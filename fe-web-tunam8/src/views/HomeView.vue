@@ -23,7 +23,17 @@
               <!-- Right column for the image -->
               <div class="col-md-6 d-flex align-items-center justify-content-center">
                 <div class="mt-5">
-                  <img src="../assets/LandingPage/Perfume2.png" style="width:500px;" class="rounded img-fluid" alt="...">
+                  <!-- <img src="../assets/LandingPage/Perfume2.png" style="width:500px;" class="rounded img-fluid" alt="..."> -->
+                  <div id="gallerywrapper">
+                    <div id="gallery">
+                      <div v-for="(image, index) in images" :key="index" :id="'pic' + (index + 1)"
+                        v-show="index === currentIndex">
+                        <img :src="image.src" :alt="'Image ' + (index + 1)" :height="image.height" :width="image.width">
+                        <a style="cursor: pointer;" class="previous" @click="previousImage">&lt;</a>
+                        <a style="cursor: pointer;" class="next" @click="nextImage">&gt;</a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -35,10 +45,10 @@
               <div class="col-md-6 my-auto">
                 <div class="d-flex justify-content-between">
                   <div class="image-frame">
-                    <img src="../assets/LandingPage/oscar1.jpg" class="rounded" alt="Oscar">
+                    <img src="../assets/LandingPage/Tunam8_2.jpg" class="rounded" alt="Oscar">
                   </div>
                   <div class="image-frame d-flex justify-content-center">
-                    <img src="../assets/LandingPage/oscar2.jpg" class="rounded" alt="Oscar">
+                    <img src="../assets/LandingPage/Tunam8_1.jpg" class="rounded" alt="Oscar">
                   </div>
                 </div>
               </div>
@@ -210,12 +220,35 @@
 </template>
 <script>
 import Navbar from '@/components/HomeNavbar.vue';
+import image1 from '@/assets/LandingPage/Perfume2.png'
+import image2 from '@/assets/LandingPage/Perfume3.png'
+import image3 from '@/assets/LandingPage/Perfume1.png'
 export default {
   name: 'HomePage',
+  data() {
+    return {
+      currentIndex: 1,
+      images: [
+        { src:image1, height: 350, width: 500 },
+        { src: image2, height: 350, width: 500 },
+        { src: image3, height: 350, width: 500 }
+        // Add more images as needed
+      ]
+    };
+  },
   components: {
     Navbar,
   },
   methods: {
+    showImage(index) {
+      this.currentIndex = (index + this.images.length) % this.images.length;
+    },
+    nextImage() {
+      this.showImage(this.currentIndex + 1);
+    },
+    previousImage() {
+      this.showImage(this.currentIndex - 1);
+    },
     scrollToNextSection() {
       // Scroll to the next section using JavaScript
       const nextSection = this.$refs.scrollWrapper.querySelector('.next-section');
@@ -223,16 +256,16 @@ export default {
         nextSection.scrollIntoView({ behavior: 'smooth' });
       }
     },
+
   },
   mounted() {
-    // Add event listeners for scroll snapping
+    setInterval(this.nextImage, 5000);
     const scrollWrapper = this.$refs.scrollWrapper;
     if (scrollWrapper) {
       scrollWrapper.addEventListener('scroll', this.handleScroll);
     }
   },
   beforeDestroy() {
-    // Remove event listener to prevent memory leaks
     const scrollWrapper = this.$refs.scrollWrapper;
     if (scrollWrapper) {
       scrollWrapper.removeEventListener('scroll', this.handleScroll);
@@ -245,7 +278,64 @@ export default {
 @import url(https://fonts.googleapis.com/css?family=Mooli);
 
 
+#gallerywrapper {
+  width: 640px;
+  height: 450px;
+  margin: 0 auto;
+  position: relative;
+  font-family: verdana, arial, sans-serif;
+}
 
+#gallerywrapper #gallery {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 450px;
+  width: 640px;
+  overflow: hidden;
+  text-align: center;
+}
+
+#gallerywrapper #gallery div {
+  width: 640px;
+  height: 900px;
+  padding-top: 10px;
+  position: relative;
+}
+
+#gallerywrapper #gallery div img {
+  clear: both;
+  display: block;
+  margin: 0 auto;
+  border: 0;
+}
+
+#gallerywrapper #gallery div h3 {
+  padding: 10px 0 0 0;
+  margin: 0;
+  font-size: 18px;
+}
+
+#gallerywrapper #gallery div p {
+  padding: 5px 0;
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+#gallery .previous {
+  display: inline;
+  float: left;
+  margin-left: 80px;
+  text-decoration: none;
+}
+
+#gallery .next {
+  display: inline;
+  float: right;
+  margin-right: 80px;
+  text-decoration: none;
+}
 
 .list-unstyled li a {
   text-decoration: none;
@@ -314,5 +404,6 @@ export default {
   width: 100%;
   height: auto;
   object-fit: cover;
-}</style>
+}
+</style>
   
