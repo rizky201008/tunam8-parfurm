@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -12,18 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('addresses', function (Blueprint $table) {
             $table->id();
-            $table->double('total');
-            $table->json('products');
             $table->foreignIdFor(User::class);
-            $table->enum('status', ['unpaid', 'proccess', 'shipping', 'received', 'canceled']);
             $table->text('address');
             $table->text('phone');
             $table->text('postal_code');
             $table->text('city');
             $table->text('province');
-            $table->text('tracking_number')->nullable();
             $table->timestamps();
         });
     }
@@ -33,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('addresses');
     }
 };
