@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -13,11 +14,18 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required'
         ]);
-        $credentials = $request->only('email', 'password');
-        if (auth()->attempt($credentials)) {
+        if (Auth::attempt([
+            'email' => $request->email,
+            'password' => $request->password
+        ])) {
             $user = User::where('email', $request->email)->first();
-            $token = $user->createToken('authToken')->accessToken;
-            return response()->json(['token' => $token], 200);
+            $ability = ($user->role == 'admin') ? 'admin' : 'user';
+            $token = $user->createToken('access-token', [$ability]);
+
+            return response()->json([
+                'message' => 'Login success 🎉🎉🎉',
+                'token' => $token->plainTextToken
+            ], 200);
         }
         return response()->json(['error' => 'Unauthenticated'], 401);
     }
