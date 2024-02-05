@@ -24,7 +24,8 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Login success 🎉🎉🎉',
-                'token' => $token->plainTextToken
+                'token' => $token->plainTextToken,
+                'user' => $user
             ], 200);
         }
         return response()->json(['error' => 'Unauthenticated'], 401);
