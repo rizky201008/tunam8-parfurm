@@ -52,7 +52,17 @@ class ProductController extends Controller
     {
         $product = Product::find($request->id);
 
+        if ($request['images'] !== null) {
+            $request['images'] = json_encode($request['images']);
+        }
+
+        if ($request['name'] !== null) {
+            $request['slug'] = Str::slug($request['name'], '-');
+        }
+
         $product->update($request->all());
+
+        $product->images = json_decode($product->images);
 
         return response()->json($product);
     }
