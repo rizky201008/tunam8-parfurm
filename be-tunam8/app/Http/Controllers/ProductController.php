@@ -39,6 +39,8 @@ class ProductController extends Controller
         $product->slug = Str::slug($request->name, '-');
         $product->save();
 
+        $product->images = json_decode($product->images);
+
         return response()->json(
             [
                 'message' => 'Product created',
@@ -64,7 +66,12 @@ class ProductController extends Controller
 
         $product->images = json_decode($product->images);
 
-        return response()->json($product);
+        return response()->json(
+            [
+                'message' => 'Product updated',
+                'product' => $product,
+            ],
+            200);
     }
 
     public function deleteProduct(Request $request)
