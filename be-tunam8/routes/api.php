@@ -16,7 +16,7 @@ use App\Http\Controllers\ProductController;
 |
 */
 
-Route::middleware(['cors'])->group(['prefix' => 'account'], function () {
+Route::group(['prefix' => 'account', 'middleware' => 'cors'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
     Route::group(['middleware' => 'auth:sanctum'], function () {
@@ -25,7 +25,7 @@ Route::middleware(['cors'])->group(['prefix' => 'account'], function () {
     });
 });
 
-Route::middleware(['cors'])->group(['middleware' => ['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('products', [ProductController::class, 'allProducts']);
     Route::get('product/{slug}', [ProductController::class, 'getProduct']);
     Route::middleware(['ability:admin'])->group(function () {
