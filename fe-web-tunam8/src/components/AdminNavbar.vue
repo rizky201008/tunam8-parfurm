@@ -1,11 +1,11 @@
 <template>
     <div class="transition-content" :class="{ pushMainContent: isActive }">
         <div>
-            <div v-if="Role === 'ADMIN'">
+            <div v-if="Role === 'admin'">
                 <div id="mySidenav" class="sidenav shadow" :class="{ openNavClass: isActive }">
                     <a class="closebtn" @click="isActive = !isActive" style="cursor: pointer;">&times;</a>
                     <a href="/admin/dashboard">Home</a>
-                    <a href="/admin/daftarbuku">Daftar Buku</a>
+                    <a href="/admin/daftarproduk">Daftar Buku</a>
                     <a href="/admin/kelolapelanggan">Kelola Pelanggan</a>
                 </div>
             </div>
@@ -20,7 +20,7 @@
                 <div class="button-side">
                     <nav class="navbar navbar-expand-lg navbar-light white bgnav shadow-sm rounded">
                         <span style="font-size: 25px; cursor: pointer;" @click="isActive = !isActive">&#9776;</span>
-                        <a class="navbar-brand" href="/" style="margin-left: 15px;">Toko Buku Oscar</a>
+                        <a class="navbar-brand" href="/" style="margin-left: 15px;">Tunam8</a>
                         <div class="ms-auto mx-2">
                             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -72,14 +72,15 @@ export default {
     },
     async mounted() {
         try {
-            const response = await axios.get(BASE_URL + '/user', {
+            const response = await axios.get(BASE_URL + '/account/user', {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem('access_token')
                 }
             });
-            this.id = response.data.user.id
-            this.username = response.data.user.name
-            this.Role = response.data.user.role;
+            this.id = response.data.id
+            this.username = response.data.name
+            this.Role = response.data.role;
+            console.log(this.username)
         } catch (error) {
             console.error(error);
 
@@ -101,7 +102,7 @@ export default {
             this.$router.push({ path: `/profile/${id}` })
         },
         onLogout() {
-            axios.post(BASE_URL + '/logout', {}, {
+            axios.post(BASE_URL + '/account/logout', {}, {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem('access_token'),
                 }
@@ -129,7 +130,10 @@ export default {
 }
 
 .navbar-brand {
-    font-weight: bold;
+  font-family: 'Merriweather', serif;
+  font-weight: light;
+  font-size: 25px;
+  color: black;
 }
 
 .sidenav {
@@ -139,7 +143,7 @@ export default {
     z-index: 1;
     top: 0;
     left: -250px;
-    background-color: #111;
+    background-color: #ffa505;
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
