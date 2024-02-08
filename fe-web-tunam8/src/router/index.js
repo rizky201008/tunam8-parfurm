@@ -8,6 +8,7 @@ import UserProfile from '../views/user/Profile.vue'
 // Admin
 import AdminDashboard from '../views/admin/AdminDashboard.vue'
 import DaftarProduk from '../views/admin/DaftarProduk.vue'
+import DaftarKategori from '../views/admin/DaftarKategori.vue'
 import KelolaPelanggan from '../views/admin/KelolaPelanggan.vue'
 
 const router = createRouter({
@@ -53,6 +54,11 @@ const router = createRouter({
       path: '/admin/daftarproduk',
       name: 'Daftar Produk',
       component: DaftarProduk,
+    },
+    {
+      path: '/admin/kategori',
+      name: 'Daftar Kategori',
+      component: DaftarKategori,
     },
     {
       path: '/admin/kelolapelanggan',

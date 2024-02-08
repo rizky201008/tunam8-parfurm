@@ -3,24 +3,41 @@
   <Navbar>
     <div>
       <div class="container-fluid px-4 py-2">
-        <div class="row">
+        <div class="row justify-content-center">
           <div class="col-md-12">
             <div class="card border-0 px-2 " style="text-align: end;">
               <div class="col text-right">
                 <div class="button-set my-4">
-                  <button-custom @click="openCategory" class="mx-4">Add Category</button-custom>
-                  <button-custom data-bs-toggle="modal" data-bs-target="#addParfum">Tambah Parfum</button-custom>
+                  <button-custom data-bs-toggle="modal" data-bs-target="#addKategori" class="mx-4">Add Category</button-custom>
+                  <button-custom @click="openDaftarParfum">Tambah Parfum</button-custom>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-md-12 mt-4">
-            <Datatables ref="datatablesParfum" />
+          <div class="col-md-6 mt-4">
+            <div class="card rounded border-0 p-2">
+              <table class="table table-sm">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Kategori</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in kategori" :key="item.id">
+                    <th scope="row">{{ index + 1 }}</th>
+                    <td>{{ item.name }}</td>
+                    <td><button class="btn btn-danger btn-delete" @click="deleteKategori(item.id)">Hapus</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
       <!-- Modal Nich -->
-      <div class="modal fade" id="addParfum" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="addKategori" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -28,37 +45,16 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
             </div>
             <div class="modal-body">
-              <form @submit.prevent="addParfum">
+              <form @submit.prevent="addKategori">
                 <div class="mb-3">
                   <label for="exampleInputEmail1" class="form-label">Nama Parfum</label>
-                  <input type="name" class="form-control" v-model="parfum.name" aria-describedby="namaCustomer">
-                </div>
-                <div class="mb-3">
-                  <label for="exampleInputDesc" class="form-label">Deskripsi</label>
-                  <textarea type="text" class="form-control" v-model="parfum.desc"
-                    aria-describedby="emailCustomer"></textarea>
-                </div>
-                <div class="mb-3">
-                  <label for="exampleInputPengarang" class="form-label">Kategori</label>
-                  <input type="text" class="form-control" v-model="parfum.category">
-                </div>
-                <div class="mb-3">
-                  <label for="FileInput" class="form-label">Gambar Parfum</label>
-                  <input type="file" class="form-control" ref="fileInput" @change="handleFileChange" multiple>
-                </div>
-                <div class="mb-3">
-                  <label for="exampleInputHarga" class="form-label">Harga</label>
-                  <input type="number" class="form-control" v-model="parfum.price">
-                </div>
-                <div class="mb-3">
-                  <label for="exampleInputStock" class="form-label">Stok</label>
-                  <input type="text" class="form-control" v-model="parfum.stok">
+                  <input type="name" class="form-control" v-model="kategori.name" aria-describedby="namaCustomer">
                 </div>
               </form>
             </div>
             <div class="modal-footer">
               <button-custom type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button-custom>
-              <button-custom class="btn btn-info" type="submit" @click="addParfum">Tambah Parfum</button-custom>
+              <button-custom class="btn btn-info" type="submit" @click="addKategori">Tambah Parfum</button-custom>
             </div>
           </div>
         </div>
@@ -82,17 +78,14 @@ export default {
   },
   data() {
     return {
-
-      // Modal Add Customer
-      parfum: {
+      kategori: [],
+      kategori: {
         name: '',
-        desc: '',
-        price: '',
-        stok: '',
-        category: '',
       },
-      selectedFile: [],
     }
+  },
+  mounted() {
+    this.retrieveKategori();
   },
   methods: {
     // Prompt
@@ -101,15 +94,14 @@ export default {
     },
 
     clearForm() {
-      this.parfum.name = '';
-      this.parfum.desc = '';
-      this.parfum.price = '';
-      this.parfum.stok = '';
-      this.parfum.foto = '';
-      this.selectedFile = '';
+      this.kategori.name = '';
     },
     openCategory() {
-      this.$router.push('/admin/kategori');
+      this.$router.push('/admin/category');
+    },
+
+    openDaftarParfum() {
+      this.$router.push('/admin/daftarproduk');
     },
 
     // Method
@@ -119,34 +111,58 @@ export default {
       // Store all selected files in an array
       this.selectedFiles = Array.from(fileInput.files);
     },
+    async retrieveKategori() {
+      try {
+        const response = await axios.get(BASE_URL + '/categories', {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        });
+        this.kategori = response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async deleteKategori(id) {
+      try {
+        await axios.delete(BASE_URL + '/categories', {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          },
+          data: { id: id },
 
-    async addParfum() {
+        });
+
+        this.retrieveKategori();
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Kategori berhasil dihapus',
+          color: 'green'
+        });
+      } catch (error) {
+        console.error(error);
+        // Optionally, show an error message or perform other actions if deletion fails
+      }
+    },
+    async addKategori() {
       try {
         // this.parfum.price = parseInt(this.parfum.price);
         const formData = new FormData();
-        this.selectedFiles.forEach((file, index) => {
-          formData.append(`images[${index}]`, file, file.name);
-        });
-        // Append the selected file
-        // formData.append('images[]', this.selectedFile, this.selectedFile.name);
-        formData.append('name', this.parfum.name);
-        formData.append('description', this.parfum.name);
-        formData.append('price', this.parfum.price);
-        formData.append('stock', this.parfum.stok);
-        formData.append('category_id', this.parfum.category);
-        console.log(this.parfum.price)
+
+        formData.append('name', this.kategori.name);
+
         const token = localStorage.getItem('access_token')
-        const response = await axios.post(BASE_URL + '/products', formData, {
+        const response = await axios.post(BASE_URL + '/categories', formData, {
           headers: {
             'Content-Type': 'multipart/form-data', // Set content type for file upload
             'Authorization': 'Bearer ' + token, // Include Bearer token in the Authorization header
           },
         });
-        console.log(response.data);
 
         this.closeModal();
-        this.$refs.datatablesParfum.retrieveParfum();
         this.clearForm();
+        this.retrieveKategori();
 
         this.$notify({
           type: 'success',
@@ -210,6 +226,32 @@ button-custom,
   &:hover {
     background-position: 0 0;
   }
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  /* Red background color */
+  border-color: #dc3545;
+  /* Red border color */
+  color: #fff;
+  /* White text color */
+  font-weight: 400;
+  /* Lighter font weight */
+  padding: 0.2rem 0.4rem;
+  /* Reduced padding */
+  font-size: 0.85rem;
+  /* Smaller font size */
+  transition: background-color 0.3s, color 0.3s;
+  /* Smooth transition */
+}
+
+.btn-delete:hover {
+  background-color: #fff;
+  /* White background color on hover */
+  border-color: #dc3545;
+  /* Red border color on hover */
+  color: #dc3545;
+  /* Red text color on hover */
 }
 </style>
   

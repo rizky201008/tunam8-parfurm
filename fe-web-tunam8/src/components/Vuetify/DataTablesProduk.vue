@@ -1,7 +1,7 @@
 <template>
     <v-card flat>
         <v-card-title class="d-flex align-center pe-2">
-            <v-icon icon="mdi-account-supervisor"></v-icon> &nbsp;
+            <v-icon icon="mdi-invoice-list"></v-icon> &nbsp;
             Daftar Parfum
             <v-spacer></v-spacer>
 
