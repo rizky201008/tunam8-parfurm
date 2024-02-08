@@ -225,6 +225,7 @@ export default {
     min-height: 100vh;
 
     background: url("../../../src/assets/LandingPage/Background.png");
+ /* background-color: #EAEAEA; */
     background-position: center;
     background-size: cover;
 }

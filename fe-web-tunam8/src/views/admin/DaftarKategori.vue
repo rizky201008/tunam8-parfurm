@@ -8,7 +8,8 @@
             <div class="card border-0 px-2 " style="text-align: end;">
               <div class="col text-right">
                 <div class="button-set my-4">
-                  <button-custom data-bs-toggle="modal" data-bs-target="#addKategori" class="mx-4">Add Category</button-custom>
+                  <button-custom data-bs-toggle="modal" data-bs-target="#addKategori" class="mx-4">Add
+                    Category</button-custom>
                   <button-custom @click="openDaftarParfum">Tambah Parfum</button-custom>
                 </div>
               </div>
@@ -28,7 +29,10 @@
                   <tr v-for="(item, index) in kategori" :key="item.id">
                     <th scope="row">{{ index + 1 }}</th>
                     <td>{{ item.name }}</td>
-                    <td><button class="btn btn-danger btn-delete" @click="deleteKategori(item.id)">Hapus</button></td>
+                    <td>
+                      <button class="btn btn-infos mr-2" @click="showModal(item.id)">Edit</button>
+                      <button class="btn btn-delete" @click="deleteKategori(item.id)">Hapus</button>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -37,17 +41,19 @@
         </div>
       </div>
       <!-- Modal Nich -->
+
       <div class="modal fade" id="addKategori" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <share-modal ref="share-modal-ref" />
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Daftar Parfum</h1>
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Kategori</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
             </div>
             <div class="modal-body">
               <form @submit.prevent="addKategori">
                 <div class="mb-3">
-                  <label for="exampleInputEmail1" class="form-label">Nama Parfum</label>
+                  <label for="exampleInputEmail1" class="form-label">Nama Kategori</label>
                   <input type="name" class="form-control" v-model="kategori.name" aria-describedby="namaCustomer">
                 </div>
               </form>
@@ -55,6 +61,26 @@
             <div class="modal-footer">
               <button-custom type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button-custom>
               <button-custom class="btn btn-info" type="submit" @click="addKategori">Tambah Parfum</button-custom>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editModalLabel">Edit Category</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form @submit.prevent="editKategori">
+                <div class="mb-3">
+                  <label for="kategoriName" class="form-label">Nama Kategori</label>
+                  <input type="text" class="form-control" id="kategoriName" v-model="selectedCategory.name">
+                </div>
+                <button-custom type="submit" class="btn btn-primary" @click="editKategori">Simpan Kategori</button-custom>
+              </form>
             </div>
           </div>
         </div>
@@ -67,6 +93,7 @@
 import axios from 'axios';
 import Navbar from '@/components/AdminNavbar.vue';
 import Datatables from '@/components/Vuetify/DataTablesProduk.vue';
+import { Modal } from 'bootstrap'
 
 const BASE_URL = import.meta.env.VITE_BASE_URL_API;
 
@@ -80,8 +107,11 @@ export default {
     return {
       kategori: [],
       kategori: {
-        name: '',
       },
+      selectedCategory: {
+        id: null,
+        name: ''
+      }
     }
   },
   mounted() {
@@ -102,6 +132,13 @@ export default {
 
     openDaftarParfum() {
       this.$router.push('/admin/daftarproduk');
+    },
+    showModal(id) {
+      this.selectedCategory = this.kategori.find(item => item.id === id);
+      $('#editModal').modal('show');
+    },
+    hideModal() {
+      this.$refs['edit-kategori'].hide()
     },
 
     // Method
@@ -183,6 +220,32 @@ export default {
         }
       }
     },
+    editKategori() {
+      const data = {
+        id: this.selectedCategory.id,
+        name: this.selectedCategory.name,
+      };
+      axios.put(BASE_URL + '/categories', data, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('access_token')
+        }
+      })
+        .then(response => {
+          console.log('Category updated successfully:', response.data);
+
+          $('#editModal').modal('hide');
+          this.retrieveKategori();
+          this.$notify({
+            type: 'success',
+            title: 'Success',
+            text: 'Kategori telah ter-update!',
+            color: 'green',
+          });
+        })
+        .catch(error => {
+          console.error('Error updating category:', error);
+        });
+    }
   }
 };
 </script>
@@ -251,6 +314,32 @@ button-custom,
   border-color: #dc3545;
   /* Red border color on hover */
   color: #dc3545;
+  /* Red text color on hover */
+}
+
+.btn-infos {
+  background-color: blue;
+  /* Red background color */
+  border-color: blue;
+  /* Red border color */
+  color: #fff;
+  /* White text color */
+  font-weight: 400;
+  /* Lighter font weight */
+  padding: 0.2rem 0.4rem;
+  /* Reduced padding */
+  font-size: 0.85rem;
+  /* Smaller font size */
+  transition: background-color 0.3s, color 0.3s;
+  /* Smooth transition */
+}
+
+.btn-infos:hover {
+  background-color: #fff;
+  /* White background color on hover */
+  border-color: blue;
+  /* Red border color on hover */
+  color: blue;
   /* Red text color on hover */
 }
 </style>
