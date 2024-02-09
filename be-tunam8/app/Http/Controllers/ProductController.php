@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductImage;
-use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -88,15 +87,21 @@ class ProductController extends Controller
 
     public function updateProduct(Request $request)
     {
+        $validated = $request->validate([
+            'name' => 'required|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer',
+            'description' => 'required',
+        ]);
+
         $product = Product::find($request->id);
 
-        if ($request['name'] !== null) {
-            $request['slug'] = Str::slug($request['name'], '-');
-        }
+        $validated['slug'] = Str::slug(round(microtime(true) * 1000) . $validated['name'], '-');
 
-        $product->update($request->all());
-
-        $product->images = json_decode($product->images);
+        $product->update(
+            $validated
+        );
 
         return response()->json(
             [
@@ -105,6 +110,14 @@ class ProductController extends Controller
             ],
             200
         );
+    }
+
+    public function addProductImage(Request $request)
+    {
+    }
+
+    public function deleteProductImage(Request $request)
+    {
     }
 
     public function deleteProduct(Request $request)
