@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:farrel": "vite --mode farrel",
+    "dev:dev": "vite --mode development",
+    "build:prod": "vite build --mode production",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
