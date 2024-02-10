@@ -3,8 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductImageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,5 +39,6 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::post('categories', [CategoryController::class, 'createCategory']);
         Route::put('categories', [CategoryController::class, 'updateCategory']);
         Route::delete('categories', [CategoryController::class, 'deleteCategory']);
+        Route::post('product-image', [ProductImageController::class, 'addProductImage']);
     });
 });
