@@ -112,14 +112,6 @@ class ProductController extends Controller
         );
     }
 
-    public function addProductImage(Request $request)
-    {
-    }
-
-    public function deleteProductImage(Request $request)
-    {
-    }
-
     public function deleteProduct(Request $request)
     {
         $product = Product::find($request->id);
