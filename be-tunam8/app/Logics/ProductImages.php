@@ -4,6 +4,7 @@ namespace App\Logics;
 
 use App\Models\Product;
 use App\Models\ProductImage;
+use Illuminate\Support\Facades\File;
 
 class ProductImages
 {
@@ -38,7 +39,15 @@ class ProductImages
         return false;
     }
 
-    public function deleteProductImage($request)
+    public function deleteProductImage($product_id)
     {
+        $productImage = ProductImage::where('product_id', $product_id)->get();
+        foreach ($productImage as $image) {
+            $imagePath = public_path('products') . '/' . $image->link;
+            $image->delete();
+            File::delete($imagePath);
+        }
+        
+        return true;
     }
 }
