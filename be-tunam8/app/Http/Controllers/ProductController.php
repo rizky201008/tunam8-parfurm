@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Logics\ProductImages as ProductImagesLogic;
 use App\Models\Product;
-use App\Models\ProductImage;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -100,6 +99,7 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'stock' => 'required|integer',
             'description' => 'required',
+            'id' => 'required|exists:products,id',
         ]);
 
         $productClass = new Product();
@@ -110,36 +110,31 @@ class ProductController extends Controller
             $validated['slug'] = Str::slug(round(microtime(true) * 1000) . $validated['name'], '-');
         }
 
-        if ($product !== null) {
-            $product->update(
-                $validated
-            );
+        $product->update(
+            $validated
+        );
 
-            $productWithImages = $productClass->with(['category', 'images'])->find($request->id);
+        $productWithImages = $productClass->with(['category', 'images'])->find($request->id);
 
-            $baseURL = config('app.url') . '/products';
-            $productWithImages->images->map(function ($image) use ($baseURL) {
-                $image->link = $baseURL . '/' . $image->link;
-                return $image;
-            });
-            return response()->json(
-                [
-                    'message' => 'Product updated',
-                    'product' => $productWithImages,
-                ],
-                200
-            );
-        }
+        $baseURL = config('app.url') . '/products';
+        $productWithImages->images->map(function ($image) use ($baseURL) {
+            $image->link = $baseURL . '/' . $image->link;
+            return $image;
+        });
         return response()->json(
             [
-                'message' => 'Product not found',
+                'message' => 'Product updated',
+                'product' => $productWithImages,
             ],
-            404
+            200
         );
     }
 
     public function deleteProduct(Request $request)
     {
+        $request->validate([
+            'id' => 'required|exists:products,id',
+        ]);
         $product = Product::find($request->id);
         $product->delete();
         return response()->json(['message' => 'Product deleted']);
