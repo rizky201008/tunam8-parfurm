@@ -99,17 +99,25 @@ class ProductController extends Controller
 
         $validated['slug'] = Str::slug(round(microtime(true) * 1000) . $validated['name'], '-');
 
-        $product->update(
-            $validated
-        );
-
+        if ($product !== null) {
+            $product->update(
+                $validated
+            );
+            return response()->json(
+                [
+                    'message' => 'Product updated',
+                    'product' => $product,
+                ],
+                200
+            );
+        }
         return response()->json(
             [
-                'message' => 'Product updated',
-                'product' => $product,
+                'message' => 'Product not found',
             ],
-            200
+            404
         );
+
     }
 
     public function deleteProduct(Request $request)
