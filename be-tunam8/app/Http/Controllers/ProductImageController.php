@@ -4,20 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Logics\ProductImages as ProductImagesLogic;
+use App\Models\ProductImage;
 
 class ProductImageController extends Controller
 {
-    public function addProductImage(Request $request)
+    public function updateProductImage(Request $request)
     {
-        $validated = $request->validate([
-            'product_id' => 'required|integer',
-            'images' => 'required',
+        $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'images' => 'required|array|min:1|max:4',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $productImagesLogic = new ProductImagesLogic();
-        $imageCount = $productImagesLogic->countImages($validated['product_id']);
-        $addImage = $productImagesLogic->addProductImage($imageCount, $validated['product_id'], $request->file('images'));
+        $productImagesLogic->deleteProductImage($request->product_id);
+        $addImage = $productImagesLogic->addProductImage(0, $request->product_id, $request->file('images'));
 
         if ($addImage) {
             return response()->json(['message' => 'Image added successfully'], 200);
@@ -26,7 +27,14 @@ class ProductImageController extends Controller
         }
     }
 
-    public function deleteProductImage(Request $request)
+    public function getAllProductImages()
     {
+        $productImages = ProductImage::all();
+        $baseUrl = config('app.url') . '/products';
+        $mapped = $productImages->map(function ($image) use ($baseUrl) {
+            $image->link = $baseUrl . '/' . $image->link;
+            return $image;
+        });
+        return response()->json($mapped, 200);
     }
 }
