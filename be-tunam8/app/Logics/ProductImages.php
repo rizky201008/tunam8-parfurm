@@ -19,6 +19,7 @@ class ProductImages
 
     public function addProductImage($imagesCount, $productId, $images)
     {
+        $files = [];
         if ($imagesCount <= 4 && $imagesCount + count($images) <= 4) {
             foreach ($images as $file) {
                 if ($file->isValid()) {
@@ -29,8 +30,8 @@ class ProductImages
                         'link' =>  $filename,
                     ];
                 }
-                ProductImage::insert($files);
             }
+            ProductImage::insert($files);
             return true;
         }
 
