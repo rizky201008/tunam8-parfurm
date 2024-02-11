@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Logics\ProductImages as ProductImagesLogic;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Support\Str;
@@ -36,7 +37,7 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'stock' => 'required|integer',
             'description' => 'required',
-            'images' => 'required',
+            'images' => 'required|array|min:1|max:4',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -48,41 +49,47 @@ class ProductController extends Controller
         $product->description = $request->description;
         $product->slug = Str::slug(round(microtime(true) * 1000) . $request->name, '-');
         $product->save();
-        $files = [];
-        if ($request->hasfile('images')) {
-            foreach ($request->file('images') as $file) {
-                if ($file->isValid()) {
-                    $filename = round(microtime(true) * 1000) . '-' . str_replace(' ', '-', $file->getClientOriginalName());
-                    $file->move(public_path('products'), $filename);
-                    $files[] = [
-                        'product_id' => $product->id,
-                        'link' =>  $filename,
-                    ];
-                }
-                ProductImage::insert($files);
-            }
+
+        $productLogic = new ProductImagesLogic();
+        if ($product->save()) {
+            $imageCount = $productLogic->countImages($request->product_id);
+            $addImages = $productLogic->addProductImage($imageCount, $product->id, $request->file('images'));
+        } else {
+            return response()->json(
+                [
+                    'message' => 'Err: Cannot add product',
+                ],
+                500
+            );
         }
 
         // Get base URL
         $baseUrl = config('app.url') . '/products';
 
         // Modify product images link with base URL
-        $productImages = Product::where('id', $product->id)->with('images')->first()->images->map(function ($image) use ($baseUrl) {
-            $image->link = $baseUrl . '/' . $image->link;
-            return $image;
-        });
+        if ($addImages) {
+            $product->images = $product->with('images')->find($product->id)->images->map(function ($image) use ($baseUrl) {
+                $image->link = $baseUrl . '/' . $image->link;
+                return $image;
+            });
 
-        $product->images = $productImages;
-
-        return response()->json(
-            [
-                'message' => 'Product created',
-                'product' => [
-                    $product
+            return response()->json(
+                [
+                    'message' => 'Product created',
+                    'product' => [
+                        $product
+                    ],
                 ],
-            ],
-            201
-        );
+                201
+            );
+        } else {
+            return response()->json(
+                [
+                    'message' => 'Err: Cannot add images to product',
+                ],
+                500
+            );
+        }
     }
 
     public function updateProduct(Request $request)
