@@ -95,9 +95,13 @@ class ProductController extends Controller
             'description' => 'required',
         ]);
 
-        $product = Product::find($request->id);
+        $productClass = new Product();
 
-        $validated['slug'] = Str::slug(round(microtime(true) * 1000) . $validated['name'], '-');
+        $product = $productClass->find($request->id);
+
+        if ($product->name !== $request->name) {
+            $validated['slug'] = Str::slug(round(microtime(true) * 1000) . $validated['name'], '-');
+        }
 
         if ($product !== null) {
             $product->update(
@@ -106,7 +110,7 @@ class ProductController extends Controller
             return response()->json(
                 [
                     'message' => 'Product updated',
-                    'product' => $product,
+                    'product' => $productClass->with(['category', 'images'])->find($request->id),
                 ],
                 200
             );
@@ -117,7 +121,6 @@ class ProductController extends Controller
             ],
             404
         );
-
     }
 
     public function deleteProduct(Request $request)
@@ -131,12 +134,11 @@ class ProductController extends Controller
     {
         $product = Product::with(['category', 'images'])->where('slug', $slug)->first();
 
-        $baseUrl = config('app.url');
-
-        $product->images->map(function ($image) use ($baseUrl) {
-            $image->link = $baseUrl . '/products/' . $image->link;
-            return $image;
-        });
+        if ($product == null) {
+            return response()->json([
+                'message' => 'Product not found',
+            ], 404);
+        }
 
         return response()->json($product);
     }
