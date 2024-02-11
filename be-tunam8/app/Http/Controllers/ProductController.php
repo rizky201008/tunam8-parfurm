@@ -64,11 +64,11 @@ class ProductController extends Controller
         }
 
         // Get base URL
-        $baseUrl = config('app.url');
+        $baseUrl = config('app.url') . '/products';
 
         // Modify product images link with base URL
         $productImages = Product::where('id', $product->id)->with('images')->first()->images->map(function ($image) use ($baseUrl) {
-            $image->link = $baseUrl . '/products/' . $image->link;
+            $image->link = $baseUrl . '/' . $image->link;
             return $image;
         });
 
@@ -107,10 +107,18 @@ class ProductController extends Controller
             $product->update(
                 $validated
             );
+
+            $productWithImages = $productClass->with(['category', 'images'])->find($request->id);
+
+            $baseURL = config('app.url') . '/products';
+            $productWithImages->images->map(function ($image) use ($baseURL) {
+                $image->link = $baseURL . '/' . $image->link;
+                return $image;
+            });
             return response()->json(
                 [
                     'message' => 'Product updated',
-                    'product' => $productClass->with(['category', 'images'])->find($request->id),
+                    'product' => $productWithImages,
                 ],
                 200
             );
@@ -139,6 +147,13 @@ class ProductController extends Controller
                 'message' => 'Product not found',
             ], 404);
         }
+
+        // Adding base URL to image links
+        $baseURL = config('app.url') . '/products'; // Replace 'https://example.com' with your actual base URL
+        $product->images->map(function ($image) use ($baseURL) {
+            $image->link = $baseURL . '/' . $image->link;
+            return $image;
+        });
 
         return response()->json($product);
     }
