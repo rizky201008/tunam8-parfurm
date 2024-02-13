@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductImageController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('categories', [CategoryController::class, 'allCategories']);
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
     Route::get('product-image', [ProductImageController::class, 'getAllProductImages']);
+    Route::get('users',[UserController::class, 'getAllUsers']);
     Route::middleware(['ability:admin'])->group(function () {
         Route::post('products', [ProductController::class, 'createProduct']);
         Route::put('products', [ProductController::class, 'updateProduct']);
