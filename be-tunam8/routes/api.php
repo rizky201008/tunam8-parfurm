@@ -24,7 +24,6 @@ Route::group(['prefix' => 'account', 'middleware' => 'cors'], function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('logout', [AuthController::class, 'logout']);
-        Route::get('user', [AuthController::class, 'user']);
     });
 });
 
@@ -34,8 +33,12 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('categories', [CategoryController::class, 'allCategories']);
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
     Route::get('product-image', [ProductImageController::class, 'getAllProductImages']);
-    Route::get('users',[UserController::class, 'getAllUsers']);
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('detail', [AuthController::class, 'user']);
+        Route::post('personalize', [UserController::class, 'personalizeUser']);
+    });
     Route::middleware(['ability:admin'])->group(function () {
+        Route::get('users', [UserController::class, 'getAllUsers']);
         Route::post('products', [ProductController::class, 'createProduct']);
         Route::put('products', [ProductController::class, 'updateProduct']);
         Route::delete('products', [ProductController::class, 'deleteProduct']);
