@@ -32,6 +32,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('product/{slug}', [ProductController::class, 'getProduct']);
     Route::get('categories', [CategoryController::class, 'allCategories']);
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
+    Route::get('product-image', [ProductImageController::class, 'getAllProductImages']);
     Route::middleware(['ability:admin'])->group(function () {
         Route::post('products', [ProductController::class, 'createProduct']);
         Route::put('products', [ProductController::class, 'updateProduct']);
@@ -39,6 +40,6 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::post('categories', [CategoryController::class, 'createCategory']);
         Route::put('categories', [CategoryController::class, 'updateCategory']);
         Route::delete('categories', [CategoryController::class, 'deleteCategory']);
-        Route::post('product-image', [ProductImageController::class, 'addProductImage']);
+        Route::post('product-image', [ProductImageController::class, 'updateProductImage']);
     });
 });
