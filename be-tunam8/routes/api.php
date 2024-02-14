@@ -41,6 +41,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     });
     Route::middleware(['ability:admin'])->group(function () {
         Route::get('users', [UserController::class, 'getAllUsers']);
+        Route::delete('users/{id}', [UserController::class, 'deleteUser']);
         Route::post('products', [ProductController::class, 'createProduct']);
         Route::put('products', [ProductController::class, 'updateProduct']);
         Route::delete('products', [ProductController::class, 'deleteProduct']);
