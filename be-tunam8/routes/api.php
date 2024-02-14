@@ -35,7 +35,9 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('product-image', [ProductImageController::class, 'getAllProductImages']);
     Route::group(['prefix' => 'user'], function () {
         Route::get('detail', [AuthController::class, 'user']);
-        Route::post('personalize', [UserController::class, 'personalizeUser']);
+        Route::post('personal', [UserController::class, 'personalizeUser']);
+        Route::get('personal', [UserController::class, 'getUserPersonal']);
+        Route::put('personal', [UserController::class, 'updateUserPersonal']);
     });
     Route::middleware(['ability:admin'])->group(function () {
         Route::get('users', [UserController::class, 'getAllUsers']);
