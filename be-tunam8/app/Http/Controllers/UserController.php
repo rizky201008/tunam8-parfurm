@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\UserPersonal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -36,20 +37,33 @@ class UserController extends Controller
 
     public function getUserPersonal(Request $request)
     {
-        $user = User::find($request->user()->id);
         $personal = UserPersonal::where('user_id', $request->user()->id)->first();
-        return response()->json(['personal' => $user->personal], 200);
+        if ($personal === null) {
+            return response()->json(['message' => 'User personalization not found'], 404);
+        }
+        $personal->tags = json_decode($personal->tags);
+        return response()->json(['personal' => $personal], 200);
     }
 
     public function updateUserPersonal(Request $request)
     {
-        $validated = $request->validate([
+        $mergedReqs = array_merge($request->all(), $request->user()->toArray());
+
+        $validator = Validator::make($mergedReqs, [
             'tags' => 'required|array',
+            'id' => 'required|integer|exists:user_personals,user_id',
         ]);
 
-        $user = User::find($request->user()->id);
-        $user->personal->tags = $validated['tags'];
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $validated = $validator->validated();
+        $user = User::with('personal')->find($validated['id']);
+        $user->personal->tags = json_encode($validated['tags']);
         $user->personal->save();
+        
+        $user->personal->tags = json_decode($user->personal->tags);
 
         return response()->json(['personal' => $user->personal, 'message' => 'User personalization updated'], 200);
     }
