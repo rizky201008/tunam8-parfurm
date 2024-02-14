@@ -273,7 +273,7 @@ button-custom,
   border: 0 none;
   padding: 13px 30px;
   background-color: #0771B8;
-  background-image: linear-gradient(45deg, #ffa505 0%, #ffb805 50%, #ffc905 90%);
+  background-image: linear-gradient(45deg, 	#ff0000 0%, #ff5252 50%, #ff7b7b 90%);  
   background-position: 100% 0;
   background-size: 200% 200%;
   color: #FFF;

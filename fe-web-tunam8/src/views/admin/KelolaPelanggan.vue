@@ -45,7 +45,7 @@
           </div> -->
 
           <div class="col-md-12 mt-4">
-            <Datatables ref="datatablesComp"/>
+            <Datatables ref="datatablesPelanggan"/>
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@
 import axios from 'axios';
 
 import Navbar from '@/components/AdminNavbar.vue';
-import Datatables from '@/components/Vuetify/DataTables.vue';
+import Datatables from '@/components/Vuetify/DataTablesPelanggan.vue';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL_API;
 
@@ -119,7 +119,7 @@ export default {
     },
   },
   mounted() {
-    this.retrieveUser();
+    // this.retrieveUser();
     // this.closeModal();
     // this.addUser();
     // this.deleteUser();
@@ -140,7 +140,7 @@ export default {
     // Method
     async addUser() {
       try {
-        const response = await axios.post(BASE_URL + '/register', {
+        const response = await axios.post(BASE_URL + '/Account/register', {
           name: this.namaCustomer,
           email: this.emailCustomer,
           password: this.passwordCustomer
@@ -152,7 +152,7 @@ export default {
             text: response.data.message,
             color: 'green'
           });
-        this.$refs.datatablesComp.retrieveUser();
+        this.$refs.datatablesPelanggan.retrieveUser();
         this.clearForm();
           console.log(response.data);
       } catch (error) {
@@ -170,30 +170,30 @@ export default {
         }
       }
     },
-    async retrieveUser() {
-      try {
-        const response = await axios.get(BASE_URL + '/getUser', {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
-        });
-        this.users = response.data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async deleteUser(id) {
-      try {
-        const response = await axios.delete(BASE_URL + '/deleteUser/' + id, {
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('access_token'),
-          },
-        });
-        this.retrieveUser();
-      } catch (error) {
-        console.error(error);
-      }
-    },
+    // async retrieveUser() {
+    //   try {
+    //     const response = await axios.get(BASE_URL + '/getUser', {
+    //       headers: {
+    //         Authorization: "Bearer " + localStorage.getItem('access_token')
+    //       }
+    //     });
+    //     this.users = response.data;
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // },
+    // async deleteUser(id) {
+    //   try {
+    //     const response = await axios.delete(BASE_URL + '/deleteUser/' + id, {
+    //       headers: {
+    //         Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+    //       },
+    //     });
+    //     this.retrieveUser();
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // },
 
   }
 };
@@ -222,7 +222,7 @@ button-custom,
   border: 0 none;
   padding: 13px 30px;
   background-color: #0771B8;
-  background-image: linear-gradient(45deg, #0F7AC0 0%, #3CB7CB 50%, #4BC7CF 90%);
+  background-image: linear-gradient(45deg, 	#ff0000 0%, #ff5252 50%, #ff7b7b 90%);
   background-position: 100% 0;
   background-size: 200% 200%;
   color: #FFF;

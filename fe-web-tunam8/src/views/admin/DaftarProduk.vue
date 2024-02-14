@@ -14,7 +14,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-12 mt-4">
+          <div class="col-md-12 mt-4 mb-12">
             <Datatables ref="datatablesParfum" />
           </div>
         </div>
@@ -25,7 +25,8 @@
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Daftar Parfum</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                id="closeModal"></button>
             </div>
             <div class="modal-body">
               <form @submit.prevent="addParfum">
@@ -39,8 +40,11 @@
                     aria-describedby="emailCustomer"></textarea>
                 </div>
                 <div class="mb-3">
-                  <label for="exampleInputPengarang" class="form-label">Kategori</label>
-                  <input type="text" class="form-control" v-model="parfum.category">
+                  <label for="exampleKategori" class="form-label">Kategori</label>
+                  <select class="form-select" v-model="parfum.category">
+                    <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}
+                    </option>
+                  </select>
                 </div>
                 <div class="mb-3">
                   <label for="FileInput" class="form-label">Gambar Parfum</label>
@@ -58,7 +62,7 @@
             </div>
             <div class="modal-footer">
               <button-custom type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button-custom>
-              <button-custom class="btn btn-info" type="submit" @click="addParfum">Tambah Parfum</button-custom>
+              <button-custom class="btn btn-info" type="submit" @click="addParfum" data-bs-dismiss="modal">Tambah Parfum</button-custom>
             </div>
           </div>
         </div>
@@ -82,8 +86,6 @@ export default {
   },
   data() {
     return {
-
-      // Modal Add Customer
       parfum: {
         name: '',
         desc: '',
@@ -92,8 +94,14 @@ export default {
         category: '',
       },
       selectedFile: [],
+      categories: [],
     }
   },
+
+  mounted() {
+    this.fetchCategories();
+  },
+
   methods: {
     // Prompt
     closeModal() {
@@ -106,7 +114,8 @@ export default {
       this.parfum.price = '';
       this.parfum.stok = '';
       this.parfum.foto = '';
-      this.selectedFile = '';
+      this.parfum.category ='',
+      this.$refs.fileInput.value = '';
     },
     openCategory() {
       this.$router.push('/admin/kategori');
@@ -116,37 +125,41 @@ export default {
     handleFileChange(event) {
       // Handle file change event
       const fileInput = this.$refs.fileInput;
-      // Store all selected files in an array
       this.selectedFiles = Array.from(fileInput.files);
     },
 
     async addParfum() {
       try {
-        // this.parfum.price = parseInt(this.parfum.price);
         const formData = new FormData();
+        // if (this.selectedFiles.length > 0) {
+        //   formData.append('images[0]', this.selectedFiles[0], this.selectedFiles[0].name);
+        // }
+
+        // for (let i = 1; i < this.selectedFiles.length; i++) {
+        //   formData.append(`images[${i}]`, this.selectedFiles[i], this.selectedFiles[i].name);
+        // }
+
         this.selectedFiles.forEach((file, index) => {
           formData.append(`images[${index}]`, file, file.name);
         });
-        // Append the selected file
-        // formData.append('images[]', this.selectedFile, this.selectedFile.name);
+
         formData.append('name', this.parfum.name);
-        formData.append('description', this.parfum.name);
+        formData.append('description', this.parfum.desc);
         formData.append('price', this.parfum.price);
         formData.append('stock', this.parfum.stok);
         formData.append('category_id', this.parfum.category);
-        console.log(this.parfum.price)
+        document.getElementById('closeModal').click();
         const token = localStorage.getItem('access_token')
         const response = await axios.post(BASE_URL + '/products', formData, {
           headers: {
-            'Content-Type': 'multipart/form-data', // Set content type for file upload
-            'Authorization': 'Bearer ' + token, // Include Bearer token in the Authorization header
+            'Content-Type': 'multipart/form-data', 
+            'Authorization': 'Bearer ' + token,
           },
         });
-        console.log(response.data);
-
-        this.closeModal();
-        this.$refs.datatablesParfum.retrieveParfum();
+        // $('#addParfum').modal('hide');
         this.clearForm();
+        this.selectedFiles = []; // Clear selected files
+        this.$refs.datatablesParfum.retrieveParfum();
 
         this.$notify({
           type: 'success',
@@ -165,6 +178,19 @@ export default {
             color: 'red',
           });
         }
+      }
+    },
+    async fetchCategories() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await axios.get(BASE_URL + '/categories', {
+          headers: {
+            'Authorization': 'Bearer ' + token,
+          },
+        });
+        this.categories = response.data;
+      } catch (error) {
+        console.error('Error fetching categories:', error);
       }
     },
   }
@@ -194,7 +220,7 @@ button-custom,
   border: 0 none;
   padding: 13px 30px;
   background-color: #0771B8;
-  background-image: linear-gradient(45deg, #ffa505 0%, #ffb805 50%, #ffc905 90%);
+  background-image: linear-gradient(45deg, 	#ff0000 0%, #ff5252 50%, #ff7b7b 90%);
   background-position: 100% 0;
   background-size: 200% 200%;
   color: #FFF;
