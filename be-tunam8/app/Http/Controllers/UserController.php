@@ -68,9 +68,9 @@ class UserController extends Controller
         return response()->json(['personal' => $user->personal, 'message' => 'User personalization updated'], 200);
     }
 
-    public function deleteUser($id)
+    public function deleteUser(Request $request)
     {
-        $user = User::find($id);
+        $user = User::find($request->id);
         if ($user === null) {
             return response()->json(['message' => 'User not found'], 404);
         }
