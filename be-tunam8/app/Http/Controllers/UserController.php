@@ -35,6 +35,11 @@ class UserController extends Controller
         return response()->json(['personal' => $personal, 'message' => 'User personalization already exists'], 200);
     }
 
+    function getUserPersonals() {
+        $personals = UserPersonal::with('user')->get();
+        return response()->json(['personals' => $personals], 200);
+    }
+
     public function getUserPersonal(Request $request)
     {
         $personal = UserPersonal::where('user_id', $request->user()->id)->first();
@@ -62,7 +67,7 @@ class UserController extends Controller
         $user = User::with('personal')->find($validated['id']);
         $user->personal->tags = json_encode($validated['tags']);
         $user->personal->save();
-        
+
         $user->personal->tags = json_decode($user->personal->tags);
 
         return response()->json(['personal' => $user->personal, 'message' => 'User personalization updated'], 200);
