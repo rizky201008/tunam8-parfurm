@@ -94,7 +94,7 @@ export default {
                 console.error(error);
             }
         },
-        async deleteUser() {
+        async deleteUser(item) {
             try {
                 const response = await axios.delete(BASE_URL + '/users', {
                     headers: {
@@ -104,7 +104,6 @@ export default {
                         id: this.itemToDelete.id
                     }
                 });
-                console.log(item.id)
                 this.$notify({
                     type: 'success',
                     title: 'Success',
