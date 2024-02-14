@@ -7,7 +7,7 @@
                     <a href="/admin/dashboard"><v-icon icon="mdi-home"></v-icon>&nbsp;Home</a>
                     <a href="/admin/daftarproduk"><v-icon icon="mdi-invoice-list"></v-icon>&nbsp;Daftar Produk</a>
                     <a href="/admin/kelolapelanggan"><v-icon icon="mdi-account"></v-icon>&nbsp;Kelola Pelanggan</a>
-                    <a  @click="onLogout" style="cursor:pointer; align-self: flex-end; bottom: 0; position: fixed;"><v-icon
+                    <a @click="onLogout" style="cursor:pointer; align-self: flex-end; bottom: 0; position: fixed;"><v-icon
                             icon="mdi-run"></v-icon>Logout</a>
                 </div>
             </div>
@@ -16,9 +16,9 @@
                 <div id="mySidenav" class="sidenav shadow" :class="{ openNavClass: isActive }">
                     <a class="closebtn" @click="isActive = !isActive" style="cursor: pointer;">&times;</a>
                     <a href="/dashboard"><v-icon icon="mdi-home"></v-icon>&nbsp;Home</a>
-                    <a  @click="onLogout" style="cursor:pointer; align-self: flex-end; bottom: 0; position: fixed;"><v-icon
+                    <a @click="onLogout" style="cursor:pointer; align-self: flex-end; bottom: 0; position: fixed;"><v-icon
                             icon="mdi-run"></v-icon>Logout</a>
-                    
+
                 </div>
             </div>
             <div class="content">
@@ -56,7 +56,8 @@
                         </div>
                     </nav>
                 </div>
-                <slot></slot>
+                <slot>
+                </slot>
             </div>
         </div>
     </div>
@@ -66,6 +67,7 @@
 <script>
 import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_BASE_URL_API
+import Footer from '@/components/Vuetify/Footer.vue';
 export default {
     name: 'AdminNavbar',
     data() {
@@ -76,9 +78,12 @@ export default {
             Role: null
         };
     },
+    components: {
+    Footer
+  },
     async mounted() {
         try {
-            const response = await axios.get(BASE_URL + '/account/user', {
+            const response = await axios.get(BASE_URL + '/user/detail', {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem('access_token')
                 }
@@ -128,7 +133,7 @@ export default {
 <style scoped>
 .bgnav {
     /* background: url("../../../src/assets/Navbar/blue_ocean.png"); */
-    background-color: red;
+    background-color: #D0011B;
 }
 
 .navbar {
@@ -149,7 +154,7 @@ export default {
     z-index: 1;
     top: 0;
     left: -250px;
-    background-color: red;
+    background-color: #D0011B;
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
@@ -178,6 +183,8 @@ export default {
 
 .transition-content {
     transition: margin-left .5s;
+    flex-grow: 1;
+    /* Let the content grow to fill remaining space */
 }
 
 .pushMainContent {
@@ -247,8 +254,9 @@ export default {
     min-height: 100vh;
 
     /* background: url("../../../src/assets/LandingPage/Background.png"); */
-    background-color: #EAEAEA;
+    background-color: #F5F5F5;
     background-position: center;
     background-size: cover;
-}</style>
+}
+</style>
     

@@ -46,20 +46,19 @@
                   <label for="desc">Deskripsi</label>
                   <textarea class="form-control" v-model="parfum.description" id="desc"></textarea>
                   <br>
-                  <label for="category">Current Category</label>
+                  <!-- <label for="category">Current Category</label>
                   <br>
-                  <v-chip class="mb-3">{{ currentCategory.name }}</v-chip>
-                  <br>
-                  <label for="category">Ubah Category</label>
-                  <select class="form-select" v-model="parfum.category" value="currentCategory.name">
-                    <option v-for="category in categories" :key="category.id" :value="category.id">
+                  <v-chip class="mb-3" v-model="parfum.category">{{ parfum.category.name }}</v-chip> -->
+                  <label for="category">Category</label>
+                  <select class="form-select" v-model="parfum.category">
+                    <option v-for="category in categories" :key="category.id" :value="category">
                       {{ category.name }}
                     </option>
                   </select>
                   <br>
                   <label for="file">Upload Foto Baru</label>
                   <br>
-                  <input type="file" ref="fileInput" @change="handleFileChange" id="file" />
+                  <input type="file" ref="fileInput" @change="handleFileChange" id="file" multiple />
                   <br>
                   <label for="harga" class="mt-3">Harga</label>
                   <div class="input-group">
@@ -104,7 +103,7 @@ export default {
         category: ''
       },
       currentCategory: '',
-      currentCategoryID:'',
+      currentCategoryID: '',
       categories: [],
       selectedFile: '',
       fotoFile: null,
@@ -119,25 +118,15 @@ export default {
       });
       this.categories = categoryresponse.data;
 
-
       const slug = this.$route.params.slug;
       const response = await axios.get(BASE_URL + '/product/' + slug, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem('access_token')
         }
       });
-
-      const data = response.data;
-      this.parfum.id = data.id
-      this.parfum.name = data.name;
-      this.parfum.description = response.data.description;
-      this.parfum.price = response.data.price
-      this.parfum.stock = response.data.stock
-      this.currentCategory = response.data.category
-      this.currentCategoryID = response.data.category.id
+      this.parfum = response.data
       this.parfum.images = response.data.images
-      category = response.data.category
-      
+      console.log(this.currentCategoryID);
     } catch (error) {
       console.error(error);
 
@@ -164,24 +153,38 @@ export default {
     },
     async saveParfum() {
       try {
+        if (this.fotoFile) {
+          const formData = new FormData();
+          formData.append('images', this.fotoFile);
+          formData.append('product_id', this.parfum.id);
+
+          await axios.post(BASE_URL + '/product-image', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: 'Bearer ' + localStorage.getItem('access_token')
+            }
+          });
+        }
+
         const requestData = {
           id: this.parfum.id,
           name: this.parfum.name,
           description: this.parfum.description,
           price: this.parfum.price,
           stock: this.parfum.stock,
-          category_id: this.currentCategoryID,
+          category_id: this.parfum.category,
         };
         const response = await axios.put(BASE_URL + '/products', requestData, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token')
           }
         });
-        this.$router.go();
+        console.log(this.category_id);
+        this.$router.push('/admin/daftarproduk');
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'Buku telah ter-update!',
+          text: 'Produk telah ter-update!',
           color: 'green',
         });
       } catch (error) {
@@ -225,7 +228,7 @@ button-custom,
   border: 0 none;
   padding: 13px 30px;
   background-color: #0771B8;
-  background-image: linear-gradient(45deg, 	#ff0000 0%, #ff5252 50%, #ff7b7b 90%);
+  background-image: linear-gradient(45deg, #ff0000 0%, #ff5252 50%, #ff7b7b 90%);
   background-position: 100% 0;
   background-size: 200% 200%;
   color: #FFF;

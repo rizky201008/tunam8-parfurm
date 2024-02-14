@@ -3,7 +3,7 @@
     <Navbar /> <!-- Include the Navbar component -->
     <div class="gradient-container">
       <!-- Use a wrapper div for scroll snapping -->
-      <div class="scroll-wrapper" ref="scrollWrapper">
+      <div class="" ref="scrollWrapper">
         <section class="welcome-section">
           <div class="container-fluid">
             <div class="row">
@@ -23,14 +23,13 @@
               <!-- Right column for the image -->
               <div class="col-md-6 d-flex align-items-center justify-content-center">
                 <div class="mt-5">
-                  <!-- <img src="../assets/LandingPage/Perfume2.png" style="width:500px;" class="rounded img-fluid" alt="..."> -->
                   <div id="gallerywrapper">
                     <div id="gallery">
                       <div v-for="(image, index) in images" :key="index" :id="'pic' + (index + 1)"
                         v-show="index === currentIndex">
                         <img :src="image.src" :alt="'Image ' + (index + 1)" :height="image.height" :width="image.width">
-                        <a style="cursor: pointer;" class="previous" @click="previousImage">&lt;</a>
-                        <a style="cursor: pointer;" class="next" @click="nextImage">&gt;</a>
+                        <!-- <a style="cursor: pointer;" class="previous" @click="previousImage">&lt;</a>
+                        <a style="cursor: pointer;" class="next" @click="nextImage">&gt;</a> -->
                       </div>
                     </div>
                   </div>
@@ -250,7 +249,6 @@ export default {
       this.showImage(this.currentIndex - 1);
     },
     scrollToNextSection() {
-      // Scroll to the next section using JavaScript
       const nextSection = this.$refs.scrollWrapper.querySelector('.next-section');
       if (nextSection) {
         nextSection.scrollIntoView({ behavior: 'smooth' });
@@ -302,9 +300,9 @@ export default {
   padding-top: 10px;
   position: relative;
 }
-
 #gallerywrapper #gallery div img {
-  clear: both;
+  max-width: 100%;
+  max-height: 100%;
   display: block;
   margin: 0 auto;
   border: 0;
@@ -356,7 +354,7 @@ export default {
 }
 
 .gradient-container {
-  background-image: url('../assets/LandingPage/Background.png');
+  /* background-image: url('../assets/LandingPage/Background.png'); */
   background-size: cover;
 }
 

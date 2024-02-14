@@ -143,16 +143,15 @@ export default {
                 }
             });
         });
-        console.log(BASE_URL);
         const accessToken = localStorage.getItem('access_token');
         if (accessToken) {
-            axios.get(BASE_URL + '/user', {
+            axios.get(BASE_URL + '/account/user', {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem('access_token')
                 }
             })
                 .then(response => {
-                    const { role } = response.data.user;
+                    const { role } = response.data;
                     if (role === 'admin') {
                         this.$router.push('/admin/dashboard');
                     } else if (role === 'user') {
@@ -234,7 +233,7 @@ export default {
         },
         async onRegist() {
             try {
-                const response = await axios.post(BASE_URL + '/register', {
+                const response = await axios.post(BASE_URL + '/account/register', {
                     name: this.registerName,
                     email: this.registerEmail,
                     password: this.registerPassword

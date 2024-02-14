@@ -2,53 +2,52 @@
 <template>
   <Navbar>
     <div>
-      <div class=" px-4 py-2">
-        <div class="row">
-          <div class="col-md-2 mb-2" v-for="(item, index) in products" :key="item.id">
-            <div class="product-single-card">
-              <div class="product-top-area">
-                <div class="product-discount">
-                  Sale
-                </div>
-
-                <div class="product-img">
-                  <div class="first-view">
-                    <img :src="item.images[0].link" alt="logo" class="img-fluid"
-                     >
+      <div class=" px-4">
+        <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
+        <div class="row" style="height: 60px;">
+          <form class="search-container" @submit.prevent="searchProduct">
+            <input type="text" id="search-bar" placeholder="Cari Produk anda" v-model="searchQuery">
+            <button type="submit" class="search-icon-btn"><img class="search-icon"
+                src="http://www.endlessicons.com/wp-content/uploads/2012/12/search-icon.png"></button>
+          </form>
+        </div>
+        <div class="div pb-8">
+          <div class="row">
+            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in filteredProducts"
+              :key="item.id">
+              <div class="product-single-card">
+                <div class="product-top-area">
+                  <div class="product-img">
+                    <div class="first-view">
+                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                    </div>
+                    <div class="hover-view">
+                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                    </div>
                   </div>
-                  <div class="hover-view">
-                    <img :src="item.images[0].link" alt="logo" class="img-fluid"
-                     >
+                  <div class="sideicons">
+                    <button class="sideicons-btn">
+                      <v-icon icon="mdi-heart"></v-icon>
+                    </button>
+                    <button class="sideicons-btn">
+                      <v-icon icon="mdi-cart-plus"></v-icon>
+                    </button>
                   </div>
                 </div>
-                <div class="sideicons">
-                  <button class="sideicons-btn">
-                    <v-icon icon="mdi-heart"></v-icon>
-                  </button>
-                  <button class="sideicons-btn">
-                    <v-icon icon="mdi-cart-plus"></v-icon>
-                  </button>
-                  
+                <div class="product-info">
+                  <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
+                  <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
+                  <div class="d-flex align-items-center">
+                    <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
+                  </div>
+                  <div class="d-flex flex-wrap align-items-center py-2">
+                    <div class="new-price">
+                      Rp. {{ formatPrice(item.price) }}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="product-info">
-                <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
-                <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
-                <div class="d-flex align-items-center">
-                  <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
-                </div>
-                <div class="d-flex flex-wrap align-items-center py-2">
-                  <!-- <div class="old-price">
-                    $50.45
-                  </div> -->
-                  <div class="new-price">
-                    Rp. {{ item.price }}
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
+            </router-link>
           </div>
         </div>
       </div>
@@ -60,21 +59,60 @@
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_BASE_URL_API;
+import Breadcrumbs from '@/components/Vuetify/Breadcrumbs.vue';
 
 export default {
   name: 'DaftarBuku',
   components: {
-    Navbar
+    Navbar,
+    Breadcrumbs
   },
   data() {
     return {
-      products: [], // Array to hold product data
+      products: [],
+      breadcrumbsItems: [
+        {
+          title: 'Home',
+          disabled: false,
+          href: '/dashboard',
+        }
+      ],
+      searchQuery: '',
     };
+  },
+  computed: {
+    dividedProducts() {
+      const numRows = Math.ceil(this.products.length / 6);
+      const rows = Array.from({ length: numRows }, (_, index) => index);
+
+      return rows.map(row => {
+        return this.products.slice(row * 6, (row + 1) * 6);
+      });
+    },
+    filteredProducts() {
+      if (!this.searchQuery.trim()) return this.products;
+      const query = this.searchQuery.toLowerCase().trim();
+      return this.products.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query)
+      );
+    }
   },
   mounted() {
     this.retrieveParfum();
   },
   methods: {
+    formatPrice(price) {
+        const numericPrice = parseFloat(price);
+        return numericPrice.toLocaleString('id-ID');
+    },
+    searchProduct() {
+      const query = this.searchQuery.toLowerCase().trim();
+      this.filteredProducts = this.products.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query)
+      );
+    },
     async retrieveParfum() {
       try {
         const response = await axios.get(BASE_URL + '/products', {
@@ -116,9 +154,6 @@ a {
   color: unset;
 }
 
-/* ===========
-Product Single Card - Start
-============= */
 .product-single-card {
   padding: 20px;
   border-radius: 5px;
@@ -170,6 +205,7 @@ Product Single Card - Start
   opacity: 0;
   transition: 0.5s ease-in;
 }
+
 /* 
 .product-single-card .product-top-area:hover .product-img .first-view {
   opacity: 0;
@@ -182,11 +218,12 @@ Product Single Card - Start
   scale: 1.2;
 } */
 .product-single-card .product-top-area .product-img img {
-  /* width: 250px; Adjust width to fit within the border */
-  /* height: 150px; Adjust height to fit within the border */
+  /* width: 250px;  */
+  /* height: 150px;  */
   /* object-fit: cover; */
-  border: 1px solid black; /* Add a 5px solid white border */
-  box-sizing: border-box; 
+  border: 1px solid black;
+  /* Add a 5px solid white border */
+  box-sizing: border-box;
 }
 
 .product-single-card .product-top-area .sideicons {
@@ -265,8 +302,53 @@ Product Single Card - Start
   opacity: 70%;
 }
 
-/* ===========
-Product Single Card - End
-============= */
+
+.search-container {
+  width: 490px;
+  display: block;
+  margin: 0 auto;
+}
+
+input#search-bar {
+  margin: 0 auto;
+  width: 100%;
+  height: 45px;
+  padding: 0 20px;
+  font-size: 1rem;
+  background-color: white;
+  border: 1px solid #D0CFCE;
+  outline: none;
+
+  &:focus {
+    border: 1px solid #D0011B;
+    transition: 0.35s ease;
+    color: #D0011B;
+
+    &::-webkit-input-placeholder {
+      transition: opacity 0.45s ease;
+      opacity: 0;
+    }
+
+    &::-moz-placeholder {
+      transition: opacity 0.45s ease;
+      opacity: 0;
+    }
+
+    &:-ms-placeholder {
+      transition: opacity 0.45s ease;
+      opacity: 0;
+    }
+  }
+}
+
+.search-icon {
+  position: relative;
+  float: right;
+  width: 75px;
+  height: 75px;
+  top: -62px;
+  right: -380px;
+}
+
 </style>
   

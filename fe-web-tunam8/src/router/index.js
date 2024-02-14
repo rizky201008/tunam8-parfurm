@@ -4,6 +4,7 @@ import Login from '../views/Login.vue'
 // User
 import UserDashboard from '../views/user/UserDashboard.vue'
 import UserProfile from '../views/user/Profile.vue'
+import ViewProduk from '../views/user/ViewProduk.vue'
 
 // Admin
 import AdminDashboard from '../views/admin/AdminDashboard.vue'
@@ -39,6 +40,21 @@ const router = createRouter({
       name: 'User Dashboard',
       component: UserDashboard,
     },
+
+    {
+      path: '/dashboard',
+      name: 'User Dashboard',
+      component: UserDashboard,
+    },
+
+    {
+      path: '/product/:slug',
+      name: 'View Produk',
+      component: ViewProduk,
+    },
+
+
+
 
     // Admin
     {

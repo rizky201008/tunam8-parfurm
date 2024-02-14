@@ -14,7 +14,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-12 mt-4">
+          <div class="col-md-12 mt-4 mb-12">
             <Datatables ref="datatablesParfum" />
           </div>
         </div>

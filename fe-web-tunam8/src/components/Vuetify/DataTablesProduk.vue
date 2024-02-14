@@ -41,7 +41,7 @@
                 <v-icon size="large" class="me-2" @click="editProduk(item)" color="blue">
                     mdi-pencil
                 </v-icon>
-                <v-icon size="large" @click="deleteProduct(item)" color="red">
+                <v-icon size="large" @click="confirmDelete(item)" color="red">
                     mdi-delete
                 </v-icon>
             </template>
@@ -51,6 +51,19 @@
                 </v-btn>
             </template>
         </v-data-table>
+        <v-dialog v-model="dialogDelete" max-width="500px">
+            <v-card title="Dialog">
+                <v-card-text>
+                    Are you sure you want to delete this item?
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn text @click="dialogDelete = false">Cancel</v-btn>
+                    <v-btn color="red" @click="deleteProduct(item)">OK</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-card>
     <div class="modal fade" id="showProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -87,8 +100,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row mt-5">
                         <div class="col-12 mt-5">
+                            <h5>Description : </h5>
                             <p>{{ selectedProduct.description }}</p>
                             <hr>
                             <p>Category:</p>
@@ -132,6 +146,7 @@ export default {
             foto: '',
             selectedProduct: {},
             currentIndex: 0,
+            dialogDelete: false,
         }
     },
     computed: {
@@ -153,16 +168,14 @@ export default {
     },
     methods: {
         //Promtp
+        confirmDelete(item) {
+            this.itemToDelete = item;
+            // console.log(item.id)
+            this.dialogDelete = true;
+        },
         showImage(index) {
             this.currentIndex = (index + this.selectedProduct.images.length) % this.selectedProduct.images.length;
         },
-        nextImage() {
-            this.showImage(this.currentIndex + 1);
-        },
-        previousImage() {
-            this.showImage(this.currentIndex - 1);
-        },
-
         async showModal(item) {
             // Set the selected product
             this.selectedProduct = item;
@@ -198,7 +211,7 @@ export default {
                     images: item.images.length > 0 ? item.images[0].link : '',
                     "Nama Parfum": item.name,
                     category: item.category ? item.category : { name: "Uncategorized" },
-                    "Harga (Rp.)": item.price,
+                    "Harga (Rp.)": "Rp." + Number(item.price).toLocaleString('id-ID'),
                     stok: item.stock,
                     slug: item.slug,
                     actions: '',
@@ -218,12 +231,13 @@ export default {
         },
         async deleteProduct(item) {
             try {
-                const id = item.id
                 const response = await axios.delete(BASE_URL + '/products', {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('access_token'),
                     },
-                    data: { id: id },
+                    data: {
+                        id: this.itemToDelete.id
+                    }
                 });
                 this.$notify({
                     type: 'success',
@@ -232,6 +246,7 @@ export default {
                     color: 'green'
                 });
                 this.retrieveParfum();
+                this.dialogDelete = false;
             } catch (error) {
                 console.error(error);
             }
@@ -242,122 +257,6 @@ export default {
 </script>
 
 <style>
-#gallerywrapper {
-    width: 640px;
-    height: 300px;
-    margin: 0 auto;
-    position: relative;
-    font-family: verdana, arial, sans-serif;
-}
-
-#gallerywrapper #gallery {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 450px;
-    width: 640px;
-    overflow: hidden;
-    text-align: center;
-}
-
-#gallerywrapper #gallery div {
-    width: 640px;
-    /* height: 900px; */
-    padding-top: 10px;
-    position: relative;
-}
-
-#gallerywrapper #gallery div img {
-    clear: both;
-    display: block;
-    margin: 0 auto;
-    border: 0;
-}
-
-#gallerywrapper #gallery div h3 {
-    padding: 10px 0 0 0;
-    margin: 0;
-    font-size: 18px;
-}
-
-#gallerywrapper #gallery div p {
-    padding: 5px 0;
-    margin: 0;
-    font-size: 12px;
-    line-height: 18px;
-}
-
-#gallery .previous {
-    display: inline;
-    float: left;
-    margin-left: 80px;
-    text-decoration: none;
-}
-
-#gallery .next {
-    display: inline;
-    float: right;
-    margin-right: 80px;
-    text-decoration: none;
-}
-
-#gallerywrapper #gallery div img {
-    max-width: 30%;
-    /* Limit image width to the container width */
-
-    margin: 0 auto;
-    border: 0;
-}
-
-@media (max-width: 576px) {
-
-    /* Styles for small screens */
-    #showProduct .modal-dialog {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0;
-        min-height: 100%;
-        /* Set minimum height to fill the screen */
-    }
-
-    #gallerywrapper {
-        width: 100%;
-        max-height: 100%;
-        /* Set maximum height to fill the available space */
-        overflow-y: auto;
-    }
-
-    #gallerywrapper #gallery {
-        height: auto;
-        width: 100%;
-    }
-
-    #gallerywrapper #gallery div img {
-        max-width: 30%;
-        /* Limit image width to 80% of the container width */
-        width: auto;
-        display: block;
-        margin: 0 auto;
-        border: 0;
-    }
-
-    #gallery .previous,
-    #gallery .next {
-        display: block;
-        margin: 0 auto;
-        text-align: center;
-        position: relative;
-        width: 100%;
-        /* Ensure full width */
-    }
-
-    #gallery .previous {
-        margin-bottom: 10px;
-        /* Add some spacing between the buttons */
-    }
-}
-
 .carousel-indicators button.thumbnail {
     width: 100px;
 }
