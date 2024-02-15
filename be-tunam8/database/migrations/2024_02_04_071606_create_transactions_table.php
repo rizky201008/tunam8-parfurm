@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Address;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,14 +16,9 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->double('total');
-            $table->json('products');
             $table->foreignIdFor(User::class);
             $table->enum('status', ['unpaid', 'proccess', 'shipping', 'received', 'canceled']);
-            $table->text('address');
-            $table->text('phone');
-            $table->text('postal_code');
-            $table->text('city');
-            $table->text('province');
+            $table->foreignIdFor(Address::class);
             $table->text('tracking_number')->nullable();
             $table->timestamps();
         });
