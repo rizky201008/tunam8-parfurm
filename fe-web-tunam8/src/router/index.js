@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import Login from '../views/Login.vue'
 // User
 import UserDashboard from '../views/user/UserDashboard.vue'
+import Keranjang from '../views/user/Keranjang.vue'
 import UserProfile from '../views/user/Profile.vue'
 import ViewProduk from '../views/user/ViewProduk.vue'
 
@@ -52,7 +53,11 @@ const router = createRouter({
       name: 'View Produk',
       component: ViewProduk,
     },
-
+    {
+      path: '/keranjang',
+      name: 'User Keranjang',
+      component: Keranjang,
+    },
 
 
 
