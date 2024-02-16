@@ -3,14 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
-use Illuminate\Support\Str;
+use App\Logics\Tags;
 use Illuminate\Http\Request;
 
 class TagsController extends Controller
 {
+
+    protected $tag;
+    protected $tagsLogic;
+
+    public function __construct(Tag $tag = new Tag(), Tags $tagsLogic = new Tags())
+    {
+        $this->tag = $tag;
+        $this->tagsLogic = $tagsLogic;
+    }
+
     public function allTags()
     {
-        return response()->json(Tag::all());
+        return response()->json(
+            $this->tag->paginate(10)
+        );
     }
 
     public function createTag(Request $request)
@@ -19,12 +31,15 @@ class TagsController extends Controller
             'name' => 'required',
         ]);
 
-        $tag = new Tag;
+        $tag = $this->tag;
         $tag->name = $request->name;
-        $tag->slug = Str::slug($request->name, '-');
+        $tag->slug = $this->tagsLogic->createSlug($request->name);
         $tag->save();
 
-        return response()->json($tag);
+        return response()->json([
+            'message' => 'Tag created successfully',
+            'tag' => $tag
+        ], 201);
     }
 
     public function updateTag(Request $request)
@@ -33,12 +48,18 @@ class TagsController extends Controller
             'name' => 'required',
             'id' => 'required|integer|exists:tags,id',
         ]);
-        $tag = Tag::find($request->id);
+        $tag = $this->tag->find($request->id);
         $tag->name = $request->name;
-        $tag->slug = Str::slug($request->name, '-');
+        $tag->slug =  $this->tagsLogic->createSlug($request->name);
         $tag->save();
 
-        return response()->json($tag);
+        return response()->json(
+            [
+                'message' => 'Tag updated successfully',
+                'tag' => $tag
+            ],
+            200
+        );
     }
 
     public function deleteTag(Request $request)
@@ -46,27 +67,15 @@ class TagsController extends Controller
         $request->validate([
             'id' => 'required|integer|exists:tags,id',
         ]);
-        $tag = Tag::find($request->id);
+        $tag = $this->tag->find($request->id);
         $tag->delete();
 
-        return response()->json($tag);
+        return response()->json(['message' => 'Tag deleted successfully'], 200);
     }
 
-    public function showTag(Request $request)
+    public function showTagProducts($slug)
     {
-        $tag = Tag::find($request->id);
-        return response()->json($tag);
-    }
-
-    public function showTagBySlug(Request $request)
-    {
-        $tag = Tag::where('slug', $request->slug)->first();
-        return response()->json($tag);
-    }
-
-    public function showTagProducts(Request $request)
-    {
-        $tag = Tag::find($request->id);
-        return response()->json($tag->products);
+        $tag = $this->tag->where('slug', $slug)->first();
+        return response()->json($tag->products->paginate(10));
     }
 }
