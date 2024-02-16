@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\TagsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
@@ -40,6 +41,8 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::delete('carts', [CartController::class, 'deleteCart']);
     Route::put('carts', [CartController::class, 'updateCartQuantity']);
     Route::post('carts', [CartController::class, 'addCart']);
+    Route::get('tags/{slug}', [TagsController::class, 'showTagProducts']);
+    Route::get('tags', [TagsController::class, 'allTags']);
     Route::group(['prefix' => 'user'], function () {
         Route::get('detail', [AuthController::class, 'user']);
         Route::post('personal', [UserController::class, 'personalizeUser']);
@@ -48,6 +51,9 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::put('personal', [UserController::class, 'updateUserPersonal']);
     });
     Route::middleware(['ability:admin'])->group(function () {
+        Route::post('tags', [TagsController::class, 'createTag']);
+        Route::put('tags', [TagsController::class, 'updateTag']);
+        Route::delete('tags', [TagsController::class, 'deleteTag']);
         Route::get('users', [UserController::class, 'getAllUsers']);
         Route::delete('users', [UserController::class, 'deleteUser']);
         Route::post('products', [ProductController::class, 'createProduct']);
