@@ -3,8 +3,9 @@ import HomeView from '../views/HomeView.vue'
 import Login from '../views/Login.vue'
 // User
 import UserDashboard from '../views/user/UserDashboard.vue'
+import UserProfile from '../views/user/EditProfil.vue'
 import Keranjang from '../views/user/Keranjang.vue'
-import UserProfile from '../views/user/Profile.vue'
+// import UserProfile from '../views/user/Profile.vue'
 import ViewProduk from '../views/user/ViewProduk.vue'
 
 // Admin
@@ -12,8 +13,10 @@ import AdminDashboard from '../views/admin/AdminDashboard.vue'
 import DaftarProduk from '../views/admin/DaftarProduk.vue'
 import EditProduk from '../views/admin/EditProduk.vue'
 import DaftarKategori from '../views/admin/DaftarKategori.vue'
+import DaftarTags from '../views/admin/DaftarTags.vue'
 import KelolaPelanggan from '../views/admin/KelolaPelanggan.vue'
 
+import { getUserRole } from '@/utils/auth'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -32,22 +35,15 @@ const router = createRouter({
     },
     // User
     {
-      path: '/profile/:id',
+      path: '/dashboard',
+      name: 'User Dashboard',
+      component: UserDashboard,
+    },
+    {
+      path: '/profile',
       name: 'User Profile',
       component: UserProfile,
     },
-    {
-      path: '/dashboard',
-      name: 'User Dashboard',
-      component: UserDashboard,
-    },
-
-    {
-      path: '/dashboard',
-      name: 'User Dashboard',
-      component: UserDashboard,
-    },
-
     {
       path: '/product/:slug',
       name: 'View Produk',
@@ -71,30 +67,57 @@ const router = createRouter({
       path: '/admin/dashboard',
       name: 'Admin Dashboard',
       component: AdminDashboard,
+      meta: { requiresAdmin: true } // Add meta field to indicate admin access required
     },
     {
       path: '/admin/daftarproduk',
       name: 'Daftar Produk',
       component: DaftarProduk,
+      meta: { requiresAdmin: true } // Add meta field to indicate admin access required
     },
     {
       path: '/admin/daftarproduk/editproduk/:slug',
       name: 'Edit Produk',
       component: EditProduk,
+      meta: { requiresAdmin: true } // Add meta field to indicate admin access required
     },
     {
       path: '/admin/kategori',
       name: 'Daftar Kategori',
       component: DaftarKategori,
+      meta: { requiresAdmin: true } // Add meta field to indicate admin access required
+    },
+    {
+      path: '/admin/tags',
+      name: 'Daftar Tags',
+      component: DaftarTags,
+      meta: { requiresAdmin: true } // Add meta field to indicate admin access required
     },
     {
       path: '/admin/kelolapelanggan',
       name: 'Kelola Pelanggan',
       component: KelolaPelanggan,
+      meta: { requiresAdmin: true } 
     },
-
-
   ]
 })
 
+router.beforeEach(async (to, from, next) => {
+  const isAdminRoute = to.matched.some(record => record.meta.requiresAdmin);
+  if (isAdminRoute) {
+    try {
+      const userRole = await getUserRole(); 
+      if (userRole !== 'admin') {
+        next('/');
+      } else {
+        next(); 
+      }
+    } catch (error) {
+      console.error('Error fetching user role:', error);
+      next('/'); // Redirect to home page if an error occurs
+    }
+  } else {
+    next();
+  }
+});
 export default router

@@ -3,13 +3,23 @@
   <Navbar>
     <div>
       <div class="container-fluid px-4 py-2">
+        <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="row">
           <div class="col-md-12">
             <div class="card border-0 px-2 " style="text-align: end;">
               <div class="col text-right">
                 <div class="button-set my-4">
-                  <button-custom @click="openCategory" class="mx-4">Add Category</button-custom>
-                  <button-custom data-bs-toggle="modal" data-bs-target="#addParfum">Tambah Parfum</button-custom>
+                  <!-- <button-custom @click="openCategory" class="mx-4">Add Category</button-custom> -->
+                  <!-- <button-custom data-bs-toggle="modal" data-bs-target="#addParfum">Tambah Parfum</button-custom> -->
+                  <v-btn color="red" rounded="xl" @click="openTags" class="mb-2 mt-2">
+                    Add Tags
+                  </v-btn>
+                  <v-btn color="red" rounded="xl" @click="openCategory" class="mx-4 mb-2 mt-2">
+                    Add Category
+                  </v-btn>
+                  <v-btn color="red" rounded="xl" data-bs-toggle="modal" data-bs-target="#addParfum" class="" >
+                    Add Parfum
+                  </v-btn>
                 </div>
               </div>
             </div>
@@ -25,8 +35,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Daftar Parfum</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                id="closeModal"></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
             </div>
             <div class="modal-body">
               <form @submit.prevent="addParfum">
@@ -62,7 +71,8 @@
             </div>
             <div class="modal-footer">
               <button-custom type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button-custom>
-              <button-custom class="btn btn-info" type="submit" @click="addParfum" data-bs-dismiss="modal">Tambah Parfum</button-custom>
+              <button-custom class="btn btn-info" type="submit" @click="addParfum" data-bs-dismiss="modal">Tambah
+                Parfum</button-custom>
             </div>
           </div>
         </div>
@@ -75,6 +85,7 @@
 import axios from 'axios';
 import Navbar from '@/components/AdminNavbar.vue';
 import Datatables from '@/components/Vuetify/DataTablesProduk.vue';
+import Breadcrumbs from '@/components/Vuetify/Breadcrumbs.vue';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL_API;
 
@@ -82,7 +93,8 @@ export default {
   name: 'DaftarBuku',
   components: {
     Navbar,
-    Datatables
+    Datatables,
+    Breadcrumbs
   },
   data() {
     return {
@@ -95,6 +107,13 @@ export default {
       },
       selectedFile: [],
       categories: [],
+      breadcrumbsItems: [
+        {
+          title: 'Daftar Produk',
+          disabled: false,
+          href: '/admin/daftarproduk',
+        },
+      ],
     }
   },
 
@@ -114,11 +133,14 @@ export default {
       this.parfum.price = '';
       this.parfum.stok = '';
       this.parfum.foto = '';
-      this.parfum.category ='',
-      this.$refs.fileInput.value = '';
+      this.parfum.category = '',
+        this.$refs.fileInput.value = '';
     },
     openCategory() {
       this.$router.push('/admin/kategori');
+    },
+    openTags() {
+      this.$router.push('/admin/tags');
     },
 
     // Method
@@ -152,7 +174,7 @@ export default {
         const token = localStorage.getItem('access_token')
         const response = await axios.post(BASE_URL + '/products', formData, {
           headers: {
-            'Content-Type': 'multipart/form-data', 
+            'Content-Type': 'multipart/form-data',
             'Authorization': 'Bearer ' + token,
           },
         });
@@ -220,7 +242,7 @@ button-custom,
   border: 0 none;
   padding: 13px 30px;
   background-color: #0771B8;
-  background-image: linear-gradient(45deg, 	#ff0000 0%, #ff5252 50%, #ff7b7b 90%);
+  background-image: linear-gradient(45deg, #ff0000 0%, #ff5252 50%, #ff7b7b 90%);
   background-position: 100% 0;
   background-size: 200% 200%;
   color: #FFF;
