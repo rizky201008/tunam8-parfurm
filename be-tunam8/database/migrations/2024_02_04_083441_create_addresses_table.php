@@ -15,11 +15,12 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class);
-            $table->text('address');
-            $table->text('phone');
-            $table->text('postal_code');
-            $table->text('city');
             $table->text('province');
+            $table->text('province_id');
+            $table->text('city');
+            $table->text('city_id');
+            $table->text('postal_code');
+            $table->text('address_detail');
             $table->timestamps();
         });
     }
