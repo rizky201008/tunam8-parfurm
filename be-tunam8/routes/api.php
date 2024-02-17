@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\TagsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
@@ -48,6 +49,10 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::post('personal', [UserController::class, 'personalizeUser']);
         Route::get('personal', [UserController::class, 'getUserPersonal']);
         Route::put('personal', [UserController::class, 'updateUserPersonal']);
+    });
+    Route::group(['prefix' => 'address'], function () {
+        Route::get('provinces', [AddressController::class, 'getProvinces']);
+        Route::get('cities/{provinceId}', [AddressController::class, 'getCities']);
     });
     Route::middleware(['ability:admin'])->group(function () {
         Route::post('tags', [TagsController::class, 'createTag']);
