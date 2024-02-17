@@ -29,7 +29,7 @@
                   <div v-for="(tag, index) in tags" :key="index" class="form-check"
                     style="font-size: 20px; margin-bottom: 10px;">
                     <input class="form-check-input" type="checkbox" :value="tag.id" v-model="selectedTags"
-                      style="width: 20px; height: 20px;">
+                      @change="handleCheckboxChange" style="width: 20px; height: 20px;">
                     <label class="form-check-label" :for="'checkbox_' + tag.id" style="padding-left: 10px;">{{ tag.name
                     }}</label>
                   </div>
@@ -108,37 +108,139 @@ export default {
     },
     async retrieveTags() {
       try {
-        const response = await axios.get(BASE_URL + '/user/personal', {
+        const response = await axios.get(BASE_URL + '/tags', {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token')
           }
         });
         this.tags = response.data.data;
+        await this.retrievePersonal();
       } catch (error) {
         console.error('Error fetching tags:', error);
       }
     },
 
-    async savePersonal() {
+
+    async retrievePersonal() {
       try {
-        const selectedTagNames = this.selectedTags.map(id => this.tags.find(tag => tag.id === id).name);
-        const response = await axios.post('/user/personal', { tags: selectedTagNames }, {
+        const response = await axios.get(BASE_URL + '/user/personal', {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token')
           }
         });
-        console.log('Personalization saved:', response.data);
-        this.$notify({
-          type: 'success',
-          title: 'Success',
-          text: 'Personalisasi berhasil diatur',
-          color: 'green',
-        });
+
+        if (response.data.tags && response.data.tags.length > 0) {
+          const selectedTagIDs = response.data.tags.map(tagName =>
+            this.tags.find(tag => tag.name === tagName)?.id
+          ).filter(Boolean);
+          this.selectedTags = selectedTagIDs;
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.log('User has not personalized yet');
+        } else {
+          console.error('Error fetching personalization:', error);
+        }
+      }
+    },
+
+    async savePersonal() {
+      try {
+        const selectedTagNames = this.selectedTags.map(id =>
+          this.tags.find(tag => tag.id === id).name
+        );
+
+        let response;
+        try {
+          response = await axios.get(BASE_URL + '/user/personal', {
+            headers: {
+              Authorization: 'Bearer ' + localStorage.getItem('access_token')
+            }
+          });
+        } catch (error) {
+          await axios.post(
+            BASE_URL + '/user/personal',
+            { tags: selectedTagNames },
+            {
+              headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('access_token')
+              }
+            }
+          );
+
+          console.log('Personalization created');
+          this.$notify({
+            type: 'success',
+            title: 'Success',
+            text: 'Personalization created successfully',
+            color: 'green'
+          });
+
+          return;
+        }
+
+        if (response.data.tags) {
+          await axios.put(
+            BASE_URL + '/user/personal',
+            { tags: selectedTagNames },
+            {
+              headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('access_token')
+              }
+            }
+          );
+          console.log('Personalization updated');
+          this.$notify({
+            type: 'success',
+            title: 'Success',
+            text: 'Personalization updated successfully',
+            color: 'green'
+          });
+        }
       } catch (error) {
         console.error('Error saving personalization:', error);
       }
-    }
-  }
+    },
+
+
+
+    // async savePersonal() {
+    //   try {
+    //     const selectedTagNames = this.selectedTags.map(id => this.tags.find(tag => tag.id === id).name);
+
+
+    //     const response = await axios.post(BASE_URL + '/user/personal', { tags: selectedTagNames }, {
+    //       headers: {
+    //         Authorization: 'Bearer ' + localStorage.getItem('access_token')
+    //       }
+    //     });
+
+    //     const personalizationId = response.data.id;
+    //     await axios.put(
+    //       BASE_URL + '/user/personal/' + personalizationId,
+    //       { tags: selectedTagNames },
+    //       {
+    //         headers: {
+    //           Authorization: 'Bearer ' + localStorage.getItem('access_token')
+    //         }
+    //       }
+    //     );
+    //     console.log('Personalization saved:', response.data);
+    //     this.$notify({
+    //       type: 'success',
+    //       title: 'Success',
+    //       text: 'Personalisasi berhasil diatur',
+    //       color: 'green',
+    //     });
+    //   } catch (error) {
+    //     console.error('Error saving personalization:', error);
+    //   }
+    // }
+  },
+  handleCheckboxChange() {
+    this.savePersonal();
+  },
+
 
 };
 </script>
