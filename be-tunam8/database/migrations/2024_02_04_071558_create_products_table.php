@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('stock');
             $table->text('description');
             $table->text('slug');
+            $table->json('tags')->nullable();
             $table->timestamps();
         });
     }
