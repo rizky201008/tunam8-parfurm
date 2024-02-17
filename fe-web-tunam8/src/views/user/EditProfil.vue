@@ -3,41 +3,12 @@
   <Navbar>
     <div class="dashboard-admin">
       <div class="container-fluid px-4 py-2">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="border-0 px-2 mb-4">
-              here
-            </div>
-          </div>
-        </div>
+        <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="row">
           <div class="col-md-12">
             <div class="card mb-4 pt-4 border-0 px-2">
               <div class="col px-4">
                 <form @submit.prevent="saveParfum">
-                  <!-- <div class="mb-3 d-flex justify-content-center">
-                    <div class="row mb-6">
-                      <div class="col-12"></div>
-                      <div v-if="parfum.images" id="carouselExampleIndicators" class="carousel slide"
-                        data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                          <div v-for="(image, index) in parfum.images" :key="index"
-                            :class="{ 'carousel-item': true, 'active': index === 0 }">
-                            <img :src="image.link" class="d-block w-100" :alt="'Slide ' + (index + 1)"
-                              style="max-width: 450px; max-height: 350px; object-fit: co;">
-                          </div>
-                        </div>
-                        <div v-if="parfum.images && parfum.images.length > 1" class="carousel-indicators">
-                          <button v-for="(image, index) in parfum.images" :key="index" type="button"
-                            :data-bs-target="'#carouselExampleIndicators'" :data-bs-slide-to="index"
-                            :class="{ 'active': index === 0 }" class="thumbnail" :aria-label="'Slide ' + (index + 1)">
-                            <img :src="image.link" class="d-block w-100" :alt="'Slide ' + (index + 1)"
-                              style="max-width: 100px; max-height: 80px; object-fit: contain;">
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div> -->
                   <div class="row">
                   </div>
                   <label for="judul">Nama</label>
@@ -50,6 +21,25 @@
                 </form>
               </div>
             </div>
+            <div class="card mb-4 pt-4 border-0 px-2">
+              <div class="row">
+                <div class="col-md-6 mx-2">
+                  <a style="font-size: 28px; font-weight: bold; color: red; margin-bottom: 100px;">Personalize
+                    Yourself</a>
+                  <div v-for="(tag, index) in tags" :key="index" class="form-check"
+                    style="font-size: 20px; margin-bottom: 10px;">
+                    <input class="form-check-input" type="checkbox" :value="tag.id" v-model="selectedTags"
+                      style="width: 20px; height: 20px;">
+                    <label class="form-check-label" :for="'checkbox_' + tag.id" style="padding-left: 10px;">{{ tag.name
+                    }}</label>
+                  </div>
+                  <div class="col-md-6 my-4">
+                    <button-custom class="btn btn-info mb-2" type="submit" @click="savePersonal">Save Your
+                      Personalization</button-custom>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -60,24 +50,32 @@
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
-const BASE_URL = import.meta.env.VITE_BASE_URL_API
+const BASE_URL = import.meta.env.VITE_BASE_URL_API;
+import Breadcrumbs from '@/components/Vuetify/Breadcrumbs.vue';
 
 
 export default {
   name: 'EditBuku',
   components: {
-    Navbar
+    Navbar,
+    Breadcrumbs
   },
   data() {
     return {
-      dataLoaded: false,
       users: {
         id: '',
         name: '',
         email: '',
       },
-      selectedFile: '',
-      fotoFile: null,
+      tags: [],
+      selectedTags: [],
+      breadcrumbsItems: [
+        {
+          title: 'My Profile',
+          disabled: false,
+          href: '/profile',
+        },
+      ],
     }
   },
   async mounted() {
@@ -101,61 +99,45 @@ export default {
           color: 'red'
         });
       }
-    }
+    };
+    this.retrieveTags();
   },
   methods: {
     handleFileChange(event) {
       this.fotoFile = event.target.files[0];
     },
-    async saveParfum() {
+    async retrieveTags() {
       try {
-        if (this.fotoFile) {
-          const formData = new FormData();
-          formData.append('images', this.fotoFile);
-          formData.append('product_id', this.parfum.id);
-
-          await axios.post(BASE_URL + '/product-image', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-              Authorization: 'Bearer ' + localStorage.getItem('access_token')
-            }
-          });
-        }
-
-        const requestData = {
-          id: this.parfum.id,
-          name: this.parfum.name,
-          description: this.parfum.description,
-          price: this.parfum.price,
-          stock: this.parfum.stock,
-          category_id: this.parfum.category,
-        };
-        const response = await axios.put(BASE_URL + '/products', requestData, {
+        const response = await axios.get(BASE_URL + '/user/personal', {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token')
           }
         });
-        console.log(this.category_id);
-        this.$router.push('/admin/daftarproduk');
+        this.tags = response.data.data;
+      } catch (error) {
+        console.error('Error fetching tags:', error);
+      }
+    },
+
+    async savePersonal() {
+      try {
+        const selectedTagNames = this.selectedTags.map(id => this.tags.find(tag => tag.id === id).name);
+        const response = await axios.post('/user/personal', { tags: selectedTagNames }, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        });
+        console.log('Personalization saved:', response.data);
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'Produk telah ter-update!',
+          text: 'Personalisasi berhasil diatur',
           color: 'green',
         });
       } catch (error) {
-        console.error(error);
-        if (error.response && error.response.data.message) {
-          const errorMessage = error.response.data.message;
-          this.$notify({
-            type: 'error',
-            title: 'Error',
-            text: errorMessage,
-            color: 'red'
-          });
-        }
+        console.error('Error saving personalization:', error);
       }
-    },
+    }
   }
 
 };
