@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use GuzzleHttp\Client;
 use App\Models\Address;
 use App\Models\Province;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 class AddressController extends Controller
@@ -35,31 +36,21 @@ class AddressController extends Controller
     public function getCities($provinceId)
     {
         $apiKey = env('RAJAONGKIR_API');
-        $curl = curl_init();
+        $client = new Client();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://api.rajaongkir.com/starter/city?province=$provinceId",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "key: $apiKey"
-            ),
-        ));
+        try {
+            $response = $client->request('GET', "https://api.rajaongkir.com/starter/city?province=$provinceId", [
+                'headers' => [
+                    'key' => $apiKey,
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
 
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
+            $data = json_decode($response->getBody()->getContents());
 
-        curl_close($curl);
-
-        if ($err) {
-            return response()->json(['error' => $err]);
-        } else {
-            $reqponse = json_decode($response);
-            return response()->json($reqponse->rajaongkir->results);
+            return response()->json($data->rajaongkir->results);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
         }
     }
 }
