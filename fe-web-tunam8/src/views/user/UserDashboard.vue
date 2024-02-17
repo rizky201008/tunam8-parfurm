@@ -13,8 +13,8 @@
         </div>
         <div class="div pb-8">
           <div class="row">
-            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in filteredProducts"
-              :key="item.id">
+            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6"
+              v-for="(item, index) in filteredProducts" :key="item.id">
               <div class="product-single-card">
                 <div class="product-top-area">
                   <div class="product-img">
@@ -29,7 +29,7 @@
                     <button class="sideicons-btn">
                       <v-icon icon="mdi-heart"></v-icon>
                     </button>
-                    <button class="sideicons-btn">
+                    <button class="sideicons-btn" @click.native.prevent="addCart(item.id)">
                       <v-icon icon="mdi-cart-plus"></v-icon>
                     </button>
                   </div>
@@ -103,8 +103,8 @@ export default {
   },
   methods: {
     formatPrice(price) {
-        const numericPrice = parseFloat(price);
-        return numericPrice.toLocaleString('id-ID');
+      const numericPrice = parseFloat(price);
+      return numericPrice.toLocaleString('id-ID');
     },
     searchProduct() {
       const query = this.searchQuery.toLowerCase().trim();
@@ -129,6 +129,27 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+    addCart(id) {
+      axios.post(BASE_URL + '/carts', { product_id: id }, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('access_token')
+        }
+      })
+
+        .then(response => {
+          console.log('Item added to cart:', response.data);
+          this.$notify({
+            type: 'success',
+            title: 'Success',
+            text: 'Produk berhasil ditambahkan',
+            color: 'green',
+          });
+        })
+        .catch(error => {
+          // Handle error if needed
+          console.error('Error adding item to cart:', error);
+        });
     },
   },
 };
@@ -349,6 +370,5 @@ input#search-bar {
   top: -62px;
   right: -380px;
 }
-
 </style>
   

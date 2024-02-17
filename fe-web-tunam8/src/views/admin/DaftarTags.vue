@@ -9,8 +9,8 @@
             <div class="card border-0 px-2 " style="text-align: end;">
               <div class="col text-right">
                 <div class="button-set my-4">
-                  <v-btn color="red" rounded="xl" data-bs-toggle="modal" data-bs-target="#addKategori" >
-                    Add Category
+                  <v-btn color="red" rounded="xl" data-bs-toggle="modal" data-bs-target="#addTags">
+                    Add Tags
                   </v-btn>
                   <!-- <v-btn color="red" rounded="xl" @click="openDaftarParfum">
                     Add Parfum
@@ -25,17 +25,17 @@
                 <thead class="table-light">
                   <tr>
                     <th scope="col">No</th>
-                    <th scope="col">Kategori</th>
+                    <th scope="col">Tag</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, index) in kategori" :key="item.id">
+                  <tr v-for="(item, index) in tags" :key="item.id">
                     <th scope="row">{{ index + 1 }}</th>
                     <td>{{ item.name }}</td>
                     <td>
                       <button class="btn btn-infos mr-2" @click="showModal(item.id)">Edit</button>
-                      <button class="btn btn-delete" @click="deleteKategori(item.id)">Hapus</button>
+                      <button class="btn btn-delete" @click="confirmDelete(index)">Hapus</button>
                     </td>
                   </tr>
                 </tbody>
@@ -46,25 +46,25 @@
       </div>
       <!-- Modal Nich -->
 
-      <div class="modal fade" id="addKategori" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="addTags" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <share-modal ref="share-modal-ref" />
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Kategori</h1>
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Tags</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
             </div>
             <div class="modal-body">
-              <form @submit.prevent="addKategori">
+              <form @submit.prevent="addTags">
                 <div class="mb-3">
-                  <label for="exampleInputEmail1" class="form-label">Nama Kategori</label>
-                  <input type="name" class="form-control" v-model="kategori.name" aria-describedby="namaCustomer">
+                  <label for="exampleInputEmail1" class="form-label">Nama Tags</label>
+                  <input type="name" class="form-control" v-model="tags.name" aria-describedby="namaCustomer">
                 </div>
               </form>
             </div>
             <div class="modal-footer">
               <button-custom type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button-custom>
-              <button-custom class="btn btn-info" type="submit" @click="addKategori">Tambah Parfum</button-custom>
+              <button-custom class="btn btn-info" type="submit" @click="addTags">Tambah Tags</button-custom>
             </div>
           </div>
         </div>
@@ -74,21 +74,32 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="editModalLabel">Edit Category</h5>
+              <h5 class="modal-title" id="editModalLabel">Edit Tags</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form @submit.prevent="editKategori">
+              <form @submit.prevent="editTags">
                 <div class="mb-3">
-                  <label for="kategoriName" class="form-label">Nama Kategori</label>
-                  <input type="text" class="form-control" id="kategoriName" v-model="selectedCategory.name">
+                  <label for="kategoriName" class="form-label">Nama Tags</label>
+                  <input type="text" class="form-control" id="tagsName" v-model="selectedTags.name">
                 </div>
-                <button-custom type="submit" class="btn btn-primary" @click="editKategori">Simpan Kategori</button-custom>
+                <button-custom type="submit" class="btn btn-primary" @click="editTags">Simpan Tags</button-custom>
               </form>
             </div>
           </div>
         </div>
       </div>
+      <v-dialog v-model="deleteDialog" max-width="500px">
+        <v-card title="Confirm Delete">
+          <v-card-text>
+            Are you sure you want to remove this tags?
+          </v-card-text>
+          <v-card-actions>
+            <v-btn text @click="deleteDialog = false">Cancel</v-btn>
+            <v-btn color="red" @click="deleteTags()">Delete</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
   </Navbar>
 </template>
@@ -96,9 +107,8 @@
 <script>
 import axios from 'axios';
 import Navbar from '@/components/AdminNavbar.vue';
-import Datatables from '@/components/Vuetify/DataTablesProduk.vue';
 import Breadcrumbs from '@/components/Vuetify/Breadcrumbs.vue';
-import { Modal } from 'bootstrap'
+
 
 const BASE_URL = import.meta.env.VITE_BASE_URL_API;
 
@@ -106,15 +116,12 @@ export default {
   name: 'DaftarBuku',
   components: {
     Navbar,
-    Datatables,
     Breadcrumbs
   },
   data() {
     return {
-      kategori: [],
-      kategori: {
-      },
-      selectedCategory: {
+      tags: [],
+      selectedTags: {
         id: null,
         name: ''
       },
@@ -125,15 +132,17 @@ export default {
           href: '/admin/daftarproduk',
         },
         {
-          title: 'Kategori',
+          title: 'Tags',
           disabled: true,
-          href: '/admin/kategori',
+          href: '/admin/tags',
         }
       ],
+      deleteDialog: false,
+      deleteIndex: null
     }
   },
   mounted() {
-    this.retrieveKategori();
+    this.retrieveTags();
   },
   methods: {
     // Prompt
@@ -142,20 +151,21 @@ export default {
     },
 
     clearForm() {
-      this.kategori.name = '';
-    },
-    openCategory() {
-      this.$router.push('/admin/category');
+      this.tags.name = '';
     },
 
     openDaftarParfum() {
       this.$router.push('/admin/daftarproduk');
     },
     showModal(id) {
-      this.selectedCategory = this.kategori.find(item => item.id === id);
+      this.selectedTags = this.tags.find(item => item.id === id);
       $('#editModal').modal('show');
     },
-    
+    confirmDelete(index) {
+      this.deleteIndex = index;
+      this.deleteDialog = true;
+    },
+
     // Method
     handleFileChange(event) {
       // Handle file change event
@@ -163,33 +173,35 @@ export default {
       // Store all selected files in an array
       this.selectedFiles = Array.from(fileInput.files);
     },
-    async retrieveKategori() {
+    async retrieveTags() {
       try {
-        const response = await axios.get(BASE_URL + '/categories', {
+        const response = await axios.get(BASE_URL + '/tags', {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token')
           }
         });
-        this.kategori = response.data;
+        this.tags = response.data.data;
       } catch (error) {
         console.error(error);
       }
     },
-    async deleteKategori(id) {
+    async deleteTags(id) {
       try {
-        await axios.delete(BASE_URL + '/categories', {
+        const item_id = this.tags[this.deleteIndex].id;
+        await axios.delete(BASE_URL + '/tags', {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token')
           },
-          data: { id: id },
+          data: { id: item_id },
 
         });
-
-        this.retrieveKategori();
+        this.tags.splice(this.deleteIndex, 1);
+        this.deleteDialog = false;
+        this.retrieveTags();
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'Kategori berhasil dihapus',
+          text: 'Tags berhasil dihapus',
           color: 'green'
         });
       } catch (error) {
@@ -197,12 +209,12 @@ export default {
         // Optionally, show an error message or perform other actions if deletion fails
       }
     },
-    async addKategori() {
+    async addTags() {
       try {
         // this.parfum.price = parseInt(this.parfum.price);
         const formData = new FormData();
 
-        formData.append('name', this.kategori.name);
+        formData.append('name', this.tags.name);
 
         const token = localStorage.getItem('access_token')
         const response = await axios.post(BASE_URL + '/categories', formData, {
@@ -235,30 +247,30 @@ export default {
         }
       }
     },
-    editKategori() {
+    editTags() {
       const data = {
-        id: this.selectedCategory.id,
-        name: this.selectedCategory.name,
+        id: this.selectedTags.id,
+        name: this.selectedTags.name,
       };
-      axios.put(BASE_URL + '/categories', data, {
+      axios.put(BASE_URL + '/tags', data, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('access_token')
         }
       })
         .then(response => {
-          console.log('Category updated successfully:', response.data);
+          console.log('Tags updated successfully:', response.data);
 
           $('#editModal').modal('hide');
-          this.retrieveKategori();
+          this.retrieveTags();
           this.$notify({
             type: 'success',
             title: 'Success',
-            text: 'Kategori telah ter-update!',
+            text: 'Tags telah ter-update!',
             color: 'green',
           });
         })
         .catch(error => {
-          console.error('Error updating category:', error);
+          console.error('Error updating tags:', error);
         });
     }
   }

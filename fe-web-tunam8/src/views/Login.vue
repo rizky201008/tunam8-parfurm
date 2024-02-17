@@ -145,7 +145,7 @@ export default {
         });
         const accessToken = localStorage.getItem('access_token');
         if (accessToken) {
-            axios.get(BASE_URL + '/account/user', {
+            axios.get(BASE_URL + '/user/detail', {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem('access_token')
                 }

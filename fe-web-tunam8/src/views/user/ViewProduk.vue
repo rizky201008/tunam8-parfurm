@@ -112,7 +112,7 @@ export default {
         {
           title: '',
           disabled: true,
-          href: '/dashboard',
+          href: '/',
         }
       ],
     }
