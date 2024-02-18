@@ -21,6 +21,10 @@ return new class extends Migration
             $table->text('city_id');
             $table->text('postal_code');
             $table->text('address_detail');
+            $table->text('phone_number');
+            $table->text('receiver');
+            $table->text('label');
+            $table->boolean('is_primary')->default(false);
             $table->timestamps();
         });
     }
