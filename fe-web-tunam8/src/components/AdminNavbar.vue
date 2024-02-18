@@ -7,7 +7,8 @@
                     <a href="/admin/dashboard"><v-icon icon="mdi-home"></v-icon>&nbsp;Home</a>
                     <a href="/admin/daftarproduk"><v-icon icon="mdi-invoice-list"></v-icon>&nbsp;Daftar Produk</a>
                     <a href="/admin/kelolapelanggan"><v-icon icon="mdi-account"></v-icon>&nbsp;Kelola Pelanggan</a>
-                    <a @click="onLogout" style="cursor:pointer; align-self: flex-end; bottom: 20px; position: fixed;"><v-icon
+                    <a @click="onLogout"
+                        style="cursor:pointer; align-self: flex-end; bottom: 20px; position: fixed;"><v-icon
                             icon="mdi-run"></v-icon>Logout</a>
                 </div>
             </div>
@@ -19,7 +20,8 @@
                     <a href="/keranjang"><v-icon icon="mdi-cart"></v-icon>&nbsp;Keranjang</a>
                     <a href="/profile" style="cursor:pointer; align-self: flex-end; bottom: 60px; position: fixed;"><v-icon
                             icon="mdi-account"></v-icon>&nbsp;My Profile</a>
-                    <a @click="onLogout" style="cursor:pointer; align-self: flex-end; bottom: 20px; position: fixed;"><v-icon
+                    <a @click="onLogout"
+                        style="cursor:pointer; align-self: flex-end; bottom: 20px; position: fixed;"><v-icon
                             icon="mdi-run"></v-icon>&nbsp;Logout</a>
 
                 </div>
@@ -63,6 +65,7 @@
                 </slot>
             </div>
         </div>
+        <address-form :receiver="username"></address-form>
     </div>
 </template>
   
@@ -82,8 +85,9 @@ export default {
         };
     },
     components: {
-    Footer
-  },
+        Footer,
+        
+    },
     async mounted() {
         try {
             const response = await axios.get(BASE_URL + '/user/detail', {

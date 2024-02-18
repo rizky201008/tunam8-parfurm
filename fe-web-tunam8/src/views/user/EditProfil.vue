@@ -5,10 +5,10 @@
       <div class="container-fluid px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-4">
             <div class="card mb-4 pt-4 border-0 px-2">
               <div class="col px-4">
-                <form @submit.prevent="saveParfum">
+                <form @submit.prevent="saveProfile">
                   <div class="row">
                   </div>
                   <label for="judul">Nama</label>
@@ -17,10 +17,78 @@
                   <label for="desc">Email</label>
                   <textarea class="form-control" v-model="users.email" id="desc"></textarea>
                   <br>
-                  <button-custom class="btn btn-info mb-2" type="submit" @click="saveParfum">Save Parfum</button-custom>
+                  <button-custom class="btn btn-info mb-2" type="submit" @click="saveProfile">Save Parfum</button-custom>
                 </form>
               </div>
             </div>
+          </div>
+          <div class="col-md-8">
+            <div class="card border-0">
+              <div class="row">
+                <div class="col-md-2 ">
+                  <v-btn color="red" rounded="xl" @click="openDialog">
+                    Add Address
+                  </v-btn>
+                </div>
+                <div class="col-md-5">
+                  tesx
+                </div>
+                <div class="col-md-5">
+                  tesx
+                </div>
+              </div>
+            </div>
+          </div>
+          <v-dialog v-model="dialogForm" persistent max-width="600">
+            <v-card>
+              <v-card-title>
+                Choose Province and City
+              </v-card-title>
+              <v-card-text>
+                <a>Select Province :</a>
+                <select v-model="selectedProvinceId" class="form-select" @change="handleProvinceChange">
+                  <option value="" disabled>Select Province</option>
+                  <option v-for="province in provinces" :key="province.province_id" :value="province.province_id">{{
+                    province.province }}</option>
+                </select>
+                <br>
+                <a>Select Cities :</a>
+                <div v-if="loadingCity">
+                  <v-progress-linear indeterminate></v-progress-linear>
+                </div>
+                <div v-else>
+                  <select v-model="selectedCityId" class="form-select" @change="updatePostalCode">
+                    <option value="" disabled>Select City</option>
+                    <option v-for="city in cities" :key="city.city_id" :value="city.city_id">{{ city.city_name }}</option>
+                  </select>
+                </div>
+                <br>
+                <label for="postalCode">Postal Code:</label>
+                <input type="text" class="form-control" id="postalCode" v-model="postalCode" :disabled="true">
+                <br>
+                <label for="addressDetail">Address Detail:</label>
+                <textarea class="form-control" id="addressDetail" v-model="addressDetail"></textarea>
+                <br>
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" class="form-control" id="phoneNumber" v-model="phoneNumber">
+                <br>
+                <label for="receiver">Receiver:</label>
+                <input type="text" class="form-control" id="receiver" v-model="receiver">
+                <br>
+                <label for="label">Label:</label>
+                <input type="text" class="form-control" id="label" v-model="label">
+              </v-card-text>
+              <v-card-actions>
+                <v-btn color="blue darken-1" text @click="dialogForm = false">Cancel</v-btn>
+                <v-btn color="blue darken-1" text @click="saveAddress">Save</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+
             <div class="card mb-4 pt-4 border-0 px-2">
               <div class="row">
                 <div class="col-md-6 mx-2">
@@ -43,6 +111,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </Navbar>
 </template>
@@ -76,6 +145,20 @@ export default {
           href: '/profile',
         },
       ],
+      dialogForm: false,
+      provinces: [],
+      selectedProvince: null,
+      cities: [],
+      selectedProvinceId: null,
+      selectedCityId: null,
+      loadingCity: false,
+
+      addressDetail: '',
+      phoneNumber: '',
+      receiver: '',
+      label: '',
+      postalCode: ''
+
     }
   },
   async mounted() {
@@ -102,6 +185,7 @@ export default {
     };
     this.retrieveTags();
   },
+  
   methods: {
     handleFileChange(event) {
       this.fotoFile = event.target.files[0];
@@ -236,10 +320,104 @@ export default {
     //     console.error('Error saving personalization:', error);
     //   }
     // }
+
+    // handleCheckboxChange() {
+    //   this.savePersonal();
+    // },
+    async openDialog() {
+      await this.fetchProvinces();
+      this.dialogForm = true;
+    },
+
+    async handleProvinceChange() {
+      if (this.selectedProvinceId) {
+        await this.fetchCitiesByProvinceId(this.selectedProvinceId);
+      } else {
+        this.cities = [];
+      }
+    },
+
+    async fetchProvinces() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await axios.get(BASE_URL + '/address/provinces', {
+          headers: {
+            'Authorization': 'Bearer ' + token,
+          },
+        });
+        this.provinces = response.data;
+      } catch (error) {
+        console.error('Error fetching provinces:', error);
+      }
+    },
+    async fetchCitiesByProvinceId(provinceId) {
+      try {
+        const token = localStorage.getItem('access_token');
+        this.loadingCity = true;
+        const response = await axios.get(BASE_URL + '/address/cities/' + provinceId, {
+          headers: {
+            'Authorization': 'Bearer ' + token,
+          },
+        });
+        this.cities = response.data;
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      } finally {
+        this.loadingCity = false;
+      }
+    },
+    async saveAddress() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const province = this.provinces.find(province => province.province_id === this.selectedProvinceId);
+        const city = this.cities.find(city => city.city_id === this.selectedCityId);
+
+        const addressData = {
+          province: province.province,
+          province_id: province.province_id,
+          city: city.city_name,
+          city_id: city.city_id,
+          postal_code: city.postal_code,
+          address_detail: this.addressDetail,
+          phone_number: this.phoneNumber,
+          receiver: this.receiver,
+          label: this.label
+        };
+
+        const response = await axios.post(BASE_URL + '/address/create', addressData, {
+          headers: {
+            'Authorization': 'Bearer ' + token,
+          },
+        });
+
+        console.log('Address saved:', response.data);
+
+        // Optionally, you can close the dialog after successfully saving the address
+        this.dialogForm = false;
+
+      } catch (error) {
+        console.error('Error saving address:', error);
+      }
+    },
+    updatePostalCode() {
+      const selectedCity = this.cities.find(city => city.city_id === this.selectedCityId);
+      if (selectedCity) {
+        this.postalCode = selectedCity.postal_code;
+      } else {
+        this.postalCode = '';
+      }
+      console.log(this.postalCode)
+    }
+
   },
-  handleCheckboxChange() {
-    this.savePersonal();
-  },
+  watch: {
+    dialogForm(val) {
+      if (!val) {
+        this.selectedProvinceId = null;
+        this.selectedCityId = null;
+      }
+    },
+  }
 
 
 };
