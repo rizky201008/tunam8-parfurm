@@ -53,6 +53,8 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::group(['prefix' => 'address'], function () {
         Route::get('provinces', [AddressController::class, 'getProvinces']);
         Route::get('cities/{provinceId}', [AddressController::class, 'getCities']);
+        Route::post('create', [AddressController::class, 'createAddress']);
+        Route::put('update', [AddressController::class, 'updateAddress']);
     });
     Route::middleware(['ability:admin'])->group(function () {
         Route::post('tags', [TagsController::class, 'createTag']);
