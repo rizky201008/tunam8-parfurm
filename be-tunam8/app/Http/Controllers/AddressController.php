@@ -130,9 +130,9 @@ class AddressController extends Controller
             'id' => 'required|exists:addresses,id'
         ]);
 
-        $address = $request->user()->address->find($request->id);
+        $address = $request->user()->address->find($request->id)->delete();;
 
-        $address->delete();
+
 
         return response()->json([
             'message' => 'Address has been deleted',
