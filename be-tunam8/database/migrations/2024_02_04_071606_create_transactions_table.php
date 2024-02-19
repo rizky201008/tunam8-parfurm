@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->double('total');
             $table->foreignIdFor(User::class);
-            $table->enum('status', ['unpaid', 'proccess', 'shipping', 'received', 'canceled']);
+            $table->enum('status', ['unpaid', 'proccess', 'shipping', 'received', 'canceled'])->default('unpaid');
             $table->foreignIdFor(Address::class);
             $table->text('tracking_number')->nullable();
             $table->timestamps();
