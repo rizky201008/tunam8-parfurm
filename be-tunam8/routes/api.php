@@ -51,6 +51,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::put('personal', [UserController::class, 'updateUserPersonal']);
     });
     Route::group(['prefix' => 'address'], function () {
+        Route::get('/', [AddressController::class, 'getAddresses']);
         Route::get('provinces', [AddressController::class, 'getProvinces']);
         Route::get('cities/{provinceId}', [AddressController::class, 'getCities']);
         Route::post('create', [AddressController::class, 'createAddress']);
