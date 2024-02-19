@@ -130,10 +130,9 @@ class AddressController extends Controller
             'id' => 'required|exists:addresses,id'
         ]);
 
-        $userid = $request->user()->id;
-        $address = $this->address->find($request->id);
+        $address = $request->user()->address->find($request->id);
 
-        if ($address->user_id !== $userid) {
+        if ($address->user_id !== $request->user()->id) {
             return response()->json(['error' => 'You are not authorized to delete this address']);
         }
 
