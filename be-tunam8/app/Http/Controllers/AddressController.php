@@ -123,4 +123,24 @@ class AddressController extends Controller
             'address' => $address,
         ]);
     }
+
+    public function deleteAddress(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:addresses,id'
+        ]);
+
+        $userid = $request->user()->id;
+        $address = $this->address->where('id', $request->id)->first();
+
+        if ($address->user_id !== $userid) {
+            return response()->json(['error' => 'You are not authorized to delete this address']);
+        }
+
+        $address->delete();
+
+        return response()->json([
+            'message' => 'Address has been deleted',
+        ]);
+    }
 }
