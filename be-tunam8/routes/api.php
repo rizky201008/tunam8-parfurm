@@ -57,6 +57,9 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::post('create', [AddressController::class, 'createAddress']);
         Route::put('update', [AddressController::class, 'updateAddress']);
     });
+    Route::group(['prefix' => 'transaction'], function () {
+        Route::post('create',[TransactionController::class,'createTransaction']);
+    });
     Route::middleware(['ability:admin'])->group(function () {
         Route::post('tags', [TagsController::class, 'createTag']);
         Route::put('tags', [TagsController::class, 'updateTag']);
