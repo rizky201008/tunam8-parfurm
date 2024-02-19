@@ -56,6 +56,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::get('cities/{provinceId}', [AddressController::class, 'getCities']);
         Route::post('create', [AddressController::class, 'createAddress']);
         Route::put('update', [AddressController::class, 'updateAddress']);
+        Route::delete('delete', [AddressController::class, 'deleteAddress']);
     });
     Route::group(['prefix' => 'transaction'], function () {
         Route::post('create',[TransactionController::class,'createTransaction']);
