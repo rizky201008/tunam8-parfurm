@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Product::class);
             $table->integer('quantity');
+            $table->boolean('selected')->default(false);
             $table->timestamps();
         });
     }
