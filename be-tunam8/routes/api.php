@@ -40,7 +40,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::post('transactions', [TransactionController::class, 'createTransaction']);
     Route::get('carts', [CartController::class, 'getCarts']);
     Route::delete('carts', [CartController::class, 'deleteCart']);
-    Route::put('carts', [CartController::class, 'updateCartQuantity']);
+    Route::put('carts', [CartController::class, 'updateCartItem']);
     Route::post('carts', [CartController::class, 'addCart']);
     Route::get('tags/{slug}', [TagsController::class, 'showTagProducts']);
     Route::get('tags', [TagsController::class, 'allTags']);
