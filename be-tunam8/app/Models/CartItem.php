@@ -16,6 +16,7 @@ class CartItem extends Model
         'product_id',
         'quantity',
         'user_id',
+        'selected',
     ];
 
     protected $hidden = [
