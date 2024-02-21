@@ -16,6 +16,7 @@ class Transactions
     protected $transactionItems;
     protected $address;
     protected $cartItem;
+    protected $client;
 
     public function __construct(Transaction $transaction, TransactionItem $transactionItem, Product $product, Address $address, CartItem $cartItem)
     {
@@ -24,6 +25,7 @@ class Transactions
         $this->transactionItems = $transactionItem;
         $this->product = $product;
         $this->cartItem = $cartItem;
+        $this->client = new \GuzzleHttp\Client();
     }
     public function getTotal($products)
     {
@@ -94,6 +96,47 @@ class Transactions
             $this->cartItem->where('product_id', $product['id'])->where('user_id', $userId)->delete();
         }
     }
+
+    public function getShippingCost($address_id, $transactionItems)
+    {
+        $apiKey = config('app.rajaongkir_apikey');
+        $origin = config('app.store_city_id');
+        $address = $this->address->find($address_id);
+        $itemAmount = 0;
+
+        foreach ($transactionItems as $item) {
+            $itemAmount += $item['qty'];
+        }
+
+        try {
+            $response = $this->client->request('POST', "https://api.rajaongkir.com/starter/cost", [
+                'headers' => [
+                    'key' => $apiKey,
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => [
+                    'origin' => $origin,
+                    'destination' => $address->id,
+                    'weight' => 500 * $itemAmount, // weight in grams
+                    'courier' => 'jne', // courier code
+                ],
+            ]);
+
+            $data = json_decode($response->getBody()->getContents());
+
+            // Mendapatkan layanan REG saja
+            $regService = collect($data->rajaongkir->results[0]->costs)->where('service', 'REG')->first();
+
+            if ($regService) {
+                return $regService->cost[0]->value;
+            } else {
+                return 0;
+            }
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
 
     public function insertTransaction($transaction, $transactionItems)
     {
