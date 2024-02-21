@@ -5,6 +5,7 @@ import Login from '../views/Login.vue'
 import UserDashboard from '../views/user/UserDashboard.vue'
 import UserProfile from '../views/user/EditProfil.vue'
 import Keranjang from '../views/user/Keranjang.vue'
+import Checkout from '../views/user/Checkout.vue'
 // import UserProfile from '../views/user/Profile.vue'
 import ViewProduk from '../views/user/ViewProduk.vue'
 
@@ -54,7 +55,11 @@ const router = createRouter({
       name: 'User Keranjang',
       component: Keranjang,
     },
-
+    {
+      path: '/checkout',
+      name: 'User Checkout',
+      component: Checkout,
+    },
 
 
     // Admin

@@ -48,7 +48,8 @@
                   <div class="ml-2">(4.5) 50 Reviews</div>
                 </div>
               </div>
-              <div class="price my-2" style="font-weight: bold; font-size: 32px;">Rp. {{ formatPrice(parfum.price) }}</div>
+              <div class="price my-2" style="font-weight: bold; font-size: 32px;">Rp. {{ formatPrice(parfum.price) }}
+              </div>
               <div class="theme-text subtitle">Deskripsi:</div>
               <div class="brief-description">
                 {{ parfum.description }}
@@ -64,7 +65,7 @@
                     <input type="number" class="form-control" value="1">
                   </div>
                   <div class="col-md-9">
-                    <button class="btn addBtn btn-block mt-2">Add to basket</button>
+                    <button class="btn addBtn btn-block mt-2" @click="addToCart(parfum.id)">Add to basket</button>
                   </div>
                 </div>
               </div>
@@ -159,9 +160,41 @@ export default {
       this.fotoFile = event.target.files[0];
     },
     formatPrice(price) {
-        const numericPrice = parseFloat(price);
-        return numericPrice.toLocaleString('id-ID');
+      const numericPrice = parseFloat(price);
+      return numericPrice.toLocaleString('id-ID');
     },
+    async addToCart(productId) {
+      try {
+        const response = await axios.post(BASE_URL + '/carts', {
+          product_id: productId
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        console.log("Product added to cart:", response.data);
+
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Product added to cart',
+          color: 'green'
+        });
+      } catch (error) {
+        console.error("Error adding product to cart:", error);
+
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message;
+          this.$notify({
+            type: 'error',
+            title: 'Error',
+            text: errorMessage,
+            color: 'red'
+          });
+        }
+      }
+    }
   }
 
 };
