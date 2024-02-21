@@ -23,7 +23,7 @@ class CartController extends Controller
     {
         $isActive = $request->query('active') ?? 0;
         if ($isActive) {
-            $cartItem = $request->user()->cartItems->where('selected', true)->get();
+            $cartItem = $request->user()->cartItems->where('selected', true);
             foreach ($cartItem as $key => $value) {
                 $cartItem[$key]->product->images = $this->getProductImage($value->product_id);
             }
