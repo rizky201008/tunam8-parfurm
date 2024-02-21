@@ -36,7 +36,7 @@ class AddressController extends Controller
 
     public function getCities($provinceId)
     {
-        $apiKey = env('RAJAONGKIR_API');
+        $apiKey = config('app.rajaongkir_apikey');
         $client = new Client();
 
         try {
