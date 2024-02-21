@@ -185,4 +185,7 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'store_city_id' => env('STORE_CITY_ID', "356"),
+    'rajaongkir_apikey' => env('RAJAONGKIR_API', "")
+
 ];
