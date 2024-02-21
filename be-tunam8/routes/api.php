@@ -44,6 +44,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::post('carts', [CartController::class, 'addCart']);
     Route::get('tags/{slug}', [TagsController::class, 'showTagProducts']);
     Route::get('tags', [TagsController::class, 'allTags']);
+    Route::get('shipping', [TransactionController::class, 'getShippingCost']);
     Route::group(['prefix' => 'user'], function () {
         Route::get('detail', [AuthController::class, 'user']);
         Route::post('personal', [UserController::class, 'personalizeUser']);
