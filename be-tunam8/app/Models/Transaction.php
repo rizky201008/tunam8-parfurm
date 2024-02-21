@@ -18,6 +18,7 @@ class Transaction extends Model
         'status',
         'address_id',
         'tracking_number',
+        'cost'
     ];
 
     public function user()
@@ -30,7 +31,8 @@ class Transaction extends Model
         return $this->belongsTo(Address::class);
     }
 
-    public function transactionItems(){
+    public function transactionItems()
+    {
         return $this->hasMany(TransactionItem::class);
     }
 }
