@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CartItem;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
@@ -22,13 +23,15 @@ class CartController extends Controller
     {
         $isActive = $request->query('active') ?? 0;
         if ($isActive) {
-            $cartItem = $this->cartItem->where('user_id', $request->user()->id)->where('selected', true)->get();
+            $cartItem = $request->user()->cartItems->where('selected', true)->get();
             foreach ($cartItem as $key => $value) {
                 $cartItem[$key]->product->images = $this->getProductImage($value->product_id);
             }
             return response()->json($cartItem);
         }
-        $cartItem = $this->cartItem->where('user_id', $request->user()->id)->get();
+
+        DB::table('cart_items')->where('user_id', $request->user()->id)->update(['selected' => 0]);
+        $cartItem = $request->user()->cartItems;
         foreach ($cartItem as $key => $value) {
             $cartItem[$key]->product->images = $this->getProductImage($value->product_id);
         }
