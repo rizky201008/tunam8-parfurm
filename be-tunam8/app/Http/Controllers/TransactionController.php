@@ -49,6 +49,8 @@ class TransactionController extends Controller
         $validateQty = $this->transactionLogic->validateStock($request->products);
         $validateAddressOwner = $this->transactionLogic->validateAddressOwner($request->address_id, $request->user()->id);
 
+        $address = $this->address->find($request->address_id);
+
         if ($validateQty['error']) {
             return response()->json(
                 [
@@ -68,14 +70,16 @@ class TransactionController extends Controller
 
         $this->transactionLogic->decreaseStock($request->products);
         $this->transactionLogic->deleteCartItem($request->products, $request->user()->id);
+        $cost = $this->transactionLogic->getShippingCost($address, $request->products);
 
         $total = $this->transactionLogic->getTotal($request->products);
 
         $transaction = [
-            'total' => $total,
+            'total' => $total + $cost,
             'user_id' => $request->user()->id,
             'status' => 'unpaid',
-            'address_id' => $request->address_id
+            'address_id' => $request->address_id,
+            'cost' => $cost,
         ];
 
         $insertTransaction = $this->transactionLogic->insertTransaction($transaction, $request->products);
@@ -94,6 +98,20 @@ class TransactionController extends Controller
         ], 201);
     }
 
+    public function getShippingCost(Request $request)
+    {
+        $request->validate([
+            'address_id' => 'required|exists:addresses,id',
+            'products' => 'required|array',
+        ]);
+
+        $cost = $this->transactionLogic->getShippingCost($request->address_id, $request->products);
+
+        return response()->json([
+            'cost' => $cost
+        ], 200);
+    }
+
     public function deleteTransaction(Request $request)
     {
         $transaction = Transaction::find($request->id);
@@ -101,8 +119,11 @@ class TransactionController extends Controller
         return response()->json(['message' => 'Transaction deleted']);
     }
 
-    public function allUserTransactions(Request $request)
+    public function calculateOngkir(Request $request)
     {
-        return response()->json(Transaction::where('user_id', $request->user()->id)->get());
+        $request->validate([
+            'address_id' => 'required|exists:addresses,id',
+            'products' => 'required|array',
+        ]);
     }
 }
