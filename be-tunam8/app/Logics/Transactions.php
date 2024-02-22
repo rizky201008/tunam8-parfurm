@@ -116,7 +116,7 @@ class Transactions
                 ],
                 'json' => [
                     'origin' => $origin,
-                    'destination' => $address->id,
+                    'destination' => $address->city_id,
                     'weight' => 500 * $itemAmount, // weight in grams
                     'courier' => 'jne', // courier code
                 ],
