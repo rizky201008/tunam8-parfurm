@@ -28,61 +28,90 @@
             </div>
           </div>
         </div>
-        <div class="col bg-white mt-2 px-2 py-2 mb-2" style="border-radius: 20px;">
+        <div class="col mx-3 rounded">
           <div class="row">
-            <h1 class="mx-8 mt-4" style="padding-left: 10px;">Pilih Alamat</h1>
-          </div>
-          <div class="row text-center">
-            <div class="mx-2">
-              <a>Select Address:</a>
-              <select v-model="selectedAddressId" class="form-select">
-                <option value="" disabled>Select Address</option>
-                <option v-for="(address, index) in addresses" :key="index" :value="index">
-                  {{ address.label }} - {{ address.receiver }}
-                </option>
-              </select>
-            </div>
-            <div v-if="selectedAddressId !== null" class="col mt-2 d-flex justify-content-center align-items-center">
-              <div class="card mx-2" style="border-radius: 20px;">
-                <div class="row">
-                  <h3 style="font-weight: bold; font-size: 20px;">Address {{ selectedAddressId + 1 }} </h3>
-                  <a>City: {{ selectedAddress.city }}</a>
-                  <br>
-                  <a>Province: {{ selectedAddress.province }}</a>
-                  <br>
-                  <a>Kode Pos: {{ selectedAddress.postal_code }}</a>
-                  <br>
-                  <a>Alamat: {{ selectedAddress.address_detail }}</a>
-                  <br>
-                  <a>No Telpon: {{ selectedAddress.phone_number }}</a>
-                  <br>
-                  <a>Penerima: {{ selectedAddress.receiver }}</a>
-                  <br>
-                </div>
-                <div class="row d-flex justify-content-center align-items-center">
-                  <div class="col-md-4">
-                    <v-chip class="my-2">{{ selectedAddress.label }}</v-chip>
+            <div class="col-md-6 bg-white mt-2 px-2 py-2 mb-2">
+              <div class="row">
+                <h1 class="ml-2 mt-4">Pilih Alamat</h1>
+              </div>
+              <div class="row">
+                <div class="mx-2 col-md-6">
+                  <select v-model="selectedAddressId" class="form-select">
+                    <option value="" disabled>Select Address</option>
+                    <option v-for="(address, index) in addresses" :key="address.id" :value="address.id">
+                      {{ address.label }} - {{ address.receiver }}
+                    </option>
+                  </select>
+                  <div class="mt-4">
+
+                    <div v-if="selectedAddressId !== null" class="col d-flex justify-content-center align-items-center">
+                      <div class="card mx-2" style="border-radius: 20px; text-align: center; width: 400px;">
+                        <div class="row">
+                          <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">Alamat </h5>
+                              <p class="card-text text-left" id="regular">
+                                <a>Nama Penerima: {{ selectedAddress.receiver }}</a>
+                                <br>
+                                <a>City: {{ selectedAddress.city }}</a>
+                                <br>
+                                <a>Province: {{ selectedAddress.province }}</a>
+                                <br>
+                                <a>Kode Pos: {{ selectedAddress.postal_code }}</a>
+                                <br>
+                                <a>Alamat: {{ selectedAddress.address_detail }}</a>
+                                <br>
+                                <a>No Telpon: {{ selectedAddress.phone_number }}</a>
+                                <br>
+                              </p>
+                            </div>
+                            <div class="card-footer my-2">
+                              <div class="div">
+                                <div v-if="loadingOngkir">
+                                  <v-progress-linear indeterminate></v-progress-linear>
+                                </div>
+                                <div v-else>
+                                  <small class="text-bold" id="regularGas">Ongkos Kirim : Rp. {{ formatPrice(ongkir) }} </small>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div class="col-12 bg-white mt-2 py-2 mt-2" style="border-radius: 20px;">
-          <div class="row">
-            <h1 class="mx-8 mt-4" style="padding-left: 10px;">Total</h1>
-          </div>
-          <div class="row mx-2">
-            <div class="col-md-6">
-              <a style="font-size: 20px;">Jumlah Barang: {{ checkedTotalItems }}</a>
-              <br>
-              <a style="font-size: 20px;">Total Harga: Rp. {{ formatPrice(checkedTotalPrice) }}</a>
-            </div>
-            <div class="col-md-4">
+            <div class="col-md-6 bg-white mt-2 mb-2">
+              <div class="row">
+                <h1 class="mt-4 ml-3">Total</h1>
+              </div>
+              <div class="row mx-2">
+                <div class="col-md-4 col-6">
+                  <a style="font-size: 20px;">Jumlah Barang</a>
+                  <br>
+                  <a style="font-size: 20px;">Harga Barang</a>
+                  <br>
+                  <a style="font-size: 20px;">Harga Ongkos Kirim</a>
+                </div>
+                <div class="col-md-4 col-6">
+                  <a style="font-size: 20px;">: {{ checkedTotalItems }}</a>
+                  <br>
+                  <a style="font-size: 20px;">: Rp. {{ formatPrice(checkedTotalPrice) }}</a>
+                  <br>
+                  <a style="font-size: 20px;">: Rp. {{ formatPrice(ongkir) }}</a>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <hr>
+                <div class="col-md-4 col-6">
 
-              <v-btn color="red" rounded="xl" @click="checkout">
-                Checkout
-              </v-btn>
+                </div>
+                <div class="col-md-4 col-6">
+                   <a style="font-size: 20px;">: Rp. {{ formatPrice(totalPaid) }}</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -128,8 +157,17 @@ export default {
       deleteDialog: false,
       deleteIndex: null,
       addresses: [],
-      selectedAddressId: null
+      selectedAddressId: null,
+      loadingOngkir: false,
+      ongkir: '',
     };
+  },
+  watch: {
+    selectedAddressId(newVal, oldVal) {
+      if (newVal !== oldVal && newVal !== null) {
+        this.sendShippingRequest();
+      }
+    }
   },
   computed: {
     checkedTotalItems() {
@@ -139,10 +177,13 @@ export default {
       return this.cartItems.reduce((acc, item) => acc + (item.product.price * parseInt(item.quantity)), 0);
     },
     selectedAddress() {
-      if (this.selectedAddressId !== null && this.addresses.length > this.selectedAddressId) {
-        return this.addresses[this.selectedAddressId];
+      if (this.selectedAddressId !== null) {
+        return this.addresses.find(address => address.id === this.selectedAddressId);
       }
       return null;
+    },
+    totalPaid() {
+        return this.checkedTotalItems + this.checkedTotalPrice + this.ongkir;
     }
   },
   mounted() {
@@ -150,14 +191,6 @@ export default {
     this.retrieveAddress();
   },
   methods: {
-    // incrementQuantity(index) {
-    //   this.cartItems[index].quantity++;
-    // },
-    // decrementQuantity(index) {
-    //   if (this.cartItems[index].quantity > 1) {
-    //     this.cartItems[index].quantity--;
-    //   }
-    // },
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
@@ -178,6 +211,9 @@ export default {
           }
         });
         this.cartItems = response.data;
+        this.$nextTick(() => {
+          this.checkedTotalItems;
+        });
       } catch (error) {
         console.error('Error retrieving selected cart data:', error);
       }
@@ -195,6 +231,34 @@ export default {
         console.error('Error fetching addresses:', error);
       }
     },
+
+    async sendShippingRequest() {
+      try {
+        this.loadingOngkir = true;
+        const requestData = {
+          address_id: this.selectedAddressId,
+          products: this.cartItems.map(item => ({
+            id: item.product.id,
+            qty: item.quantity
+          }))
+        };
+
+        const response = await axios.post(BASE_URL + '/shipping', requestData, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        });
+
+        console.log('Shipping request sent successfully:', response.data);
+        this.ongkir = response.data.cost;
+      } catch (error) {
+        console.error('Error sending shipping request:', error);
+      } finally {
+        this.loadingOngkir = false;
+      }
+    },
+
+
     async deleteItem() {
       try {
         const item_id = this.cartItems[this.deleteIndex].id;
@@ -229,6 +293,8 @@ export default {
   width: auto;
   height: auto;
 } */
+
+
 .shopping-cart {
   display: flex;
   justify-content: space-between;

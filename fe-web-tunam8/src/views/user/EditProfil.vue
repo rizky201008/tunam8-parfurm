@@ -222,9 +222,7 @@ export default {
       }
     } finally {
       this.loadingProfile = false;
-    }
-
-    ;
+    };
     this.retrieveAddress();
     this.retrieveTags();
   },
