@@ -23,14 +23,14 @@ class CartController extends Controller
     {
         $isActive = $request->query('active') ?? 0;
         if ($isActive) {
-            $cartItem = $request->user()->cartItems->where('selected', true);
+            $cartItem = $this->cartItem->with('product')->where('user_id', $request->user()->id)->where('selected', 1)->get();
             foreach ($cartItem as $key => $value) {
                 $cartItem[$key]->product->images = $this->getProductImage($value->product_id);
             }
             return response()->json($cartItem);
         }
 
-        DB::table('cart_items')->where('user_id', $request->user()->id)->update(['selected' => 0]);
+        $this->cartItem->where('user_id', $request->user()->id)->update(['selected' => 0]);
         $cartItem = $request->user()->cartItems;
         foreach ($cartItem as $key => $value) {
             $cartItem[$key]->product->images = $this->getProductImage($value->product_id);
