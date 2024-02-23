@@ -106,7 +106,7 @@ class TransactionController extends Controller
         $cost = $this->transactionLogic->getShippingCost($request->address_id, $request->products);
 
         return response()->json([
-            'cost' => $cost
+            'cost' => $cost['cost']
         ], 200);
     }
 
