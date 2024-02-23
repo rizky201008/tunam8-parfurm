@@ -2,7 +2,7 @@
 <template>
   <Navbar>
     <div>
-      <div class="container-fluid px-4 py-2">
+      <div class="container px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="bg-white col-md-12">
           <div v-for="(item, index) in cartItems" :key="index" class="cart-item">
@@ -14,7 +14,7 @@
             </div>
             <div class="col-5 text-left">
               <div class="product-details">
-                <a style="font-size: 32px;">{{ item.product.name }}</a>
+                <a style="font-size: 27px;">{{ item.product.name }}</a>
                 <p style="font-weight: bold; font-size: large; color: green;">Rp. {{ formatPrice(item.product.price)
                 }}</p>
               </div>

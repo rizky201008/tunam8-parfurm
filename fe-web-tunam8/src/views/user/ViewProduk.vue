@@ -2,7 +2,7 @@
 <template>
   <Navbar>
     <div class="dashboard-admin">
-      <div class="container-fluid px-4">
+      <div class="container px-4">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
 
         <v-dialog v-model="dialog1" hide-overlay persistent width="300" lazy>
@@ -61,9 +61,9 @@
                 <v-chip class="mt-3">{{ parfum.category.name }}</v-chip>
                 <hr>
                 <div class="row">
-                  <div class="col-md-3 mt-2">
+                  <!-- <div class="col-md-3 mt-2">
                     <input type="number" class="form-control" value="1">
-                  </div>
+                  </div> -->
                   <div class="col-md-9">
                     <button class="btn addBtn btn-block mt-2" @click="addToCart(parfum.id)">Add to basket</button>
                   </div>

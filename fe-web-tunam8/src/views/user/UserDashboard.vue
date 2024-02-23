@@ -1,7 +1,7 @@
 <!-- Catalogue.vue -->
 <template>
   <Navbar>
-    <div>
+    <div class="container">
       <div class=" px-4">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="row" style="height: 60px;">
@@ -147,8 +147,13 @@ export default {
           });
         })
         .catch(error => {
-          // Handle error if needed
           console.error('Error adding item to cart:', error);
+          this.$notify({
+            type: 'error',
+            title: 'Tambah Produk Gagal',
+            text: 'Produk sudah ada pada keranjang',
+            color: 'red',
+          });
         });
     },
   },

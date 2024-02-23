@@ -2,11 +2,11 @@
 <template>
   <Navbar>
     <div>
-      <div class="container-fluid px-4 py-2">
+      <div class="container px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="col-md-12 bg-white" style="border-radius: 20px;">
           <div class="row">
-            <h1 class="mx-8 mt-4" style="padding-left: 10px;">Checkout</h1>
+            <h3 class="mx-8 mt-4" style="padding-left: 10px;">Produk Dipesan</h3>
           </div>
           <div v-for="(item, index) in cartItems" :key="index" class="cart-item">
             <div class="col-2">
@@ -28,11 +28,11 @@
             </div>
           </div>
         </div>
-        <div class="col mx-3 rounded">
+        <div class="col bg-white" style="border-radius: 20px; margin-bottom:150px">
           <div class="row">
-            <div class="col-md-6 bg-white mt-2 px-2 py-2 mb-2">
+            <div class="col-md-6  p-4 mb-2">
               <div class="row">
-                <h1 class="ml-2 mt-4">Pilih Alamat</h1>
+                <h3 class="ml-2">Pilih Alamat</h3>
               </div>
               <div class="row">
                 <div class="mx-2 col-md-6">
@@ -43,7 +43,6 @@
                     </option>
                   </select>
                   <div class="mt-4">
-
                     <div v-if="selectedAddressId !== null" class="col d-flex justify-content-center align-items-center">
                       <div class="card mx-2" style="border-radius: 20px; text-align: center; width: 400px;">
                         <div class="row">
@@ -71,7 +70,8 @@
                                   <v-progress-linear indeterminate></v-progress-linear>
                                 </div>
                                 <div v-else>
-                                  <small class="text-bold" id="regularGas">Ongkos Kirim : Rp. {{ formatPrice(ongkir) }} </small>
+                                  <small class="text-bold" id="regularGas">Ongkos Kirim : Rp. {{ formatPrice(ongkir) }}
+                                  </small>
                                 </div>
                               </div>
                             </div>
@@ -83,11 +83,11 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-6 bg-white mt-2 mb-2">
+            <div class="col-md-6 mt-2 mb-2 ">
               <div class="row">
-                <h1 class="mt-4 ml-3">Total</h1>
+                <h3 class="mt-4 ml-3">Total</h3>
               </div>
-              <div class="row mx-2">
+              <div class="row mx-2 border-bottom">
                 <div class="col-md-4 col-6">
                   <a style="font-size: 20px;">Jumlah Barang</a>
                   <br>
@@ -103,14 +103,20 @@
                   <a style="font-size: 20px;">: Rp. {{ formatPrice(ongkir) }}</a>
                 </div>
               </div>
-              <div class="row mt-2">
-                <hr>
+              <div class="row mt-20 mx-2">
                 <div class="col-md-4 col-6">
-
+                  <a style="font-size: 20px;">Total Dibayar</a>
                 </div>
                 <div class="col-md-4 col-6">
-                   <a style="font-size: 20px;">: Rp. {{ formatPrice(totalPaid) }}</a>
+                  <a style="font-size: 20px;"> : <span style="font-weight: 500; color: #D0011B">Rp. {{
+                    formatPrice(totalPaid) }} </span></a>
                 </div>
+              </div>
+              <div class="row mt-8 mx-2">
+                <button class="btn btn-danger" style="width: 100%;height:50px; margin-bottom:100px"
+                  @click="processPayment">
+                  Bayar
+                </button>
               </div>
             </div>
           </div>
@@ -183,7 +189,7 @@ export default {
       return null;
     },
     totalPaid() {
-        return this.checkedTotalItems + this.checkedTotalPrice + this.ongkir;
+      return this.checkedTotalPrice + this.ongkir;
     }
   },
   mounted() {
@@ -258,6 +264,33 @@ export default {
       }
     },
 
+    processPayment() {
+      console.log(this.selectedAddressId)
+      const requestData = {
+        products: this.cartItems.map(item => ({
+          id: item.product.id,
+          qty: item.quantity
+        })),
+        address_id: this.selectedAddressId
+      };
+
+      axios.post(BASE_URL + '/transactions', requestData, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+        }
+      })
+        .then(response => {
+
+          console.log('Payment created:', response.data);
+          window.open(response.data.link, '_blank');
+          this.$router.push('/keranjang');
+
+        })
+        .catch(error => {
+          console.error('Error processing payment:', error);
+          console.log(requestData)
+        });
+    },
 
     async deleteItem() {
       try {

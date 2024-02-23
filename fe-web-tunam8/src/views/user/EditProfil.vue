@@ -2,7 +2,7 @@
 <template>
   <Navbar>
     <div class="dashboard-admin">
-      <div class="container-fluid px-4 py-2">
+      <div class="container px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="row " style="min-height: 264px ;">
           <div class="col-md-4">
