@@ -186,6 +186,8 @@ return [
     ])->toArray(),
 
     'store_city_id' => env('STORE_CITY_ID', "356"),
-    'rajaongkir_apikey' => env('RAJAONGKIR_API', "")
+    'rajaongkir_apikey' => env('RAJAONGKIR_API', ""),
+    'midtrans_server_key' => env('MIDTRANS_SERVER_KEY', ''),
+    'midtrans_client_key' => env('MIDTRANS_CLIENT_KEY', ''),
 
 ];
