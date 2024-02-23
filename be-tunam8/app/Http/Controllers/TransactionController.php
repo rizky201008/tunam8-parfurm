@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Address;
 use App\Models\Product;
 use App\Models\CartItem;
@@ -52,49 +53,46 @@ class TransactionController extends Controller
         $address = $this->address->find($request->address_id);
 
         if ($validateQty['error']) {
-            return response()->json(
-                [
-                    'message' => $validateQty['message']
-                ],
-                400
-            );
+            throw new Exception($validateQty['message']);
         }
         if ($validateAddressOwner['error']) {
-            return response()->json(
-                [
-                    'message' => $validateAddressOwner['message']
-                ],
-                400
-            );
+            throw new Exception($validateAddressOwner['message']);
         }
 
         $this->transactionLogic->decreaseStock($request->products);
         $this->transactionLogic->deleteCartItem($request->products, $request->user()->id);
-        $cost = $this->transactionLogic->getShippingCost($address, $request->products);
+        $cost = $this->transactionLogic->getShippingCost($address->city_id, $request->products);
+
+        if ($cost['error']) {
+            throw new Exception($cost['message']);
+        }
 
         $total = $this->transactionLogic->getTotal($request->products);
 
         $transaction = [
-            'total' => $total + $cost,
+            'total' => $total + $cost['cost'],
             'user_id' => $request->user()->id,
             'status' => 'unpaid',
             'address_id' => $request->address_id,
-            'cost' => $cost,
+            'cost' => $cost['cost'],
         ];
 
         $insertTransaction = $this->transactionLogic->insertTransaction($transaction, $request->products);
 
+        $paymentLink = $this->transactionLogic->createMidtransSnapLink($total + $cost['cost'], $insertTransaction['transaction_id']);
+
+
         if ($insertTransaction['error']) {
-            return response()->json(
-                [
-                    'message' => $insertTransaction['message']
-                ],
-                400
-            );
+            throw new Exception($insertTransaction['message']);
+        }
+
+        if ($paymentLink['error']) {
+            throw new Exception($paymentLink['message']);
         }
 
         return response()->json([
-            'message' => 'Transaction created'
+            'message' => 'Transaction created',
+            'link' => $paymentLink['payment_url'],
         ], 201);
     }
 
