@@ -48,7 +48,7 @@ class TransactionController extends Controller
         ]);
 
         $this->transactionLogic->validateStock($request->products);
-        $this->transactionLogic->validateAddressOwner($request->address_id, $request->user()->id);
+        // $this->transactionLogic->validateAddressOwner($request->address_id, $request->user()->id);
 
         $address = $this->address->find($request->address_id);
 
