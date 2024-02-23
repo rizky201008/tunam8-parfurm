@@ -2,9 +2,10 @@
 
 namespace App\Logics;
 
+use Exception;
 use App\Models\Address;
-use App\Models\CartItem;
 use App\Models\Product;
+use App\Models\CartItem;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Illuminate\Support\Facades\Validator;
@@ -85,7 +86,7 @@ class Transactions
     {
         foreach ($products as $product) {
             $produk = $this->product->find($product['id']);
-            $produk->stock->decrement($product['qty']);
+            $produk->stock = $produk->stock - $product['qty'];
             $produk->save();
         }
     }
@@ -97,11 +98,10 @@ class Transactions
         }
     }
 
-    public function getShippingCost($address_id, $transactionItems)
+    public function getShippingCost($city_id, $transactionItems)
     {
         $apiKey = config('app.rajaongkir_apikey');
         $origin = config('app.store_city_id');
-        $address = $this->address->find($address_id);
         $itemAmount = 0;
 
         foreach ($transactionItems as $item) {
@@ -116,7 +116,7 @@ class Transactions
                 ],
                 'json' => [
                     'origin' => $origin,
-                    'destination' => $address->city_id,
+                    'destination' => $city_id,
                     'weight' => 500 * $itemAmount, // weight in grams
                     'courier' => 'jne', // courier code
                 ],
@@ -128,12 +128,23 @@ class Transactions
             $regService = collect($data->rajaongkir->results[0]->costs)->where('service', 'REG')->first();
 
             if ($regService) {
-                return $regService->cost[0]->value;
+                return [
+                    'error' => false,
+                    'message' => '',
+                    'cost' => $regService->cost[0]->value
+                ];
             } else {
-                return 0;
+                return [
+                    'error' => false,
+                    'message' => '',
+                    'cost' => 0
+                ];
             }
         } catch (\Exception $e) {
-            return $e;
+            return [
+                'error' => true,
+                'message' => $e->getMessage()
+            ];
         }
     }
 
@@ -145,6 +156,7 @@ class Transactions
             'user_id' => $transaction['user_id'],
             'status' => $transaction['status'],
             'address_id' => $transaction['address_id'],
+            'cost' => $transaction['cost'],
         ]);
 
         if (!$transaction) {
@@ -170,13 +182,50 @@ class Transactions
         if (!$insertTransactionItems) {
             return [
                 'error' => true,
-                'message' => 'Failed to insert transaction items'
+                'message' => 'Failed to insert transaction items',
+                'transaction_id' => null
             ];
         }
 
         return [
             'error' => false,
-            'message' => ''
+            'message' => '',
+            'transaction_id' => $trx->id
         ];
+    }
+
+    public function createMidtransSnapLink($amount, $trxId)
+    {
+        // Set your Merchant Server Key
+        \Midtrans\Config::$serverKey = config('app.midtrans_server_key');
+        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+        \Midtrans\Config::$isProduction = false;
+        // Set sanitization on (default)
+        \Midtrans\Config::$isSanitized = true;
+        // Set 3DS transaction for credit card to true
+        \Midtrans\Config::$is3ds = true;
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => $trxId,
+                'gross_amount' => (int)$amount,
+            )
+        );
+
+        try {
+            // Get Snap Payment Page URL
+            $paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
+
+            // Redirect to Snap Payment Page
+            return [
+                'error' => false,
+                'message' => '',
+                'payment_url' => $paymentUrl
+            ];
+        } catch (Exception $e) {
+            return [
+                'error' => true,
+                'message' => $e->getMessage()
+            ];
+        }
     }
 }
