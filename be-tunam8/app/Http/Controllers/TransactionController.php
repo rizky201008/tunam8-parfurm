@@ -47,17 +47,10 @@ class TransactionController extends Controller
             'products' => 'required|array',
         ]);
 
-        $validateQty = $this->transactionLogic->validateStock($request->products);
-        $validateAddressOwner = $this->transactionLogic->validateAddressOwner($request->address_id, $request->user()->id);
+        $this->transactionLogic->validateStock($request->products);
+        $this->transactionLogic->validateAddressOwner($request->address_id, $request->user()->id);
 
         $address = $this->address->find($request->address_id);
-
-        if ($validateQty['error']) {
-            throw new Exception($validateQty['message']);
-        }
-        if ($validateAddressOwner['error']) {
-            throw new Exception($validateAddressOwner['message']);
-        }
 
         $this->transactionLogic->decreaseStock($request->products);
         $this->transactionLogic->deleteCartItem($request->products, $request->user()->id);

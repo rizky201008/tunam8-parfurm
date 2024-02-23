@@ -53,16 +53,8 @@ class Transactions
             ]);
 
             if ($validator->fails()) {
-                return [
-                    'message' => $validator->messages()->first(),
-                    'error' => true
-                ];
+                throw new Exception("Stock $produk->name tidak mencukupi");
             }
-
-            return [
-                'message' => "",
-                'error' => false
-            ];
         }
     }
 
@@ -70,16 +62,8 @@ class Transactions
     {
         $address = $this->address->find($addressId);
         if ($address->user_id !== $userId) {
-            return [
-                'error' => true,
-                'message' => "PLease use your own address to order"
-            ];
+            throw new Exception('Address not found');
         }
-
-        return [
-            'error' => false,
-            'message' => ''
-        ];
     }
 
     public function decreaseStock($products)
