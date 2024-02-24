@@ -127,4 +127,12 @@ class TransactionController extends Controller
         return response()->json(['message' => 'Transaction deleted']);
     }
 
+    public function updateTransaction(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:transactions,id',
+        ]);
+        $this->transaction->find($request->id)->update($request->all());
+        return response()->json(['message' => 'Transaction updated']);
+    }
 }
