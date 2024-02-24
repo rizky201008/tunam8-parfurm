@@ -28,12 +28,12 @@ class UserController extends Controller
 
         UserPersonal::create([
             'user_id' => $request->user()->id,
-            'tags' => json_encode($request->tags),
+            'tags' => $request->tags,
         ]);
 
         $userPersonal = $request->user()->personal;
 
-        $userPersonal->tags = json_decode($userPersonal->tags);
+        $userPersonal->tags = $userPersonal->tags;
 
         return response()->json(['tags' => $userPersonal->tags, 'message' => 'User personalization created'], 201);
     }
@@ -50,8 +50,6 @@ class UserController extends Controller
         }
 
         $personal = $request->user()->personal;
-
-        $personal->tags = json_decode($personal->tags);
         return response()->json($personal, 200);
     }
 
@@ -70,10 +68,8 @@ class UserController extends Controller
 
         $userPersonal = $request->user()->personal;
         $userPersonal->update([
-            'tags' => json_encode($request->tags),
+            'tags' => $request->tags,
         ]);
-
-        $userPersonal->tags = json_decode($userPersonal->tags);
 
         return response()->json(['tags' => $userPersonal->tags, 'message' => 'User personalization updated'], 200);
     }
