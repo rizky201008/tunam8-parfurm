@@ -35,6 +35,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('products', [ProductController::class, 'allProducts']);
     Route::get('product/{slug}', [ProductController::class, 'getProduct']);
     Route::post('search-products', [ProductController::class, 'searchProductByName']);
+    Route::get('personalized-products', [ProductController::class, 'getPersonalizedProducts']);
     Route::get('categories', [CategoryController::class, 'allCategories']);
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
     Route::get('product-image', [ProductImageController::class, 'getAllProductImages']);
@@ -47,6 +48,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::post('carts', [CartController::class, 'addCart']);
     Route::get('tags/{slug}', [TagsController::class, 'showTagProducts']);
     Route::get('tags', [TagsController::class, 'allTags']);
+    Route::get('tags/products/{tag}', [TagsController::class, 'getProductsByTag']);
     Route::post('shipping', [TransactionController::class, 'getShippingCost']);
     Route::group(['prefix' => 'user'], function () {
         Route::get('detail', [AuthController::class, 'user']);
