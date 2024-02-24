@@ -34,6 +34,7 @@ Route::group(['prefix' => 'account', 'middleware' => 'cors'], function () {
 Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('products', [ProductController::class, 'allProducts']);
     Route::get('product/{slug}', [ProductController::class, 'getProduct']);
+    Route::post('search-products', [ProductController::class, 'searchProductByName']);
     Route::get('categories', [CategoryController::class, 'allCategories']);
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
     Route::get('product-image', [ProductImageController::class, 'getAllProductImages']);
