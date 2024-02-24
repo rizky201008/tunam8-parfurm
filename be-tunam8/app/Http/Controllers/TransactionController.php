@@ -127,11 +127,4 @@ class TransactionController extends Controller
         return response()->json(['message' => 'Transaction deleted']);
     }
 
-    public function calculateOngkir(Request $request)
-    {
-        $request->validate([
-            'address_id' => 'required|exists:addresses,id',
-            'products' => 'required|array',
-        ]);
-    }
 }
