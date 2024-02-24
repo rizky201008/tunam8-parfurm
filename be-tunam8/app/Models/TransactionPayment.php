@@ -10,9 +10,16 @@ class TransactionPayment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'payment_link',
+        'link',
         'transaction_id',
         'status',
+    ];
+
+    protected $hidden = [
+        'transaction_id',
+        'created_at',
+        'updated_at',
+        'id'
     ];
 
     public function transaction()
