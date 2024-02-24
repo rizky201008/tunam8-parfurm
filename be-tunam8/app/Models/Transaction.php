@@ -35,4 +35,9 @@ class Transaction extends Model
     {
         return $this->hasMany(TransactionItem::class);
     }
+
+    public function transactionPayment()
+    {
+        return $this->hasOne(TransactionPayment::class);
+    }
 }
