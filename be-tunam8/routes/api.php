@@ -38,6 +38,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
     Route::get('product-image', [ProductImageController::class, 'getAllProductImages']);
     Route::post('transactions', [TransactionController::class, 'createTransaction']);
+    Route::get('transactions', [TransactionController::class, 'getTransactions']);
     Route::get('carts', [CartController::class, 'getCarts']);
     Route::delete('carts', [CartController::class, 'deleteCart']);
     Route::put('carts', [CartController::class, 'updateCartItem']);
@@ -58,9 +59,6 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::post('create', [AddressController::class, 'createAddress']);
         Route::put('update', [AddressController::class, 'updateAddress']);
         Route::delete('delete', [AddressController::class, 'deleteAddress']);
-    });
-    Route::group(['prefix' => 'transaction'], function () {
-        Route::post('create',[TransactionController::class,'createTransaction']);
     });
     Route::middleware(['ability:admin'])->group(function () {
         Route::post('tags', [TagsController::class, 'createTag']);
