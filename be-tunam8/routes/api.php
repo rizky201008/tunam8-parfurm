@@ -74,5 +74,6 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::put('categories', [CategoryController::class, 'updateCategory']);
         Route::delete('categories', [CategoryController::class, 'deleteCategory']);
         Route::post('product-image', [ProductImageController::class, 'updateProductImage']);
+        Route::put('transactions', [TransactionController::class, 'updateTransaction']);
     });
 });
