@@ -26,4 +26,14 @@ class UserPersonal extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getTagsAttribute($value)
+    {
+        return json_decode($value);
+    }
+
+    public function setTagsAttribute($value)
+    {
+        $this->attributes['tags'] = json_encode($value);
+    }
 }
