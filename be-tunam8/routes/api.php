@@ -39,6 +39,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('product-image', [ProductImageController::class, 'getAllProductImages']);
     Route::post('transactions', [TransactionController::class, 'createTransaction']);
     Route::get('transactions', [TransactionController::class, 'getTransactions']);
+    Route::get('transactions/{transactionId}', [TransactionController::class, 'getTransaction']);
     Route::get('carts', [CartController::class, 'getCarts']);
     Route::delete('carts', [CartController::class, 'deleteCart']);
     Route::put('carts', [CartController::class, 'updateCartItem']);
