@@ -189,5 +189,6 @@ return [
     'rajaongkir_apikey' => env('RAJAONGKIR_API', ""),
     'midtrans_server_key' => env('MIDTRANS_SERVER_KEY', ''),
     'midtrans_client_key' => env('MIDTRANS_CLIENT_KEY', ''),
+    'callback_url' => env('CALLBACK_URL', null),
 
 ];
