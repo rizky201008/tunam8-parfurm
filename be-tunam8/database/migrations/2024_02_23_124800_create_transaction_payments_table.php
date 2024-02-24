@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('transaction_payments', function (Blueprint $table) {
             $table->id();
-            $table->text('payment_link');
+            $table->text('link');
             $table->foreignIdFor(Transaction::class);
             $table->string('status');
             $table->timestamps();
