@@ -97,7 +97,7 @@ class ProductController extends Controller
 
     public function updateProduct(Request $request)
     {
-       $request->validate([
+        $request->validate([
             'id' => 'required|exists:products,id',
         ]);
 
@@ -109,7 +109,7 @@ class ProductController extends Controller
             $validated['slug'] = Str::slug(round(microtime(true) * 1000) . $request->name, '-');
         }
 
-        if ($request->tags !==null) {
+        if ($request->tags !== null) {
             $request['tags'] = json_encode($request->tags);
         }
 
@@ -163,5 +163,23 @@ class ProductController extends Controller
         });
 
         return response()->json($product);
+    }
+
+    public function searchProductByName(Request $request)
+    {
+        $name = $request['query'];
+        $products = Product::with(['category', 'images'])->where('name', 'LIKE',"%$name%")->get();
+        // Adding base URL to image links
+        $baseURL = config('app.url') . '/products';
+        $products->map(function ($product) use ($baseURL) {
+            $product->tags = json_decode($product->tags);
+            $product->images->map(function ($image) use ($baseURL) {
+                $image->link = $baseURL . '/' . $image->link;
+                return $image;
+            });
+            return $product;
+        });
+
+        return response()->json($products);
     }
 }
