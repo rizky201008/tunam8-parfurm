@@ -36,7 +36,7 @@ class TransactionController extends Controller
 
     public function allTransactions()
     {
-        return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->all());
+        return response()->json($this->transaction->with(['transactionItems', 'transactionPayment','user'])->get());
     }
 
     public function getTransactions(Request $request)
