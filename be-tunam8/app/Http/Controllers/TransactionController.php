@@ -35,12 +35,12 @@ class TransactionController extends Controller
 
     public function allTransactions()
     {
-        return response()->json($this->transaction->all());
+        return response()->json($this->transaction->with(['transactionItems','transactionPayment'])->all());
     }
 
     public function getTransactions(Request $request)
     {
-        return response()->json(Transaction::with('transactionItems')->where('user_id', $request->user()->id)->get());
+        return response()->json($this->transaction->with(['transactionItems','transactionPayment'])->where('user_id', $request->user()->id)->get());
     }
 
     public function createTransaction(Request $request)
