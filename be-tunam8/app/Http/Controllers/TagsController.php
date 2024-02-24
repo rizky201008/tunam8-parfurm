@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use App\Logics\Tags;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class TagsController extends Controller
@@ -77,5 +78,12 @@ class TagsController extends Controller
     {
         $tag = $this->tag->where('slug', $slug)->first();
         return response()->json($tag->products->paginate(10));
+    }
+
+    public function getProductsByTag($tag)
+    {
+        $products = Product::with(['category', 'images'])->where('tags', 'LIKE',"%$tag%")->paginate(25);
+
+        return response()->json($products);
     }
 }
