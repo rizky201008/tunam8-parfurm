@@ -36,7 +36,7 @@ class TransactionController extends Controller
 
     public function allTransactions()
     {
-        return response()->json($this->transaction->with(['transactionItems', 'transactionPayment','user'])->get());
+        return response()->json($this->transaction->with(['transactionItems', 'transactionPayment', 'user'])->get());
     }
 
     public function getTransactions(Request $request)
@@ -54,10 +54,17 @@ class TransactionController extends Controller
         }
         if ($request->user()->role != 'admin') {
             $transaction = $this->transaction->with(['transactionItems', 'transactionPayment'])->where('id', $transactionId)->where('user_id', $request->user()->id)->first();
-        }
-        else {
+        } else {
             $transaction = $this->transaction->with(['transactionItems', 'transactionPayment'])->where('id', $transactionId)->first();
         }
+
+        $transaction->transactionItems->map(function ($item) {
+            $item->product = $this->product->find($item->product_id);
+            $item->product->image = $item->product->images[0]->link;
+            unset($item->product->images); // Remove images field
+            return $item;
+        });
+
         return response()->json(
             $transaction
         );
