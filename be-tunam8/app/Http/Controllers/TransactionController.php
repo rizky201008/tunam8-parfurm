@@ -9,6 +9,7 @@ use App\Models\CartItem;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\TransactionItem;
+use App\Models\TransactionPayment;
 use App\Logics\Transactions as TransactionLogic;
 
 class TransactionController extends Controller
@@ -19,6 +20,7 @@ class TransactionController extends Controller
     protected $transactionItems;
     protected $address;
     protected $cartItem;
+    protected $transactionPayment;
 
     public function __construct()
     {
@@ -27,7 +29,8 @@ class TransactionController extends Controller
         $this->transactionItems = new TransactionItem();
         $this->address = new Address();
         $this->cartItem = new CartItem();
-        $this->transactionLogic = new TransactionLogic($this->transaction, $this->transactionItems, $this->product, $this->address, $this->cartItem);
+        $this->transactionPayment = new TransactionPayment();
+        $this->transactionLogic = new TransactionLogic($this->transaction, $this->transactionItems, $this->product, $this->address, $this->cartItem, $this->transactionPayment);
     }
 
     public function allTransactions()
@@ -37,7 +40,7 @@ class TransactionController extends Controller
 
     public function getTransactions(Request $request)
     {
-        return response()->json($request->user()->transactions->get());
+        return response()->json(Transaction::with('transactionItems')->where('user_id', $request->user()->id)->get());
     }
 
     public function createTransaction(Request $request)
@@ -48,7 +51,6 @@ class TransactionController extends Controller
         ]);
 
         $this->transactionLogic->validateStock($request->products);
-        // $this->transactionLogic->validateAddressOwner($request->address_id, $request->user()->id);
 
         $address = $this->address->find($request->address_id);
 
