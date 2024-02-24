@@ -52,7 +52,12 @@ class TransactionController extends Controller
         if ($validator->fails()) {
             throw new Exception($validator->errors()->first());
         }
-        $transaction = $this->transaction->with(['transactionItems', 'transactionPayment'])->where('id', $transactionId)->where('user_id', $request->user()->id)->first();
+        if ($request->user()->role != 'admin') {
+            $transaction = $this->transaction->with(['transactionItems', 'transactionPayment'])->where('id', $transactionId)->where('user_id', $request->user()->id)->first();
+        }
+        else {
+            $transaction = $this->transaction->with(['transactionItems', 'transactionPayment'])->where('id', $transactionId)->first();
+        }
         return response()->json(
             $transaction
         );
