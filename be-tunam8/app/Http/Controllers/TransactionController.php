@@ -10,6 +10,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\TransactionItem;
 use App\Models\TransactionPayment;
+use Illuminate\Support\Facades\Validator;
 use App\Logics\Transactions as TransactionLogic;
 
 class TransactionController extends Controller
@@ -35,12 +36,26 @@ class TransactionController extends Controller
 
     public function allTransactions()
     {
-        return response()->json($this->transaction->with(['transactionItems','transactionPayment'])->all());
+        return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->all());
     }
 
     public function getTransactions(Request $request)
     {
-        return response()->json($this->transaction->with(['transactionItems','transactionPayment'])->where('user_id', $request->user()->id)->get());
+        return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->where('user_id', $request->user()->id)->get());
+    }
+
+    public function getTransaction(Request $request, $transactionId)
+    {
+        $validator = Validator::make(['transaction_id' => $transactionId], [
+            'transaction_id' => 'required|exists:transactions,id'
+        ]);
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
+        }
+        $transaction = $this->transaction->with(['transactionItems', 'transactionPayment'])->where('id', $transactionId)->where('user_id', $request->user()->id)->first();
+        return response()->json(
+            $transaction
+        );
     }
 
     public function createTransaction(Request $request)
