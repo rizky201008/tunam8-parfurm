@@ -19,6 +19,7 @@ class Product extends Model
         'description',
         'images',
         'slug',
+        'tags'
     ];
 
     protected $hidden = [
