@@ -203,7 +203,7 @@ class Transactions
             $paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
 
             $this->transactionPayment->create([
-                'payment_link' => $paymentUrl,
+                'link' => $paymentUrl,
                 'transaction_id' => $trxId,
                 'status' => 'unpaid'
             ]);
