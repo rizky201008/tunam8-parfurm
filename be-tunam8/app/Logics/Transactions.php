@@ -191,6 +191,7 @@ class Transactions
         \Midtrans\Config::$isSanitized = true;
         // Set 3DS transaction for credit card to true
         \Midtrans\Config::$is3ds = true;
+        \Midtrans\Config::$appendNotifUrl = config('app.midtrans_callback_url');
         $params = array(
             'transaction_details' => array(
                 'order_id' => $trxId,

@@ -7,6 +7,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\TagsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\CallbackController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
@@ -81,3 +82,5 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::get('all-transactions', [TransactionController::class, 'allTransactions']);
     });
 });
+
+Route::middleware('midtrans')->post('callback', [CallbackController::class, 'callback']);
