@@ -131,7 +131,7 @@ export default {
     async getTransactions() {
       try {
         const token = localStorage.getItem('access_token');
-        const response = await axios.get(BASE_URL + '/transactions', {
+        const response = await axios.get(BASE_URL + '/all-transactions', {
           headers: {
             Authorization: 'Bearer ' + token
           }
@@ -178,8 +178,12 @@ export default {
         return 'unpaid';
       } else if (status === 'shipping') {
         return 'shipping';
+      } else if (status === 'proccess') {
+        return 'proccess';
       } else if (status === 'received') {
         return 'received';
+      } else if (status === 'canceled') {
+        return 'canceled';
       } else {
         return '';
       }
@@ -204,7 +208,7 @@ export default {
   padding-bottom: 20px;
 }
 
-.process {
+.proccess {
   padding-right: 5px;
   padding-left: 5px;
   border-radius: 5px;
@@ -230,9 +234,17 @@ export default {
   color: white;
   font-weight: 600;
   text-decoration: none;
+  background-color: orange;
+}
+.canceled {
+  padding-right: 5px;
+  padding-left: 5px;
+  border-radius: 5px;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
   background-color: red;
 }
-
 .received {
   padding-right: 5px;
   padding-left: 5px;
