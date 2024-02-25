@@ -2,49 +2,45 @@
 <template>
   <Navbar>
     <div>
-      <div class=" px-4">
+      <div class="container px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
-        <div class="row">
-          <div class="shopping-cart">
-            <div class="cart-items bg-white">
-              <div v-for="(item, index) in cartItems" :key="index" class="cart-item">
-                <div class="col-1 d-flex justify-content-center align-item-center">
-                  <input type="checkbox" v-model="item.checked" class="checkbox-style">
-                </div>
-                <div class="col-3 d-flex justify-content-center align-item-center">
-                  <img :src="item.product.images" alt="Product Image" class="product-image">
-                </div>
-                <div class="col-5 text-left">
-                  <div class="product-details">
-                    <a style="font-size: 32px;">{{ item.product.name }}</a>
-                    <p style="font-weight: bold; font-size: large; color: green;">Rp. {{ formatPrice(item.product.price)
-                    }}</p>
-                  </div>
-                </div>
-                <div class="col-3">
-                  <div class="quantity-controls">
-                    <v-icon @click="decrementQuantity(index)" class="mx-2" color="red" size="24"
-                      icon="mdi-minus-circle-outline"></v-icon>
-                    <span class="mx-2" style="font-size: 20px;">{{ item.quantity }}</span>
-                    <v-icon @click="incrementQuantity(index)" class="mx-2" color="green" size="24"
-                      icon="mdi-plus-circle-outline"></v-icon>
-                    <v-icon @click="confirmDelete(index)" class="mx-2" color="red" icon="mdi-delete" size="26"></v-icon>
-                    <p style="font-weight: bold; font-size: medium">Rp. {{ formatPrice(item.product.price * item.quantity)
-                    }}</p>
-                  </div>
-                </div>
-                <hr>
+        <div class="bg-white col-md-12">
+          <div v-for="(item, index) in cartItems" :key="index" class="cart-item">
+            <div class="col-1 d-flex justify-content-center align-item-center">
+              <input type="checkbox" v-model="item.checked" class="checkbox-style">
+            </div>
+            <div class="col-3 d-flex justify-content-center align-item-center">
+              <img :src="item.product.images" alt="Product Image" class="product-image">
+            </div>
+            <div class="col-5 text-left">
+              <div class="product-details">
+                <a style="font-size: 27px;">{{ item.product.name }}</a>
+                <p style="font-weight: bold; font-size: large; color: green;">Rp. {{ formatPrice(item.product.price)
+                }}</p>
+              </div>
+            </div>
+            <div class="col-3">
+              <div class="quantity-controls">
+                <v-icon @click="decrementQuantity(index)" class="mx-2" color="red" size="24"
+                  icon="mdi-minus-circle-outline"></v-icon>
+                <span class="mx-2" style="font-size: 20px;">{{ item.quantity }}</span>
+                <v-icon @click="incrementQuantity(index)" class="mx-2" color="green" size="24"
+                  icon="mdi-plus-circle-outline"></v-icon>
+                <v-icon @click="confirmDelete(index)" class="mx-2" color="red" icon="mdi-delete" size="26"></v-icon>
+                <p style="font-weight: bold; font-size: medium">Rp. {{ formatPrice(item.product.price * item.quantity)
+                }}</p>
               </div>
             </div>
           </div>
-          <div class="mt-2 border-0">
-            <div class="col-md-12">
-              <div class="cart-summary bg-white">
-                <h2>Cart Summary</h2>
-                <p>Total Items: {{ checkedTotalItems }}</p>
-                <p>Total Price: Rp. {{ formatPrice(checkedTotalPrice) }}</p>
-              </div>
-            </div>
+        </div>
+        <div class="row-12 bg-white mt-2 px-2 py-2 text-center" style="border-radius: 20px;">
+          <div>
+            <h2>Cart Summary</h2>
+            <p>Total Items: {{ checkedTotalItems }}</p>
+            <p>Total Price: Rp. {{ formatPrice(checkedTotalPrice) }}</p>
+            <v-btn color="red" rounded="xl" @click="checkout">
+              Checkout
+            </v-btn>
           </div>
         </div>
         <v-dialog v-model="deleteDialog" max-width="500px">
@@ -167,6 +163,26 @@ export default {
           });
       }, 4000);
     },
+    checkout() {
+      const checkedItems = this.cartItems.filter(item => item.checked);
+      checkedItems.forEach(item => {
+        axios.put(BASE_URL + '/carts', {
+          id: item.id,
+          quantity: item.quantity,
+          selected: true
+        }, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        })
+          .then(response => {
+            this.$router.push('/checkout');
+          })
+          .catch(error => {
+            console.error('Error updating quantity:', error);
+          });
+      });
+    },
     async deleteItem() {
       try {
         const item_id = this.cartItems[this.deleteIndex].id;
@@ -246,6 +262,7 @@ export default {
 .cart-summary p {
   margin-bottom: 5px;
 }
+
 .checkbox-style {
   width: 20px;
   height: 20px;

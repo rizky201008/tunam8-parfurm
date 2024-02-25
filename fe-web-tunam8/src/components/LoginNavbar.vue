@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light white shadow-sm bg-red fixed-top">
+  <nav class="navbar navbar-expand-lg navbar-light white shadow-sm fixed-top" style="background-color: #D0011B;">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">Tunam8</a>
     </div>

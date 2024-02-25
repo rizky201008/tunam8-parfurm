@@ -12,12 +12,14 @@
                                     <h2>Login</h2>
                                     <div class="inputbox">
                                         <ion-icon name="mail-outline"></ion-icon>
-                                        <input class="input-type" type="email" v-model="loginEmail" required>
+                                        <input class="input-type" type="email" v-model="loginEmail" required
+                                            @focus="enableEmailAutocomplete" autocomplete="off">
                                         <label for="">Email</label>
                                     </div>
                                     <div class="inputbox">
                                         <ion-icon name="lock-closed-outline"></ion-icon>
-                                        <input class="input-type" type="password" v-model="loginPassword" required>
+                                        <input class="input-type" type="password" v-model="loginPassword" required
+                                            @focus="enablePasswordAutocomplete" autocomplete="off">
                                         <label for="">Password</label>
                                     </div>
                                     <div class="forget">
@@ -25,7 +27,7 @@
                                             <br><a class="text-right" @click="toggleEmailForgotPassword"
                                                 style="cursor: pointer">Forget Password</a></label>
                                     </div>
-                                        <button class="login-button" type="submit" style="color:white">Log in</button>
+                                    <button class="login-button" type="submit" style="color:white">Log in</button>
                                     <div class="register">
                                         <p>Don't have an account <a @click="toggleForm" style="cursor: pointer">Register</a>
                                         </p>
@@ -126,6 +128,9 @@ export default {
             createForgotPassword: "",
 
             rememberMe: false,
+
+            emailAutocomplete: 'off',
+            passwordAutocomplete: 'off'
         };
     },
     mounted() {
@@ -166,6 +171,12 @@ export default {
     },
 
     methods: {
+        enableEmailAutocomplete() {
+            this.emailAutocomplete = 'email';
+        },
+        enablePasswordAutocomplete() {
+            this.passwordAutocomplete = 'current-password';
+        },
         toggleForm() {
             this.isRegister = !this.isRegister;
         },

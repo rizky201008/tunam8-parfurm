@@ -9,15 +9,13 @@
             <div class="card border-0 px-2 " style="text-align: end;">
               <div class="col text-right">
                 <div class="button-set my-4">
-                  <!-- <button-custom @click="openCategory" class="mx-4">Add Category</button-custom> -->
-                  <!-- <button-custom data-bs-toggle="modal" data-bs-target="#addParfum">Tambah Parfum</button-custom> -->
                   <v-btn color="red" rounded="xl" @click="openTags" class="mb-2 mt-2">
                     Add Tags
                   </v-btn>
                   <v-btn color="red" rounded="xl" @click="openCategory" class="mx-4 mb-2 mt-2">
                     Add Category
                   </v-btn>
-                  <v-btn color="red" rounded="xl" data-bs-toggle="modal" data-bs-target="#addParfum" class="" >
+                  <v-btn color="red" rounded="xl" data-bs-toggle="modal" data-bs-target="#addParfum" class="">
                     Add Parfum
                   </v-btn>
                 </div>
@@ -47,6 +45,13 @@
                   <label for="exampleInputDesc" class="form-label">Deskripsi</label>
                   <textarea type="text" class="form-control" v-model="parfum.desc"
                     aria-describedby="emailCustomer"></textarea>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Tags</label>
+                  <div class="form-check" v-for="tag in tags" :key="tag.id">
+                    <input class="form-check-input" type="checkbox" :value="tag.name" v-model="selectedTags">
+                    <label class="form-check-label">{{ tag.name }}</label>
+                  </div>
                 </div>
                 <div class="mb-3">
                   <label for="exampleKategori" class="form-label">Kategori</label>
@@ -104,9 +109,12 @@ export default {
         price: '',
         stok: '',
         category: '',
+        tag: ''
       },
       selectedFile: [],
       categories: [],
+      tags: [],
+      selectedTags: [],
       breadcrumbsItems: [
         {
           title: 'Daftar Produk',
@@ -119,6 +127,7 @@ export default {
 
   mounted() {
     this.fetchCategories();
+    this.retrieveTags();
   },
 
   methods: {
@@ -153,14 +162,6 @@ export default {
     async addParfum() {
       try {
         const formData = new FormData();
-        // if (this.selectedFiles.length > 0) {
-        //   formData.append('images[0]', this.selectedFiles[0], this.selectedFiles[0].name);
-        // }
-
-        // for (let i = 1; i < this.selectedFiles.length; i++) {
-        //   formData.append(`images[${i}]`, this.selectedFiles[i], this.selectedFiles[i].name);
-        // }
-
         this.selectedFiles.forEach((file, index) => {
           formData.append(`images[${index}]`, file, file.name);
         });
@@ -169,6 +170,7 @@ export default {
         formData.append('description', this.parfum.desc);
         formData.append('price', this.parfum.price);
         formData.append('stock', this.parfum.stok);
+        formData.append('tags', this.selectedTags.join(', '));
         formData.append('category_id', this.parfum.category);
         document.getElementById('closeModal').click();
         const token = localStorage.getItem('access_token')
@@ -181,6 +183,7 @@ export default {
         // $('#addParfum').modal('hide');
         this.clearForm();
         this.selectedFiles = []; // Clear selected files
+        this.selectedTags = [];
         this.$refs.datatablesParfum.retrieveParfum();
 
         this.$notify({
@@ -200,6 +203,18 @@ export default {
             color: 'red',
           });
         }
+      }
+    },
+    async retrieveTags() {
+      try {
+        const response = await axios.get(BASE_URL + '/tags', {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        });
+        this.tags = response.data.data;
+      } catch (error) {
+        console.error(error);
       }
     },
     async fetchCategories() {

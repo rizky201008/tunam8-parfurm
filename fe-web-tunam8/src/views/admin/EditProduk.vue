@@ -46,9 +46,14 @@
                   <label for="desc">Deskripsi</label>
                   <textarea class="form-control" v-model="parfum.description" id="desc"></textarea>
                   <br>
-                  <!-- <label for="category">Current Category</label>
+                  <div class="mb-3">
+                    <label class="form-label">Tags</label>
+                    <div class="form-check" v-for="tag in tags" :key="tag.id">
+                      <input class="form-check-input" type="checkbox" :value="tag.name" v-model="selectedTags">
+                      <label class="form-check-label">{{ tag.name }}</label>
+                    </div>
+                  </div>
                   <br>
-                  <v-chip class="mb-3" v-model="parfum.category">{{ parfum.category.name }}</v-chip> -->
                   <label for="category">Category</label>
                   <select class="form-select" v-model="parfum.category">
                     <option v-for="category in categories" :key="category.id" :value="category">
@@ -100,13 +105,15 @@ export default {
         description: '',
         price: '',
         images: [],
-        category: ''
+        category: '',
       },
       currentCategory: '',
       currentCategoryID: '',
       categories: [],
       selectedFile: '',
       fotoFile: null,
+      tags: [],
+      selectedTags: [],
     }
   },
   async mounted() {
@@ -117,6 +124,7 @@ export default {
         }
       });
       this.categories = categoryresponse.data;
+
 
       const slug = this.$route.params.slug;
       const response = await axios.get(BASE_URL + '/product/' + slug, {
@@ -140,7 +148,8 @@ export default {
           color: 'red'
         });
       }
-    }
+    };
+    this.retrieveTags();
   },
   computed: {
     imageUrl() {
@@ -151,6 +160,29 @@ export default {
     handleFileChange(event) {
       this.fotoFile = event.target.files[0];
     },
+    async retrieveTags() {
+      try {
+        const response = await axios.get(BASE_URL + '/tags', {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        });
+        this.tags = response.data.data;
+        const productTags = this.parfum.tags.split(',');
+
+        // Iterate over each tag
+        productTags.forEach(productTag => {
+          // Find the corresponding tag object in the tags array
+          const foundTag = this.tags.find(tag => tag.name === productTag.trim());
+          if (foundTag) {
+            // If the tag is found, mark the checkbox as checked
+            this.selectedTags.push(foundTag.name);
+          }
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
     async saveParfum() {
       try {
         if (this.fotoFile) {
@@ -158,28 +190,28 @@ export default {
           formData.append('images', this.fotoFile);
           formData.append('product_id', this.parfum.id);
 
-          await axios.post(BASE_URL + '/product-image', formData, {
+          await axios.post('/product-image', formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
               Authorization: 'Bearer ' + localStorage.getItem('access_token')
             }
           });
         }
-
         const requestData = {
           id: this.parfum.id,
           name: this.parfum.name,
           description: this.parfum.description,
           price: this.parfum.price,
           stock: this.parfum.stock,
-          category_id: this.parfum.category,
+          category_id: this.parfum.category.id,
+          tags: this.selectedTags.join(',')
         };
         const response = await axios.put(BASE_URL + '/products', requestData, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token')
           }
         });
-        console.log(this.category_id);
+        console.log(this.tagString);
         this.$router.push('/admin/daftarproduk');
         this.$notify({
           type: 'success',
@@ -188,6 +220,7 @@ export default {
           color: 'green',
         });
       } catch (error) {
+        console.log(this.tagString)
         console.error(error);
         if (error.response && error.response.data.message) {
           const errorMessage = error.response.data.message;
