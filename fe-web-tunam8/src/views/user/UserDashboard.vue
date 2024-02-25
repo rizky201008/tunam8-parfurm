@@ -1,20 +1,58 @@
 <!-- Catalogue.vue -->
 <template>
   <Navbar>
-    <div>
+    <div class="container">
       <div class=" px-4">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="row" style="height: 60px;">
-          <form class="search-container" @submit.prevent="searchProduct">
-            <input type="text" id="search-bar" placeholder="Cari Produk anda" v-model="searchQuery">
-            <button type="submit" class="search-icon-btn"><img class="search-icon"
-                src="http://www.endlessicons.com/wp-content/uploads/2012/12/search-icon.png"></button>
+          <form class="search-container" @submit.prevent="searchProduct" style="max-width: 350px;">
+            <div class="row">
+              <input type="text" id="search-bar" placeholder="Cari Produk anda" v-model="searchQuery"
+                @input="searchProduct">
+            </div>
           </form>
         </div>
         <div class="div pb-8">
-          <div class="row">
-            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6"
-              v-for="(item, index) in filteredProducts" :key="item.id">
+          <div class="row" v-if="searchResults.length > 0">
+            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in searchResults"
+              :key="item.id">
+              <div class="product-single-card">
+                <div class="product-top-area">
+                  <div class="product-img">
+                    <div class="first-view">
+                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                    </div>
+                    <div class="hover-view">
+                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                    </div>
+                  </div>
+                  <div class="sideicons">
+                    <button class="sideicons-btn">
+                      <v-icon icon="mdi-heart"></v-icon>
+                    </button>
+                    <button class="sideicons-btn" @click.native.prevent="addCart(item.id)">
+                      <v-icon icon="mdi-cart-plus"></v-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="product-info">
+                  <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
+                  <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
+                  <div class="d-flex align-items-center">
+                    <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
+                  </div>
+                  <div class="d-flex flex-wrap align-items-center py-2">
+                    <div class="new-price">
+                      Rp. {{ formatPrice(item.price) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </div>
+          <div class="row" v-else>
+            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in products"
+              :key="item.id">
               <div class="product-single-card">
                 <div class="product-top-area">
                   <div class="product-img">
@@ -77,26 +115,12 @@ export default {
           href: '/dashboard',
         }
       ],
-      searchQuery: '',
+      searchResults: [],
+
     };
   },
   computed: {
-    dividedProducts() {
-      const numRows = Math.ceil(this.products.length / 6);
-      const rows = Array.from({ length: numRows }, (_, index) => index);
 
-      return rows.map(row => {
-        return this.products.slice(row * 6, (row + 1) * 6);
-      });
-    },
-    filteredProducts() {
-      if (!this.searchQuery.trim()) return this.products;
-      const query = this.searchQuery.toLowerCase().trim();
-      return this.products.filter(product =>
-        product.name.toLowerCase().includes(query) ||
-        product.description.toLowerCase().includes(query)
-      );
-    }
   },
   mounted() {
     this.retrieveParfum();
@@ -112,6 +136,25 @@ export default {
         product.name.toLowerCase().includes(query) ||
         product.description.toLowerCase().includes(query)
       );
+    },
+
+    async searchProduct() {
+      try {
+        const query = this.searchQuery.trim();
+        const response = await axios.post(BASE_URL + '/search-products', { query }, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        });
+        this.searchResults = response.data;
+      } catch (error) {
+        console.error('Error searching products:', error);
+        // Handle the error appropriately
+      }
+    },
+
+    clearSearch() {
+      this.searchQuery = ''; // Clear the search input
     },
     async retrieveParfum() {
       try {
@@ -147,8 +190,13 @@ export default {
           });
         })
         .catch(error => {
-          // Handle error if needed
           console.error('Error adding item to cart:', error);
+          this.$notify({
+            type: 'error',
+            title: 'Tambah Produk Gagal',
+            text: 'Produk sudah ada pada keranjang',
+            color: 'red',
+          });
         });
     },
   },
@@ -325,9 +373,10 @@ a {
 
 
 .search-container {
-  width: 490px;
+  width: 400px;
   display: block;
   margin: 0 auto;
+  padding-right: 30px;
 }
 
 input#search-bar {
@@ -368,7 +417,7 @@ input#search-bar {
   width: 75px;
   height: 75px;
   top: -62px;
-  right: -380px;
+  right: -70px;
 }
 </style>
   

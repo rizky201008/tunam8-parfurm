@@ -2,52 +2,143 @@
 <template>
   <Navbar>
     <div class="dashboard-admin">
-      <div class="container-fluid px-4 py-2">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="border-0 px-2 mb-4">
-              here
+      <div class="container px-4 py-2">
+        <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
+        <div class="row " style="min-height: 264px ;">
+          <div class="col-md-4">
+            <div class="card mb-4 pt-4 border-0 px-2">
+              <div v-if="loadingProfile">
+                <div class="d-flex justify-content-center align-itemsx-center">
+                  <v-progress-circular indeterminate></v-progress-circular>
+                </div>
+              </div>
+              <div v-else>
+                <div class="col px-4">
+                  <form @submit.prevent="saveProfile">
+                    <div class="row">
+                    </div>
+                    <label for="judul">Nama</label>
+                    <input class="form-control" type="text" v-model="users.name" id="judul" />
+                    <br>
+                    <label for="desc">Email</label>
+                    <textarea class="form-control" v-model="users.email" id="desc"></textarea>
+                    <br>
+                    <button-custom class="btn btn-info mb-2" type="submit" @click="saveProfile">Save
+                      Parfum</button-custom>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
+          <div class="col-md-8 ">
+            <div class="card border-0">
+              <div class="row d-flex align-items-center justify-content-center my-2 mx-2" v-if="addresses.length < 2">
+                <div class="col-md-2">
+                  <v-btn color="red" rounded="xl" @click="openDialog">
+                    Add Address
+                  </v-btn>
+                </div>
+              </div>
+              <div class="row mx-2 ">
+                <div class="col-md-6 mt-2 " v-for="(address, index) in addresses" :key="index">
+                  <h3 style="font-weight: bold; font-size: 20px;">Address {{ index + 1 }} <v-icon size="large"
+                      @click="confirmDelete(index)" color="red">
+                      mdi-delete
+                    </v-icon></h3>
+                  <a>City: {{ address.city }}</a>
+                  <br>
+                  <a>Province: {{ address.province }}</a>
+                  <br>
+                  <a>Kode Pos: {{ address.postal_code }}</a>
+                  <br>
+                  <a>Alamat: {{ address.address_detail }}</a>
+                  <br>
+                  <a>No Telpon: {{ address.phone_number }}</a>
+                  <br>
+                  <a>Penerima: {{ address.receiver }}</a>
+                  <br>
+                  <v-chip class="my-2">{{ address.label }}</v-chip>
+                </div>
+              </div>
+            </div>
+          </div>
+          <v-dialog v-model="deleteDialog" max-width="500px">
+            <v-card title="Confirm Delete">
+              <v-card-text>
+                Are you sure you want to remove this address?
+              </v-card-text>
+              <v-card-actions>
+                <v-btn text @click="deleteDialog = false">Cancel</v-btn>
+                <v-btn color="red" @click="deleteItem()">Delete</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <v-dialog v-model="dialogForm" max-width="600">
+            <v-card>
+              <v-card-title>
+                Choose Province and City
+              </v-card-title>
+              <v-card-text>
+                <a>Select Province :</a>
+                <select v-model="selectedProvinceId" class="form-select" @change="handleProvinceChange">
+                  <option value="" disabled>Select Province</option>
+                  <option v-for="province in provinces" :key="province.province_id" :value="province.province_id">{{
+                    province.province }}</option>
+                </select>
+                <br>
+                <a>Select Cities :</a>
+                <div v-if="loadingCity">
+                  <v-progress-linear indeterminate></v-progress-linear>
+                </div>
+                <div v-else>
+                  <select v-model="selectedCityId" class="form-select" @change="updatePostalCode">
+                    <option value="" disabled>Select City</option>
+                    <option v-for="city in cities" :key="city.city_id" :value="city.city_id">{{ city.city_name }}</option>
+                  </select>
+                </div>
+                <br>
+                <label for="postalCode">Postal Code:</label>
+                <input type="text" class="form-control" id="postalCode" v-model="postalCode" :disabled="true">
+                <br>
+                <label for="addressDetail">Address Detail:</label>
+                <textarea class="form-control" id="addressDetail" v-model="addressDetail"></textarea>
+                <br>
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" class="form-control" id="phoneNumber" v-model="phoneNumber">
+                <br>
+                <label for="receiver">Receiver:</label>
+                <input type="text" class="form-control" id="receiver" v-model="receiver">
+                <br>
+                <label for="label">Label:</label>
+                <input type="text" class="form-control" id="label" v-model="label">
+              </v-card-text>
+              <v-card-actions>
+                <v-btn color="blue darken-1" text @click="dialogForm = false">Cancel</v-btn>
+                <v-btn color="blue darken-1" text @click="saveAddress">Save</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
         </div>
-        <div class="row">
+        <div class="row mt-2">
           <div class="col-md-12">
             <div class="card mb-4 pt-4 border-0 px-2">
-              <div class="col px-4">
-                <form @submit.prevent="saveParfum">
-                  <!-- <div class="mb-3 d-flex justify-content-center">
-                    <div class="row mb-6">
-                      <div class="col-12"></div>
-                      <div v-if="parfum.images" id="carouselExampleIndicators" class="carousel slide"
-                        data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                          <div v-for="(image, index) in parfum.images" :key="index"
-                            :class="{ 'carousel-item': true, 'active': index === 0 }">
-                            <img :src="image.link" class="d-block w-100" :alt="'Slide ' + (index + 1)"
-                              style="max-width: 450px; max-height: 350px; object-fit: co;">
-                          </div>
-                        </div>
-                        <div v-if="parfum.images && parfum.images.length > 1" class="carousel-indicators">
-                          <button v-for="(image, index) in parfum.images" :key="index" type="button"
-                            :data-bs-target="'#carouselExampleIndicators'" :data-bs-slide-to="index"
-                            :class="{ 'active': index === 0 }" class="thumbnail" :aria-label="'Slide ' + (index + 1)">
-                            <img :src="image.link" class="d-block w-100" :alt="'Slide ' + (index + 1)"
-                              style="max-width: 100px; max-height: 80px; object-fit: contain;">
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div> -->
-                  <div class="row">
+              <div class="row">
+                <div class="col-md-6 mx-2">
+                  <a style="font-size: 28px; font-weight: bold; color: red; margin-bottom: 100px;">Personalize
+                    Yourself</a>
+                  <div v-for="(tag, index) in tags" :key="index" class="form-check"
+                    style="font-size: 20px; margin-bottom: 10px;">
+                    <input class="form-check-input" type="checkbox" :value="tag.id" v-model="selectedTags"
+                      @change="handleCheckboxChange" style="width: 20px; height: 20px;">
+                    <label class="form-check-label" :for="'checkbox_' + tag.id" style="padding-left: 10px;">{{ tag.name
+                    }}</label>
                   </div>
-                  <label for="judul">Nama</label>
-                  <input class="form-control" type="text" v-model="users.name" id="judul" />
-                  <br>
-                  <label for="desc">Email</label>
-                  <textarea class="form-control" v-model="users.email" id="desc"></textarea>
-                  <br>
-                  <button-custom class="btn btn-info mb-2" type="submit" @click="saveParfum">Save Parfum</button-custom>
-                </form>
+                  <div class="col-md-6 my-4">
+                    <button-custom class="btn btn-info mb-2" type="submit" @click="savePersonal">Save Your
+                      Personalization</button-custom>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -60,29 +151,55 @@
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
-const BASE_URL = import.meta.env.VITE_BASE_URL_API
+const BASE_URL = import.meta.env.VITE_BASE_URL_API;
+import Breadcrumbs from '@/components/Vuetify/Breadcrumbs.vue';
 
 
 export default {
   name: 'EditBuku',
   components: {
-    Navbar
+    Navbar,
+    Breadcrumbs
   },
   data() {
     return {
-      dataLoaded: false,
       users: {
         id: '',
         name: '',
         email: '',
       },
-      selectedFile: '',
-      fotoFile: null,
+      tags: [],
+      selectedTags: [],
+      breadcrumbsItems: [
+        {
+          title: 'My Profile',
+          disabled: false,
+          href: '/profile',
+        },
+      ],
+      deleteDialog: false,
+      deleteIndex: null,
+      dialogForm: false,
+      provinces: [],
+      selectedProvince: null,
+      cities: [],
+      selectedProvinceId: null,
+      selectedCityId: null,
+      loadingCity: false,
+      loadingProfile: false,
+
+      addressDetail: '',
+      phoneNumber: '',
+      receiver: '',
+      label: '',
+      postalCode: '',
+      addresses: [],
     }
   },
   async mounted() {
     try {
       const slug = this.$route.params.slug;
+      this.loadingProfile = true;
       const response = await axios.get(BASE_URL + '/user/detail', {
         headers: {
           Authorization: "Bearer " + localStorage.getItem('access_token')
@@ -101,62 +218,296 @@ export default {
           color: 'red'
         });
       }
-    }
+    } finally {
+      this.loadingProfile = false;
+    };
+    this.retrieveAddress();
+    this.retrieveTags();
   },
+
   methods: {
     handleFileChange(event) {
       this.fotoFile = event.target.files[0];
     },
-    async saveParfum() {
+    async retrieveTags() {
       try {
-        if (this.fotoFile) {
-          const formData = new FormData();
-          formData.append('images', this.fotoFile);
-          formData.append('product_id', this.parfum.id);
-
-          await axios.post(BASE_URL + '/product-image', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-              Authorization: 'Bearer ' + localStorage.getItem('access_token')
-            }
-          });
-        }
-
-        const requestData = {
-          id: this.parfum.id,
-          name: this.parfum.name,
-          description: this.parfum.description,
-          price: this.parfum.price,
-          stock: this.parfum.stock,
-          category_id: this.parfum.category,
-        };
-        const response = await axios.put(BASE_URL + '/products', requestData, {
+        const response = await axios.get(BASE_URL + '/tags', {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token')
           }
         });
-        console.log(this.category_id);
-        this.$router.push('/admin/daftarproduk');
-        this.$notify({
-          type: 'success',
-          title: 'Success',
-          text: 'Produk telah ter-update!',
-          color: 'green',
-        });
+        this.tags = response.data.data;
+        await this.retrievePersonal();
       } catch (error) {
-        console.error(error);
-        if (error.response && error.response.data.message) {
-          const errorMessage = error.response.data.message;
-          this.$notify({
-            type: 'error',
-            title: 'Error',
-            text: errorMessage,
-            color: 'red'
-          });
+        console.error('Error fetching tags:', error);
+      }
+    },
+
+    async retrieveAddress() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await axios.get(BASE_URL + '/address', {
+          headers: {
+            Authorization: 'Bearer ' + token
+          }
+        });
+        this.addresses = response.data;
+      } catch (error) {
+        console.error('Error fetching addresses:', error);
+      }
+    },
+    async retrievePersonal() {
+      try {
+        const response = await axios.get(BASE_URL + '/user/personal', {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        });
+
+        if (response.data.tags && response.data.tags.length > 0) {
+          // Split the tags string into an array of tags
+          const tagNames = response.data.tags.split(',').map(tag => tag.trim());
+
+          // Map each tag name to its corresponding tag ID
+          const selectedTagIDs = tagNames.map(tagName =>
+            this.tags.find(tag => tag.name === tagName)?.id
+          ).filter(Boolean);
+
+          // Update the selectedTags with the retrieved tag IDs
+          this.selectedTags = selectedTagIDs;
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.log('User has not personalized yet');
+        } else {
+          console.error('Error fetching personalization:', error);
         }
       }
     },
+    async savePersonal() {
+      try {
+        const selectedTagNames = this.selectedTags.map(id =>
+          this.tags.find(tag => tag.id === id).name
+        ).join(','); // Join tag names with commas
+
+        let response;
+        try {
+          response = await axios.get(BASE_URL + '/user/personal', {
+            headers: {
+              Authorization: 'Bearer ' + localStorage.getItem('access_token')
+            }
+          });
+        } catch (error) {
+          await axios.post(
+            BASE_URL + '/user/personal',
+            { tags: selectedTagNames },
+            {
+              headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('access_token')
+              }
+            }
+          );
+
+          console.log('Personalization created');
+          this.$notify({
+            type: 'success',
+            title: 'Success',
+            text: 'Personalization created successfully',
+            color: 'green'
+          });
+
+          return;
+        }
+
+        if (response.data.tags) {
+          await axios.put(
+            BASE_URL + '/user/personal',
+            { tags: selectedTagNames },
+            {
+              headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('access_token')
+              }
+            }
+          );
+          console.log('Personalization updated');
+          this.$notify({
+            type: 'success',
+            title: 'Success',
+            text: 'Personalization updated successfully',
+            color: 'green'
+          });
+        }
+      } catch (error) {
+        console.error('Error saving personalization:', error);
+      }
+    },
+
+
+
+    // async savePersonal() {
+    //   try {
+    //     const selectedTagNames = this.selectedTags.map(id => this.tags.find(tag => tag.id === id).name);
+
+
+    //     const response = await axios.post(BASE_URL + '/user/personal', { tags: selectedTagNames }, {
+    //       headers: {
+    //         Authorization: 'Bearer ' + localStorage.getItem('access_token')
+    //       }
+    //     });
+
+    //     const personalizationId = response.data.id;
+    //     await axios.put(
+    //       BASE_URL + '/user/personal/' + personalizationId,
+    //       { tags: selectedTagNames },
+    //       {
+    //         headers: {
+    //           Authorization: 'Bearer ' + localStorage.getItem('access_token')
+    //         }
+    //       }
+    //     );
+    //     console.log('Personalization saved:', response.data);
+    //     this.$notify({
+    //       type: 'success',
+    //       title: 'Success',
+    //       text: 'Personalisasi berhasil diatur',
+    //       color: 'green',
+    //     });
+    //   } catch (error) {
+    //     console.error('Error saving personalization:', error);
+    //   }
+    // }
+
+    // handleCheckboxChange() {
+    //   this.savePersonal();
+    // },
+    async openDialog() {
+      await this.fetchProvinces();
+      this.dialogForm = true;
+    },
+
+    async handleProvinceChange() {
+      if (this.selectedProvinceId) {
+        await this.fetchCitiesByProvinceId(this.selectedProvinceId);
+      } else {
+        this.cities = [];
+      }
+    },
+
+    async fetchProvinces() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await axios.get(BASE_URL + '/address/provinces', {
+          headers: {
+            'Authorization': 'Bearer ' + token,
+          },
+        });
+        this.provinces = response.data;
+      } catch (error) {
+        console.error('Error fetching provinces:', error);
+      }
+    },
+    async fetchCitiesByProvinceId(provinceId) {
+      try {
+        const token = localStorage.getItem('access_token');
+        this.loadingCity = true;
+        const response = await axios.get(BASE_URL + '/address/cities/' + provinceId, {
+          headers: {
+            'Authorization': 'Bearer ' + token,
+          },
+        });
+        this.cities = response.data;
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      } finally {
+        this.loadingCity = false;
+      }
+    },
+    confirmDelete(index) {
+      this.deleteIndex = index;
+      this.deleteDialog = true;
+    },
+    async saveAddress() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const province = this.provinces.find(province => province.province_id === this.selectedProvinceId);
+        const city = this.cities.find(city => city.city_id === this.selectedCityId);
+
+        const addressData = {
+          province: province.province,
+          province_id: province.province_id,
+          city: city.city_name,
+          city_id: city.city_id,
+          postal_code: city.postal_code,
+          address_detail: this.addressDetail,
+          phone_number: this.phoneNumber,
+          receiver: this.receiver,
+          label: this.label
+        };
+
+        const response = await axios.post(BASE_URL + '/address/create', addressData, {
+          headers: {
+            'Authorization': 'Bearer ' + token,
+          },
+        });
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Address created successfully',
+          color: 'green'
+        });
+        this.retrieveAddress();
+        console.log('Address saved:', response.data);
+
+        // Optionally, you can close the dialog after successfully saving the address
+        this.dialogForm = false;
+
+      } catch (error) {
+        console.error('Error saving address:', error);
+      }
+    },
+    async deleteItem() {
+      try {
+        const item_id = this.addresses[this.deleteIndex].id;
+        await axios.delete(BASE_URL + '/address/delete', {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          },
+          data: {
+            id: item_id
+          }
+        });
+
+        // this.addresses.splice(this.deleteIndex, 1);
+        this.deleteDialog = false;
+        this.retrieveAddress();
+      } catch (error) {
+        console.error('Error deleting item:', error);
+      }
+    },
+    updatePostalCode() {
+      const selectedCity = this.cities.find(city => city.city_id === this.selectedCityId);
+      if (selectedCity) {
+        this.postalCode = selectedCity.postal_code;
+      } else {
+        this.postalCode = '';
+      }
+      console.log(this.postalCode)
+    }
+
+  },
+  watch: {
+    dialogForm(val) {
+      if (!val) {
+        this.selectedProvinceId = null;
+        this.selectedCityId = null;
+        this.addressDetail = '',
+          this.receiver = '',
+          this.phoneNumber = '',
+          this.label = ''
+      }
+    },
   }
+
 
 };
 </script>

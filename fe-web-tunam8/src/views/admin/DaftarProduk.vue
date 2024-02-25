@@ -9,8 +9,6 @@
             <div class="card border-0 px-2 " style="text-align: end;">
               <div class="col text-right">
                 <div class="button-set my-4">
-                  <!-- <button-custom @click="openCategory" class="mx-4">Add Category</button-custom> -->
-                  <!-- <button-custom data-bs-toggle="modal" data-bs-target="#addParfum">Tambah Parfum</button-custom> -->
                   <v-btn color="red" rounded="xl" @click="openTags" class="mb-2 mt-2">
                     Add Tags
                   </v-btn>
