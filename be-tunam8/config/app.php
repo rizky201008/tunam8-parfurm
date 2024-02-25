@@ -189,6 +189,6 @@ return [
     'rajaongkir_apikey' => env('RAJAONGKIR_API', ""),
     'midtrans_server_key' => env('MIDTRANS_SERVER_KEY', ''),
     'midtrans_client_key' => env('MIDTRANS_CLIENT_KEY', ''),
-    'callback_url' => env('CALLBACK_URL', null),
+    'midtrans_callback_url' => env('APP_URL', "https://webhook.site/1b8bea3a-9dd8-4113-b20b-a39853c61ba2")."/api/callback",
 
 ];
