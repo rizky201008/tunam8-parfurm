@@ -40,7 +40,8 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12 bg-white mt-2" v-for="(transaction, index) in transactions" :key="index" style="cursor: pointer;">
+        <div class="col-md-12 bg-white mt-2" v-for="(transaction, index) in transactions" :key="index"
+          style="cursor: pointer;">
           <div class="row px-3 ls-transaction" @click="goToTransactionDetail(transaction.id)">
             <div class="col-4">
               <a style="font-size: 18px; font-weight: bold;">#{{ transaction.id }}</a>
@@ -79,7 +80,7 @@ export default {
           disabled: false,
           href: '/pesanan',
         },
-        
+
       ],
       transactions: [],
     };
@@ -163,7 +164,7 @@ export default {
   padding-bottom: 20px;
 }
 
-.process {
+.proccess {
   padding-right: 5px;
   padding-left: 5px;
   border-radius: 5px;
@@ -190,6 +191,16 @@ export default {
   color: white;
   font-weight: 600;
   text-decoration: none;
+  background-color: orange;
+}
+
+.canceled {
+  padding-right: 5px;
+  padding-left: 5px;
+  border-radius: 5px;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
   background-color: red;
 }
 
@@ -202,6 +213,7 @@ export default {
   text-decoration: none;
   background-color: lightgreen;
 }
+
 
 .tablist {
   padding-top: 10px;
@@ -269,6 +281,5 @@ export default {
 .checkbox-style {
   width: 20px;
   height: 20px;
-}
-</style>
+}</style>
   
