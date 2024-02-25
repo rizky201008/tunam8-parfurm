@@ -6,6 +6,8 @@ import UserDashboard from '../views/user/UserDashboard.vue'
 import UserProfile from '../views/user/EditProfil.vue'
 import Keranjang from '../views/user/Keranjang.vue'
 import Checkout from '../views/user/Checkout.vue'
+import Pesanan from '../views/user/Pesanan.vue'
+import DetailPesanan from '../views/user/DetailPesanan.vue'
 // import UserProfile from '../views/user/Profile.vue'
 import ViewProduk from '../views/user/ViewProduk.vue'
 
@@ -16,6 +18,7 @@ import EditProduk from '../views/admin/EditProduk.vue'
 import DaftarKategori from '../views/admin/DaftarKategori.vue'
 import DaftarTags from '../views/admin/DaftarTags.vue'
 import KelolaPelanggan from '../views/admin/KelolaPelanggan.vue'
+import ManagePesanan from '../views/admin/ManagePesanan.vue'
 
 import { getUserRole } from '@/utils/auth'
 const router = createRouter({
@@ -60,7 +63,16 @@ const router = createRouter({
       name: 'User Checkout',
       component: Checkout,
     },
-
+    {
+      path: '/pesanan',
+      name: 'User Pesanan',
+      component: Pesanan,
+    },
+    {
+      path: '/pesanan/:id',
+      name: 'User Detail Pesanan',
+      component: DetailPesanan,
+    },
 
     // Admin
     {
@@ -102,6 +114,12 @@ const router = createRouter({
       path: '/admin/kelolapelanggan',
       name: 'Kelola Pelanggan',
       component: KelolaPelanggan,
+      meta: { requiresAdmin: true } 
+    },
+    {
+      path: '/admin/pesanan',
+      name: 'Kelola Pesanan',
+      component: ManagePesanan,
       meta: { requiresAdmin: true } 
     },
   ]

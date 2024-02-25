@@ -122,7 +122,6 @@
         </div>
         <div class="row mt-2">
           <div class="col-md-12">
-
             <div class="card mb-4 pt-4 border-0 px-2">
               <div class="row">
                 <div class="col-md-6 mx-2">
@@ -145,7 +144,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </Navbar>
 </template>
@@ -267,9 +265,15 @@ export default {
         });
 
         if (response.data.tags && response.data.tags.length > 0) {
-          const selectedTagIDs = response.data.tags.map(tagName =>
+          // Split the tags string into an array of tags
+          const tagNames = response.data.tags.split(',').map(tag => tag.trim());
+
+          // Map each tag name to its corresponding tag ID
+          const selectedTagIDs = tagNames.map(tagName =>
             this.tags.find(tag => tag.name === tagName)?.id
           ).filter(Boolean);
+
+          // Update the selectedTags with the retrieved tag IDs
           this.selectedTags = selectedTagIDs;
         }
       } catch (error) {
@@ -280,12 +284,11 @@ export default {
         }
       }
     },
-
     async savePersonal() {
       try {
         const selectedTagNames = this.selectedTags.map(id =>
           this.tags.find(tag => tag.id === id).name
-        );
+        ).join(','); // Join tag names with commas
 
         let response;
         try {
