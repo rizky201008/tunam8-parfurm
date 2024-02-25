@@ -13,19 +13,22 @@ class ProductController extends Controller
     {
         $products = Product::with(['category', 'images'])->paginate(10);
 
-        // Get base URL
-        $baseUrl = config('app.url');
-
-        // Modify each product's images link with base URL
-        $products->map(function ($product) use ($baseUrl) {
-            $product->images->map(function ($image) use ($baseUrl) {
-                $image->link = $baseUrl . '/products/' . $image->link;
-                return $image;
-            });
-            return $product;
-        });
-
         return response()->json($products);
+    }
+
+    public function getPersonalizedProducts(Request $request)
+    {
+        $tags   = $request->user()->personal;
+        $explodedTags = explode(',', $tags->tags);
+        $filteredProduct  = [];
+        foreach ($explodedTags as $tag) {
+            $products = Product::with(['category', 'images'])->where('tags', 'LIKE', "%$tag%")->inRandomOrder()->limit(10)->get();
+            foreach ($products as $product) {
+                array_push($filteredProduct, $product);
+            }
+        }
+
+        return response()->json($filteredProduct);
     }
 
     public function createProduct(Request $request)
@@ -38,6 +41,7 @@ class ProductController extends Controller
             'description' => 'required',
             'images' => 'required|array|min:1|max:4',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'tags' => 'required'
         ]);
 
         $product = new Product;
@@ -46,6 +50,7 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->stock = $request->stock;
         $product->description = $request->description;
+        $product->tags = $request->tags;
         $product->slug = Str::slug(round(microtime(true) * 1000) . $request->name, '-');
         $product->save();
 
@@ -62,15 +67,8 @@ class ProductController extends Controller
             );
         }
 
-        // Get base URL
-        $baseUrl = config('app.url') . '/products';
-
         // Modify product images link with base URL
         if ($addImages) {
-            $product->images = $product->with('images')->find($product->id)->images->map(function ($image) use ($baseUrl) {
-                $image->link = $baseUrl . '/' . $image->link;
-                return $image;
-            });
 
             return response()->json(
                 [
@@ -93,12 +91,7 @@ class ProductController extends Controller
 
     public function updateProduct(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'description' => 'required',
+        $request->validate([
             'id' => 'required|exists:products,id',
         ]);
 
@@ -107,20 +100,15 @@ class ProductController extends Controller
         $product = $productClass->find($request->id);
 
         if ($product->name !== $request->name) {
-            $validated['slug'] = Str::slug(round(microtime(true) * 1000) . $validated['name'], '-');
+            $validated['slug'] = Str::slug(round(microtime(true) * 1000) . $request->name, '-');
         }
 
         $product->update(
-            $validated
+            $request->all()
         );
 
         $productWithImages = $productClass->with(['category', 'images'])->find($request->id);
 
-        $baseURL = config('app.url') . '/products';
-        $productWithImages->images->map(function ($image) use ($baseURL) {
-            $image->link = $baseURL . '/' . $image->link;
-            return $image;
-        });
         return response()->json(
             [
                 'message' => 'Product updated',
@@ -150,13 +138,14 @@ class ProductController extends Controller
             ], 404);
         }
 
-        // Adding base URL to image links
-        $baseURL = config('app.url') . '/products'; // Replace 'https://example.com' with your actual base URL
-        $product->images->map(function ($image) use ($baseURL) {
-            $image->link = $baseURL . '/' . $image->link;
-            return $image;
-        });
-
         return response()->json($product);
+    }
+
+    public function searchProductByName(Request $request)
+    {
+        $name = $request['query'];
+        $products = Product::with(['category', 'images'])->where('name', 'LIKE', "%$name%")->get();
+
+        return response()->json($products);
     }
 }

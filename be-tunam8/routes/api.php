@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\TagsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
@@ -33,22 +34,35 @@ Route::group(['prefix' => 'account', 'middleware' => 'cors'], function () {
 Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('products', [ProductController::class, 'allProducts']);
     Route::get('product/{slug}', [ProductController::class, 'getProduct']);
+    Route::post('search-products', [ProductController::class, 'searchProductByName']);
+    Route::get('personalized-products', [ProductController::class, 'getPersonalizedProducts']);
     Route::get('categories', [CategoryController::class, 'allCategories']);
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
     Route::get('product-image', [ProductImageController::class, 'getAllProductImages']);
     Route::post('transactions', [TransactionController::class, 'createTransaction']);
+    Route::get('transactions', [TransactionController::class, 'getTransactions']);
+    Route::get('transactions/{transactionId}', [TransactionController::class, 'getTransaction']);
     Route::get('carts', [CartController::class, 'getCarts']);
     Route::delete('carts', [CartController::class, 'deleteCart']);
-    Route::put('carts', [CartController::class, 'updateCartQuantity']);
+    Route::put('carts', [CartController::class, 'updateCartItem']);
     Route::post('carts', [CartController::class, 'addCart']);
     Route::get('tags/{slug}', [TagsController::class, 'showTagProducts']);
     Route::get('tags', [TagsController::class, 'allTags']);
+    Route::get('tags/products/{tag}', [TagsController::class, 'getProductsByTag']);
+    Route::post('shipping', [TransactionController::class, 'getShippingCost']);
     Route::group(['prefix' => 'user'], function () {
         Route::get('detail', [AuthController::class, 'user']);
         Route::post('personal', [UserController::class, 'personalizeUser']);
         Route::get('personal', [UserController::class, 'getUserPersonal']);
-        Route::get('personals', [UserController::class, 'getUserPersonals']);
         Route::put('personal', [UserController::class, 'updateUserPersonal']);
+    });
+    Route::group(['prefix' => 'address'], function () {
+        Route::get('/', [AddressController::class, 'getAddresses']);
+        Route::get('provinces', [AddressController::class, 'getProvinces']);
+        Route::get('cities/{provinceId}', [AddressController::class, 'getCities']);
+        Route::post('create', [AddressController::class, 'createAddress']);
+        Route::put('update', [AddressController::class, 'updateAddress']);
+        Route::delete('delete', [AddressController::class, 'deleteAddress']);
     });
     Route::middleware(['ability:admin'])->group(function () {
         Route::post('tags', [TagsController::class, 'createTag']);
@@ -63,5 +77,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::put('categories', [CategoryController::class, 'updateCategory']);
         Route::delete('categories', [CategoryController::class, 'deleteCategory']);
         Route::post('product-image', [ProductImageController::class, 'updateProductImage']);
+        Route::put('transactions', [TransactionController::class, 'updateTransaction']);
+        Route::get('all-transactions', [TransactionController::class, 'allTransactions']);
     });
 });

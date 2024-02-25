@@ -17,8 +17,8 @@ class Product extends Model
         'price',
         'stock',
         'description',
-        'images',
         'slug',
+        'tags'
     ];
 
     protected $hidden = [
@@ -34,5 +34,15 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function getTagAttribute($value)
+    {
+        return json_decode($value);
+    }
+
+    public function setTagAttribute($value)
+    {
+        $this->attributes['tags'] = json_encode($value);
     }
 }

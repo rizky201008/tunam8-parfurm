@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CartItem;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
@@ -20,7 +21,17 @@ class CartController extends Controller
 
     public function getCarts(Request $request)
     {
-        $cartItem = $this->cartItem->where('user_id', $request->user()->id)->get();
+        $isActive = $request->query('active') ?? 0;
+        if ($isActive) {
+            $cartItem = $this->cartItem->with('product')->where('user_id', $request->user()->id)->where('selected', 1)->get();
+            foreach ($cartItem as $key => $value) {
+                $cartItem[$key]->product->images = $this->getProductImage($value->product_id);
+            }
+            return response()->json($cartItem);
+        }
+
+        $this->cartItem->where('user_id', $request->user()->id)->update(['selected' => 0]);
+        $cartItem = $request->user()->cartItems;
         foreach ($cartItem as $key => $value) {
             $cartItem[$key]->product->images = $this->getProductImage($value->product_id);
         }
@@ -68,7 +79,7 @@ class CartController extends Controller
             'product_id' => $validated['product_id'],
             'quantity' => 1,
         ]);
-        
+
         return response()->json(
             [
                 'message' => 'Success: Cart item added',
@@ -77,12 +88,12 @@ class CartController extends Controller
         );
     }
 
-    public function updateCartQuantity(Request $request)
+    public function updateCartItem(Request $request)
     {
         $request->validate([
             'id' => 'required|exists:cart_items,id',
         ]);
-        $cartItem = $this->cartItem->where('user_id', $request->user()->id)->where('id', $request->id)->first();
+        $cartItem = $request->user()->cartItems->where('id', $request->id)->first();
         $stok = $cartItem->product->stock + 1;
         $validated = Validator::make($request->all(), [
             'quantity' => "required|numeric|lt:" . $stok,
@@ -90,8 +101,7 @@ class CartController extends Controller
         if ($validated->fails()) {
             return response()->json(['message' => $validated->errors()->first()], 422);
         }
-        $cartItem->quantity = $request->quantity;
-        $cartItem->save();
+        $cartItem->update($request->all());
 
         return response()->json(
             [

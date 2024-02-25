@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Category;
+use App\Models\Transaction;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,15 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('transaction_payments', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignIdFor(Category::class);
-            $table->double('price');
-            $table->integer('stock');
-            $table->text('description');
-            $table->text('slug');
-            $table->json('tags')->nullable();
+            $table->text('link');
+            $table->foreignIdFor(Transaction::class);
+            $table->string('status');
             $table->timestamps();
         });
     }
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('transaction_payments');
     }
 };

@@ -16,61 +16,62 @@ class UserController extends Controller
 
     public function personalizeUser(Request $request)
     {
-        $validated = $request->validate([
-            'tags' => 'required|array',
+        $merged = array_merge(['user_id' => $request->user()->id, 'tags' => $request->tags]);
+        $validator = Validator::make(array_merge($merged), [
+            'tags' => 'required',
+            'user_id' => 'required|integer|unique:user_personals,user_id',
         ]);
 
-        $validated['tags'] = json_encode($validated['tags']);
-
-        $personal = UserPersonal::where('user_id', $request->user()->id)->first();
-        if ($personal === null) {
-            $createdPersonal = UserPersonal::create([
-                'user_id' => $request->user()->id,
-                'tags' => $validated['tags'],
-            ]);
-
-            return response()->json(['personal' => $createdPersonal, 'message' => 'User personalization created'], 201);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->first()], 422);
         }
 
-        return response()->json(['personal' => $personal, 'message' => 'User personalization already exists'], 200);
+        UserPersonal::create([
+            'user_id' => $request->user()->id,
+            'tags' => $request->tags,
+        ]);
+
+        $userPersonal = $request->user()->personal;
+
+        $userPersonal->tags = $userPersonal->tags;
+
+        return response()->json(['tags' => $userPersonal->tags, 'message' => 'User personalization created'], 201);
     }
 
-    function getUserPersonals() {
-        $personals = UserPersonal::with('user')->get();
-        return response()->json(['personals' => $personals], 200);
-    }
 
     public function getUserPersonal(Request $request)
     {
-        $personal = UserPersonal::where('user_id', $request->user()->id)->first();
-        if ($personal === null) {
-            return response()->json(['message' => 'User personalization not found'], 404);
+        $validator = Validator::make(['user_id' => $request->user()->id], [
+            'user_id' => 'required|integer|exists:user_personals,user_id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->first()], 422);
         }
-        $personal->tags = json_decode($personal->tags);
-        return response()->json(['personal' => $personal], 200);
+
+        $personal = $request->user()->personal;
+        return response()->json($personal, 200);
     }
 
     public function updateUserPersonal(Request $request)
     {
-        $mergedReqs = array_merge($request->all(), $request->user()->toArray());
+        $mergedReqs = array_merge(['tags' => $request->tags,'user_id' =>  $request->user()->id]);
 
         $validator = Validator::make($mergedReqs, [
-            'tags' => 'required|array',
-            'id' => 'required|integer|exists:user_personals,user_id',
+            'tags' => 'required',
+            'user_id' => 'required|integer|exists:user_personals,user_id',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()->first()], 422);
         }
 
-        $validated = $validator->validated();
-        $user = User::with('personal')->find($validated['id']);
-        $user->personal->tags = json_encode($validated['tags']);
-        $user->personal->save();
+        $userPersonal = $request->user()->personal;
+        $userPersonal->update([
+            'tags' => $request->tags,
+        ]);
 
-        $user->personal->tags = json_decode($user->personal->tags);
-
-        return response()->json(['personal' => $user->personal, 'message' => 'User personalization updated'], 200);
+        return response()->json(['tags' => $userPersonal->tags, 'message' => 'User personalization updated'], 200);
     }
 
     public function deleteUser(Request $request)
