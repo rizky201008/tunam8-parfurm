@@ -7,7 +7,7 @@
         <section class="welcome-section">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-md-6 d-flex justify-content-center align-items-center">
+              <!-- <div class="col-md-6 d-flex justify-content-center align-items-center">
                 <div class="text-left align-middle">
                   <h1 class="cursive mb-6" style="font-weight: 600; font-size: 2.5rem;">
                     SELAMAT DATANG
@@ -19,20 +19,29 @@
                     temukan parfum yang cocok dengan selera anda!</p>
                   <button class="btn btn-primary" @click="scrollToNextSection">Jelajahi Kami</button>
                 </div>
-              </div>
+              </div> -->
+
               <!-- Right column for the image -->
               <div class="col-md-6 d-flex align-items-center justify-content-center">
                 <div class="mt-5">
-                  <div id="gallerywrapper">
-                    <div id="gallery">
+                  <div class="gallerywrapper">
+                    <div class="gallery">
                       <div v-for="(image, index) in images" :key="index" :id="'pic' + (index + 1)"
                         v-show="index === currentIndex">
-                        <img :src="image.src" :alt="'Image ' + (index + 1)" :height="image.height" :width="image.width">
-                        <!-- <a style="cursor: pointer;" class="previous" @click="previousImage">&lt;</a>
-                        <a style="cursor: pointer;" class="next" @click="nextImage">&gt;</a> -->
+                        <img class="object-fit-scale" :src="image.src" :alt="'Image ' + (index + 1)"
+                          :height="image.height" :width="image.width">
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+              <div class="col-md-6 dekstop-view mobile-view">
+                <div class="mx-auto">
+                  <h1 style=" font-weight: bold;">WE ARE TUNAM8</h1>
+                  <h2 style=" font-weight: bold;">Discover Our Product</h2>
+                  <h2 style=" font-weight: bold;">Browse Your Favourite Perfume On Our Site!</h2>
+                  <button @click="scrollToNextSection" class="button-set default mt-2" style="font-weight: bold;">JELAJAHI
+                    KAMI</button>
                 </div>
               </div>
             </div>
@@ -174,14 +183,13 @@
                   <hr>
                 </div>
                 <div class="row">
-                  <div class="col-sm-4">
+                  <div class="col-md-4">
                     <iframe
                       src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d263.5697728083286!2d113.91026973777512!3d-2.2215533977149895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMsKwMTMnMTcuOCJTIDExM8KwNTQnMzcuNyJF!5e0!3m2!1sid!2sid!4v1707033163216!5m2!1sid!2sid"
                       width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy"
                       referrerpolicy="no-referrer-when-downgrade"></iframe>
                   </div>
-                  <div class="col-sm-8">
-
+                  <div class="col-md-8">
                     <h3>Tunam8 Parfum </h3>
                     <p>Jl. Sisingamangaraja I, Menteng, Kec. Jekan Raya, Kota Palangka Raya, Kalimantan Tengah 73111</p>
 
@@ -228,7 +236,7 @@ export default {
     return {
       currentIndex: 1,
       images: [
-        { src:image1, height: 350, width: 500 },
+        { src: image1, height: 350, width: 500 },
         { src: image2, height: 350, width: 500 },
         { src: image3, height: 350, width: 500 }
         // Add more images as needed
@@ -276,7 +284,7 @@ export default {
 @import url(https://fonts.googleapis.com/css?family=Mooli);
 
 
-#gallerywrapper {
+.gallerywrapper {
   width: 640px;
   height: 450px;
   margin: 0 auto;
@@ -284,7 +292,7 @@ export default {
   font-family: verdana, arial, sans-serif;
 }
 
-#gallerywrapper #gallery {
+.gallerywrapper .gallery {
   position: absolute;
   left: 0;
   top: 0;
@@ -294,13 +302,14 @@ export default {
   text-align: center;
 }
 
-#gallerywrapper #gallery div {
+.gallerywrapper .gallery div {
   width: 640px;
   height: 900px;
   padding-top: 10px;
   position: relative;
 }
-#gallerywrapper #gallery div img {
+
+.gallerywrapper .gallery div img {
   max-width: 100%;
   max-height: 100%;
   display: block;
@@ -308,27 +317,27 @@ export default {
   border: 0;
 }
 
-#gallerywrapper #gallery div h3 {
+.gallerywrapper .gallery div h3 {
   padding: 10px 0 0 0;
   margin: 0;
   font-size: 18px;
 }
 
-#gallerywrapper #gallery div p {
+.gallerywrapper #gallery div p {
   padding: 5px 0;
   margin: 0;
   font-size: 12px;
   line-height: 18px;
 }
 
-#gallery .previous {
+.gallery .previous {
   display: inline;
   float: left;
   margin-left: 80px;
   text-decoration: none;
 }
 
-#gallery .next {
+.gallery .next {
   display: inline;
   float: right;
   margin-right: 80px;
@@ -367,7 +376,29 @@ export default {
   /* Set the width to 100vw */
 }
 
-.welcome-section,
+.welcome-section {
+  padding-top: 150px;
+  height: 100vh;
+  scroll-snap-align: start;
+  background-size: 100%;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  /* align-items: center; */
+  /* background: linear-gradient(135deg, #1a94b8, #1aa4b8); */
+  background-image: url('../assets/LandingPage/main-bg.png');
+}
+
+/* .welcome-section {
+  height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url('../assets/LandingPage/main-bg.png');
+} */
+
 .next-section {
   height: 100vh;
   scroll-snap-align: start;
@@ -375,21 +406,21 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: white;
 }
 
 .third-section {
   padding: 20px;
   height: 100vh;
+  background-color: white;
+  scroll-snap-align: none;
 }
 
 .third-section .col-md-6 {
   margin-bottom: 20px;
+  background-color: white;
 }
 
-
-.third-section {
-  scroll-snap-align: none;
-}
 
 .image-frame {
   width: 48%;
@@ -403,5 +434,60 @@ export default {
   height: auto;
   object-fit: cover;
 }
-</style>
+
+
+.button-set {
+  display: inline-block;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.default {
+  border: 2px solid black;
+  color: #3498db;
+  background-color: #fff;
+}
+
+.default-set:hover {
+  background-color: #3498db;
+  color: #fff;
+}
+
+@media only screen and (min-width: 950px) {
+
+  .dekstop-view {
+    color: white;
+
+    .default {
+      border: 2px solid white;
+      color: #3498db;
+      background-color: #fff;
+    }
+
+  }
+}
+
+
+@media only screen and (max-width: 950px) {
+  .third-section {
+    margin-bottom: 800px;
+    height: 100vh;
+    background-color: white;
+  }
+
+  .home-photo {
+    width: 400px;
+
+  }
+
+  .mobile-view {
+    margin-top: 15px;
+    padding-left: 20px;
+    color: black;
+  }
+}</style>
   

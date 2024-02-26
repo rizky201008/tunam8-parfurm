@@ -281,6 +281,7 @@ export default {
     min-height: 100vh;
     width: 100%;
     /* background-image: url('../assets/LandingPage/Background.png'); */
+    background-color: white;
     background-position: center;
     background-size: cover;
 }
