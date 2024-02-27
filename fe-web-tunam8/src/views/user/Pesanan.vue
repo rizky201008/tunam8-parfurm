@@ -139,6 +139,8 @@ export default {
         return 'shipping';
       } else if (status === 'received') {
         return 'received';
+      } else if (status === 'canceled') {
+        return 'canceled';
       } else {
         // Add more conditions for other status if needed
         return '';

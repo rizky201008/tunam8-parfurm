@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light white shadow-sm bg-red fixed-top">
+  <nav class="navbar navbar-expand-lg navbar-light white shadow bg-red fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="/" >Tunam8</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
