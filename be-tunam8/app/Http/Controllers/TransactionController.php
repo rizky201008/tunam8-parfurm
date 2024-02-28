@@ -47,8 +47,8 @@ class TransactionController extends Controller
     {
         $status = $request->query('status');
 
-        if ($status !==null) {
-            return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->where('status', $status)->get());
+        if ($status !== null) {
+            return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->where('status', $status)->where('user_id', $request->user()->id)->get());
         }
         return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->where('user_id', $request->user()->id)->get());
     }
