@@ -34,13 +34,22 @@ class TransactionController extends Controller
         $this->transactionLogic = new TransactionLogic($this->transaction, $this->transactionItems, $this->product, $this->address, $this->cartItem, $this->transactionPayment);
     }
 
-    public function allTransactions()
+    public function allTransactions(Request $request)
     {
+        $status = $request->query('status');
+        if ($status !== null) {
+            return response()->json($this->transaction->with(['transactionItems', 'transactionPayment', 'user'])->where('status', $status)->get());
+        }
         return response()->json($this->transaction->with(['transactionItems', 'transactionPayment', 'user'])->get());
     }
 
     public function getTransactions(Request $request)
     {
+        $status = $request->query('status');
+
+        if ($status !==null) {
+            return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->where('status', $status)->get());
+        }
         return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->where('user_id', $request->user()->id)->get());
     }
 
