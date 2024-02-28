@@ -72,12 +72,22 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12 bg-white p-4 mt-2 mb-4">
+        <div class="col-md-12 bg-white p-4 mt-2 mb-4" v-if="transaction.status === 'unpaid'">
           <div class="row px-3 border-bottom">
             <h4>Bayar</h4>
           </div>
           <div class="row px-3 pt-2">
-
+            <div class="col-md-4">
+              Total Belum Bayar:
+            </div>
+            <div class="col-md-6">
+              <a style="font-size: 20px; font-weight: bold;">: Rp. {{ formatPrice(transaction.total) }}</a>
+            </div>
+            <div class="col-md-2">
+              <v-btn color="red" rounded="xl" :href="transaction.transaction_payment.link" class="mx-4 mb-2 mt-2">
+                Bayar
+              </v-btn>
+            </div>
           </div>
         </div>
       </div>
@@ -175,7 +185,6 @@ export default {
       } else if (status === 'canceled') {
         return 'canceled';
       } else {
-        // Add more conditions for other status if needed
         return '';
       }
     }

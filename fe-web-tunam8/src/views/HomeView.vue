@@ -1,5 +1,4 @@
 <template>
-  <main>
     <Navbar /> <!-- Include the Navbar component -->
     <div class="gradient-container">
       <!-- Use a wrapper div for scroll snapping -->
@@ -223,7 +222,6 @@
         </section>
       </div>
     </div>
-  </main>
 </template>
 <script>
 import Navbar from '@/components/HomeNavbar.vue';
@@ -310,9 +308,7 @@ export default {
 }
 
 .gallerywrapper .gallery div img {
-  max-width: 100%;
-  max-height: 100%;
-  display: block;
+
   margin: 0 auto;
   border: 0;
 }

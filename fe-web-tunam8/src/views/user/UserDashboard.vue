@@ -12,7 +12,48 @@
             </div>
           </form>
         </div>
+        
         <div class="div pb-8">
+          <div class="row" style="border-bottom: 2px solid black;" v-if="!searchResults.length > 0">
+            <div class="row text-center">
+              RECOMMENDATIONS
+            </div>
+            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in products.slice(0, 6)"
+              :key="item.id">
+              <div class="product-single-card">
+                <div class="product-top-area">
+                  <div class="product-img">
+                    <div class="first-view">
+                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                    </div>
+                    <div class="hover-view">
+                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                    </div>
+                  </div>
+                  <div class="sideicons">
+                    <button class="sideicons-btn">
+                      <v-icon icon="mdi-heart"></v-icon>
+                    </button>
+                    <button class="sideicons-btn" @click.native.prevent="addCart(item.id)">
+                      <v-icon icon="mdi-cart-plus"></v-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="product-info">
+                  <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
+                  <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
+                  <div class="d-flex align-items-center">
+                    <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
+                  </div>
+                  <div class="d-flex flex-wrap align-items-center py-2">
+                    <div class="new-price">
+                      Rp. {{ formatPrice(item.price) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </div>
           <div class="row" v-if="searchResults.length > 0">
             <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in searchResults"
               :key="item.id">
@@ -50,7 +91,7 @@
               </div>
             </router-link>
           </div>
-          <div class="row" v-else>
+          <div class="row mt-2" v-else>
             <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in products"
               :key="item.id">
               <div class="product-single-card">
