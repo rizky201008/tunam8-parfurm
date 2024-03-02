@@ -37,7 +37,7 @@
             <div class="col-md-6 d-flex flex-column justify-content-between">
               <a style="font-size: 32px; font-weight: bold;">{{ parfum.name }}</a>
               <br>
-              <div class="ratings">
+              <!-- <div class="ratings">
                 <div class="stars d-flex">
                   <div class="theme-text mr-2">Product Ratings: </div>
                   <div>&#9733;</div>
@@ -47,7 +47,7 @@
                   <div>&#9733;</div>
                   <div class="ml-2">(4.5) 50 Reviews</div>
                 </div>
-              </div>
+              </div> -->
               <div class="price my-2" style="font-weight: bold; font-size: 32px;">Rp. {{ formatPrice(parfum.price) }}
               </div>
               <div class="theme-text subtitle">Deskripsi:</div>
@@ -56,6 +56,8 @@
               </div>
               <br>
               <div class="mt-auto pb-2">
+                <a>Tags:</a>
+                            <p>{{ parfum.tags }}</p>
                 <a>Category &nbsp;: </a>
                 <br>
                 <v-chip class="mt-3">{{ parfum.category.name }}</v-chip>

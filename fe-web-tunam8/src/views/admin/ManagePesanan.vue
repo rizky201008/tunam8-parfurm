@@ -6,22 +6,28 @@
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="col-md-12 bg-white">
           <div class="row px-3">
-            <div class="col tablist tab-active">
+            <div :class="{ 'col': true, 'tablist': true, 'tab-active': activeTab === 'Semua' }"
+              @click="toggleTab('Semua')">
               Semua
             </div>
-            <div class="col tablist">
+            <div :class="{ 'col': true, 'tablist': true, 'tab-active': activeTab === 'Belum Bayar' }"
+              @click="toggleTab('Belum Bayar')">
               Belum Bayar
             </div>
-            <div class="col tablist">
+            <div :class="{ 'col': true, 'tablist': true, 'tab-active': activeTab === 'Proses' }"
+              @click="toggleTab('Proses')">
               Proses
             </div>
-            <div class="col tablist">
+            <div :class="{ 'col': true, 'tablist': true, 'tab-active': activeTab === 'Dikirim' }"
+              @click="toggleTab('Dikirim')">
               Dikirim
             </div>
-            <div class="col tablist">
+            <div :class="{ 'col': true, 'tablist': true, 'tab-active': activeTab === 'Diterima' }"
+              @click="toggleTab('Diterima')">
               Diterima
             </div>
-            <div class="col tablist">
+            <div :class="{ 'col': true, 'tablist': true, 'tab-active': activeTab === 'Dibatalkan' }"
+              @click="toggleTab('Dibatalkan')">
               Dibatalkan
             </div>
           </div>
@@ -38,6 +44,9 @@
             <div class="col">
               <a style=" font-size: 18px;"> Total</a>
             </div>
+            <div class="col">
+              <a style=" font-size: 18px;"> Tanggal</a>
+            </div>
             <div class="col d-flex justify-content-center align-items-center">
               <a style=" font-size: 18px;"> Status </a>
             </div>
@@ -46,8 +55,8 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12 bg-white mt-2" v-for="(transaction, index) in transactions" :key="index">
-          <div class="row px-3 ls-transaction">
+        <div class="col-md-12 bg-white mt-2" v-for="(transaction, index) in transactions" :key="index" style="cursor: pointer;">
+          <div class="row px-3 ls-transaction" @click="goToTransactionDetail(transaction.id)">
             <div class="col">
               <a style="font-size: 18px; font-weight: bold;">#{{ transaction.id }}</a>
             </div>
@@ -56,6 +65,9 @@
             </div>
             <div class="col">
               <a style="font-size: 18px;">Rp. {{ formatPrice(transaction.total) }}</a>
+            </div>
+            <div class="col">
+              <a style="font-size: 18px;">{{ formatDate(transaction.created_at) }}</a>
             </div>
             <div class="col d-flex justify-content-center align-items-center">
               <a :class="getClassForStatus(transaction.status)" style="font-size: 18px;">{{ transaction.status }}</a>
@@ -92,6 +104,7 @@ import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_BASE_URL_API;
 import Breadcrumbs from '@/components/Vuetify/Breadcrumbs.vue';
+import moment from 'moment';
 
 export default {
   name: 'DaftarBuku',
@@ -112,33 +125,47 @@ export default {
       dialogForm: false,
       selectedTransactionIndex: null,
       selectedStatus: "",
-      trackingNumber: ""
+      trackingNumber: "",
+      activeTab: 'Semua',
     };
   },
   computed: {
     statusOptions() {
       return ['proccess', 'canceled', 'shipping', 'received', 'unpaid'];
+    },
+    filteredTransactions() {
+      if (this.selectedTab === 'Semua') {
+        return this.transactions;
+      } else {
+        return this.transactions.filter(transaction => transaction.status === this.selectedTab);
+      }
     }
   },
   mounted() {
     this.getTransactions();
   },
   methods: {
+    formatDate(data_date) {
+      return moment.utc(data_date).format('YYYY-MM-DD')
+    },
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
     },
-    async getTransactions() {
+    async getTransactions(status = '') {
       try {
         const token = localStorage.getItem('access_token');
         const response = await axios.get(BASE_URL + '/all-transactions', {
+          params: {
+            status: status
+          },
           headers: {
             Authorization: 'Bearer ' + token
           }
         });
         this.transactions = response.data;
       } catch (error) {
-        console.error('Error fetching addresses:', error);
+        console.error('Error fetching transactions:', error);
       }
     },
     editStatus(index) {
@@ -187,7 +214,35 @@ export default {
       } else {
         return '';
       }
-    }
+    },
+    goToTransactionDetail(id) {
+      this.$router.push({ path: `/admin/detailpesanan/` + id });
+    },
+    toggleTab(tab) {
+      // Update activeTab state
+      this.activeTab = tab;
+
+      // Call getTransactions method with appropriate status based on the selected tab
+      switch (tab) {
+        case 'Belum Bayar':
+          this.getTransactions('unpaid');
+          break;
+        case 'Proses':
+          this.getTransactions('proccess');
+          break;
+        case 'Dikirim':
+          this.getTransactions('shipping');
+          break;
+        case 'Diterima':
+          this.getTransactions('received');
+          break;
+        case 'Dibatalkan':
+          this.getTransactions('canceled');
+          break;
+        default:
+          this.getTransactions(); // For default tab 'Semua', no status parameter is passed
+      }
+    },
   }
 };
 
@@ -227,6 +282,7 @@ export default {
   text-decoration: none;
   background-color: yellow;
 }
+
 .unpaid {
   padding-right: 5px;
   padding-left: 5px;
@@ -236,6 +292,7 @@ export default {
   text-decoration: none;
   background-color: orange;
 }
+
 .canceled {
   padding-right: 5px;
   padding-left: 5px;
@@ -245,6 +302,7 @@ export default {
   text-decoration: none;
   background-color: red;
 }
+
 .received {
   padding-right: 5px;
   padding-left: 5px;

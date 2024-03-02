@@ -4,10 +4,6 @@
     <div>
       <div class="container px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
-        <v-dialog v-model="showDialog" hide-overlay persistent width="300" lazy>
-          <v-progress-circular indeterminate color="red" :size="90" class="mb-0"
-            style="margin: auto;"></v-progress-circular>
-        </v-dialog>
         <div class="col-md-12 bg-white p-4">
           <div class="row px-3 border-bottom">
             <div class="col-3">
@@ -76,7 +72,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12 bg-white p-4 mt-2 mb-4" v-if="transaction.status === 'unpaid'">
+        <!-- <div class="col-md-12 bg-white p-4 mt-2 mb-4" v-if="transaction.status === 'unpaid'">
           <div class="row px-3 border-bottom">
             <h4>Bayar</h4>
           </div>
@@ -93,7 +89,7 @@
               </v-btn>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </Navbar>
@@ -115,7 +111,6 @@ export default {
   data() {
     return {
       ids: '',
-      showDialog: false,
       breadcrumbsItems: [
         {
           title: 'Pesanan Saya',
@@ -135,11 +130,8 @@ export default {
     };
   },
   mounted() {
-    this.showDialog = true;
     this.getAddress().then(() => {
       this.getTransactionDetails();
-    }).finally(() => {
-      this.showDialog = false;
     });
   },
   methods: {

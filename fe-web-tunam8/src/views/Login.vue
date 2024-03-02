@@ -2,6 +2,10 @@
     <main>
         <Navbar />
         <section class="login-section">
+            <v-dialog v-model="showDialog" hide-overlay persistent width="300" lazy>
+                        <v-progress-circular indeterminate color="red" :size="90" class="mb-0" style="right: -100px;"></v-progress-circular>
+            </v-dialog>
+
             <div class="container">
                 <div class="form-box shadow" :class="{ 'register-form': isRegister }">
                     <div class="padding-container">
@@ -113,6 +117,7 @@ export default {
     },
     data() {
         return {
+            showDialog: false,
             isRegister: false,
             isForgotPassword: false,
             isEmailForgotPassword: false,
@@ -201,13 +206,58 @@ export default {
         },
 
 
+        // async onSubmit() {
+
+        //     try {
+        //         const response = await axios.post(BASE_URL + '/account/login', {
+        //             email: this.loginEmail,
+        //             password: this.loginPassword
+        //         });
+
+        //         this.$notify({
+        //             type: 'success',
+        //             title: 'Success',
+        //             text: response.data.message,
+        //             color: 'green'
+        //         });
+        //         console.log(response.data);
+
+        //         const { role } = response.data.user;
+
+        //         if (role === 'admin') {
+        //             localStorage.setItem('access_token', response.data.token);
+        //             this.$router.push('/admin/dashboard');
+        //         } else if (role === 'user') {
+        //             localStorage.setItem('access_token', response.data.token);
+        //             this.$router.push('/dashboard');
+        //         }
+
+
+        //     } catch (error) {
+        //         console.error(error);
+
+        //         if (error.response && error.response.data.message) {
+        //             const errorMessage = error.response.data.message;
+        //             // Display notification with red color
+        //             this.$notify({
+        //                 type: 'error',
+        //                 title: 'Error',
+        //                 text: errorMessage,
+        //                 color: 'red'
+        //             });
+        //         }
+        //     }
+        // },
         async onSubmit() {
+            this.showDialog = true; // Show the dialog when login starts
+
             try {
                 const response = await axios.post(BASE_URL + '/account/login', {
                     email: this.loginEmail,
                     password: this.loginPassword
                 });
 
+                // your success handling code
                 this.$notify({
                     type: 'success',
                     title: 'Success',
@@ -217,7 +267,6 @@ export default {
                 console.log(response.data);
 
                 const { role } = response.data.user;
-
                 if (role === 'admin') {
                     localStorage.setItem('access_token', response.data.token);
                     this.$router.push('/admin/dashboard');
@@ -226,13 +275,11 @@ export default {
                     this.$router.push('/dashboard');
                 }
 
-
             } catch (error) {
                 console.error(error);
 
                 if (error.response && error.response.data.message) {
                     const errorMessage = error.response.data.message;
-                    // Display notification with red color
                     this.$notify({
                         type: 'error',
                         title: 'Error',
@@ -240,6 +287,8 @@ export default {
                         color: 'red'
                     });
                 }
+            } finally {
+                this.showDialog = false; // Hide the dialog regardless of the outcome
             }
         },
         async onRegist() {
