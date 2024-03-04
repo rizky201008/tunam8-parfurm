@@ -7,9 +7,10 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\TagsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
-use App\Http\Controllers\CallbackController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CallbackController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ProductImageController;
 
@@ -80,6 +81,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::post('product-image', [ProductImageController::class, 'updateProductImage']);
         Route::put('transactions', [TransactionController::class, 'updateTransaction']);
         Route::get('all-transactions', [TransactionController::class, 'allTransactions']);
+        Route::get('dashboard', [DashboardController::class, 'index']);
     });
 });
 
