@@ -10,7 +10,7 @@
           </div>
           <div v-for="(item, index) in cartItems" :key="index" class="cart-item">
             <div class="col-2">
-              <img :src="item.product.images" alt="Product Image" class="product-image">
+              <img :src="item.product.image" alt="Product Image" class="product-image">
             </div>
             <div class="col-5">
               <div class="product-details">
@@ -345,8 +345,8 @@ export default {
 }
 
 .product-image {
-  width: 250px;
-  height: 250px;
+  width: 200px;
+  height: 200px;
   object-fit: contain;
   margin: auto;
   padding: 20px;

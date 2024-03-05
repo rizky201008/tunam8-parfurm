@@ -1,5 +1,5 @@
 <template>
-        <v-breadcrumbs class="bg-white rounded" :items="items">
+        <v-breadcrumbs class="bg-white rounded shadow" :items="items">
             <template v-slot:divider>
                 <v-icon icon="mdi-chevron-right"></v-icon>
             </template>

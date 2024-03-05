@@ -105,6 +105,8 @@
                             <h5>Description : </h5>
                             <p>{{ selectedProduct.description }}</p>
                             <hr>
+                            <a>Tags:</a>
+                            <p>{{ selectedProduct.tags }}</p>
                             <p>Category:</p>
                             <v-chip v-if="selectedProduct.category">{{ selectedProduct.category.name }}</v-chip>
                             <hr>

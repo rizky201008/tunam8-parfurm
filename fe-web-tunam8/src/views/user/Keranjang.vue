@@ -10,7 +10,7 @@
               <input type="checkbox" v-model="item.checked" class="checkbox-style">
             </div>
             <div class="col-3 d-flex justify-content-center align-item-center">
-              <img :src="item.product.images" alt="Product Image" class="product-image">
+              <img :src="item.product.image" alt="Product Image" class="product-image">
             </div>
             <div class="col-5 text-left">
               <div class="product-details">
@@ -234,8 +234,8 @@ export default {
 }
 
 .product-image {
-  width: 250px;
-  height: 250px;
+  width: 200px;
+  height: 200px;
   object-fit: contain;
   margin: auto;
   padding: 20px;
