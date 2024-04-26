@@ -1,0 +1,86 @@
+version: '3'
+
+networks:
+  laravel_tunam:
+    driver: bridge
+
+volumes:
+  mysql:
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_tunam
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8001:80"
+    volumes:
+      - ./be-tunam8:/var/www/app
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - laravel_tunam
+
+  mysql:
+    platform: linux/amd64
+    image: mysql
+    container_name: mysql_tunam
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "${MYSQL_HOST_PORT}:${MYSQL_DOCKER_CONTAINER_PORT}"
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: vcashier
+      MYSQL_USER: vcashier
+      MYSQL_PASSWORD: ${MYSQL_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DB_ROOT_PASSWORD}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - laravel_tunam
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    container_name: phpmyadmin_tunam
+    ports:
+      - "8002:80"
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - laravel_tunam
+
+  php:
+    build:
+      context: ./be-tunam8
+      dockerfile: Dockerfile
+    container_name: php_tunam
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/app
+    volumes:
+      - ./be-tunam8:/var/www/app
+    ports:
+      - "${PHP_HOST_PORT}:${PHP_DOCKER_CONTAINER_PORT}"
+    networks:
+      - laravel_tunam
+
+  vue:
+    build:
+      context: ./fe-web-tunam8
+      dockerfile: Dockerfile
+    container_name: vue_tunam
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/app
+    volumes:
+      - ./fe-web-tunam8:/var/www/app
+    ports:
+      - "${VUE_HOST_PORT}:${VUE_DOCKER_CONTAINER_PORT}"
+    networks:
+      - laravel_tunam
