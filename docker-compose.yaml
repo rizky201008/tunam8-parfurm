@@ -8,7 +8,7 @@ volumes:
   mysql:
 
 services:
-  nginx:
+  nginx_be:
     image: nginx:alpine
     container_name: nginx_tunam
     restart: unless-stopped
