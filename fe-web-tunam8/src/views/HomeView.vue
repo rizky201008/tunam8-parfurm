@@ -3,7 +3,7 @@
     <div class="gradient-container">
       <!-- Use a wrapper div for scroll snapping -->
       <div class="" ref="scrollWrapper">
-        <section class="welcome-section">
+        <section class="welcome-section bg-white">
           <div class="container-fluid">
             <div class="row">
               <!-- <div class="col-md-6 d-flex justify-content-center align-items-center">
@@ -60,7 +60,7 @@
                 </div>
               </div>
               <!-- Right column for the image -->
-              <div class="col-md-6">
+              <div class="col-md-6 text-black">
                 <h1>Toko Parfum Terlengkap dan Terjangkau di kawasan Palangkaraya</h1>
                 <p>Kami menyediakan berbagai jenis dan tipe parfum
                 </p>
@@ -104,8 +104,8 @@
             </div>
           </div>
         </section>
-        <section class="third-section flex-wrap d-flex justify-content-center align-items-center">
-          <div class="container">
+        <section class="third-section d-flex justify-content-center align-items-center text-black">
+          <div class="container bg-white">
             <div class="row">
               <div>
                 <h1 class="bold">Why Us?</h1>
