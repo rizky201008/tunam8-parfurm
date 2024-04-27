@@ -52,10 +52,10 @@
               <div class="col-md-6 my-auto">
                 <div class="d-flex justify-content-between">
                   <div class="image-frame">
-                    <img src="../assets/LandingPage/Tunam8_2.jpg" class="rounded" alt="Oscar">
+                    <img src="../assets/LandingPage/tunam8_2.jpg" class="rounded" alt="Oscar">
                   </div>
                   <div class="image-frame d-flex justify-content-center">
-                    <img src="../assets/LandingPage/Tunam8_1.jpg" class="rounded" alt="Oscar">
+                    <img src="../assets/LandingPage/tunam8_1.jpg" class="rounded" alt="Oscar">
                   </div>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-<template>
+    <template>
     <main>
         <Navbar />
         <section class="login-section">
@@ -249,7 +249,7 @@ export default {
         //     }
         // },
         async onSubmit() {
-            this.showDialog = true; // Show the dialog when login starts
+            this.showDialog = true; 
 
             try {
                 const response = await axios.post(BASE_URL + '/account/login', {
@@ -288,7 +288,7 @@ export default {
                     });
                 }
             } finally {
-                this.showDialog = false; // Hide the dialog regardless of the outcome
+                this.showDialog = false; 
             }
         },
         async onRegist() {
