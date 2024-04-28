@@ -27,7 +27,7 @@ class ProductRepository
                 $hashedName = $file->hashName();
                 $file->store('product');
                 $path = Storage::path('product/' . $hashedName);
-                $url = Storage::url('product/' . $hashedName);
+                $url ='storage/product/' . $hashedName;
                 $files[] = [
                     'product_id' => $productId,
                     'link' => $url,
