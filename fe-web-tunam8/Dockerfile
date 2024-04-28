@@ -1,23 +1,22 @@
 FROM node:lts-alpine
 
-# pasang (install) server http sederhana untuk menjalankan static content
+# install simple http server for serving static content
 RUN npm install -g http-server
 
-# buat folder 'app' pada direktori yang sedang dikerjakan
+# make the 'app' folder the current working directory
 WORKDIR /app
 
-# salin 'package.json' dan 'package-lock.json' (jika ada)
+# copy both 'package.json' and 'package-lock.json' (if available)
 COPY package*.json ./
 
-# pasang dependecy proyek
+# install project dependencies
 RUN npm install
 
-# salin berkas-berkas proyek serta folder-foldernya ke direktori yang sedang dikerjakan (misal. folder 'app)
+# copy project files and folders to the current working directory (i.e. 'app' folder)
 COPY . .
 
-# bangun aplikasi untuk produksi dengan minifikasi
+# build app for production with minification
 RUN npm run build
 
 EXPOSE 8080
-
 CMD [ "http-server", "dist" ]

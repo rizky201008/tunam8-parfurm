@@ -10,7 +10,7 @@ volumes:
 services:
   nginx_be:
     image: nginx:alpine
-    container_name: nginx_tunam
+    container_name: nginx_tunam_be
     restart: unless-stopped
     tty: true
     ports:
@@ -35,8 +35,8 @@ services:
     volumes:
       - mysql:/var/lib/mysql
     environment:
-      MYSQL_DATABASE: vcashier
-      MYSQL_USER: vcashier
+      MYSQL_DATABASE: tunam
+      MYSQL_USER: tuman
       MYSQL_PASSWORD: ${MYSQL_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_DB_ROOT_PASSWORD}
       SERVICE_TAGS: dev
