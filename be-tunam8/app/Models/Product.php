@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Category;
-use App\Models\ProductImage;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -36,13 +35,11 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
-    public function getTagAttribute($value)
+    protected function tags(): Attribute
     {
-        return json_decode($value);
-    }
-
-    public function setTagAttribute($value)
-    {
-        $this->attributes['tags'] = json_encode($value);
+        return Attribute::make(
+            get: fn (string $value) => json_decode($value),
+            set: fn (string $value) => json_encode($value),
+        );
     }
 }
