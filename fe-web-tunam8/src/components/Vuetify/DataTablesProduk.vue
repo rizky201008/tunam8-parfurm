@@ -26,9 +26,9 @@
                     {{ item.no }}
                 </div>
             </template>
-            <template v-slot:item.images.link="{ item }">
+            <template v-slot:item.images="{ item }">
                 <v-card class="my-2" elevation="2" rounded>
-                    <v-img :src="item.images.link" height="100%" cover></v-img>
+                    <v-img :src="item.images" height="100%" cover></v-img>
                 </v-card>
             </template>
             <template v-slot:item.category="{ item }">
