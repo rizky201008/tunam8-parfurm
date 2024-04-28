@@ -46,7 +46,7 @@
       </div>
       <!-- Modal Nich -->
 
-      <div class="modal fade" id="addTags" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade text-black" id="addTags" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <share-modal ref="share-modal-ref" />
         <div class="modal-dialog">
           <div class="modal-content">
@@ -70,7 +70,7 @@
         </div>
       </div>
 
-      <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal fade text-black" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -217,7 +217,7 @@ export default {
         formData.append('name', this.tags.name);
 
         const token = localStorage.getItem('access_token')
-        const response = await axios.post(BASE_URL + '/categories', formData, {
+        const response = await axios.post(BASE_URL + '/tags', formData, {
           headers: {
             'Content-Type': 'multipart/form-data', // Set content type for file upload
             'Authorization': 'Bearer ' + token, // Include Bearer token in the Authorization header
@@ -226,7 +226,7 @@ export default {
 
         this.closeModal();
         this.clearForm();
-        this.retrieveKategori();
+        this.retrieveTags();
 
         this.$notify({
           type: 'success',

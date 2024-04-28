@@ -26,9 +26,9 @@
                     {{ item.no }}
                 </div>
             </template>
-            <template v-slot:item.images="{ item }">
+            <template v-slot:item.images.link="{ item }">
                 <v-card class="my-2" elevation="2" rounded>
-                    <v-img :src="item.images" height="100%" cover></v-img>
+                    <v-img :src="item.images.link" height="100%" cover></v-img>
                 </v-card>
             </template>
             <template v-slot:item.category="{ item }">
@@ -65,7 +65,7 @@
             </v-card>
         </v-dialog>
     </v-card>
-    <div class="modal fade" id="showProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade text-black" id="showProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
