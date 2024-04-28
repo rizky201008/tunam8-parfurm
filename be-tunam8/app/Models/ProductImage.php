@@ -14,7 +14,7 @@ class ProductImage extends Model
     protected function link(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => config('app.url') . $value,
+            get: fn (string $value) => url($value),
         );
     }
 }
