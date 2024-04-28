@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Logics\ProductImages as ProductImagesLogic;
+use App\Logics\ProductRepository;
 use App\Models\Product;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -54,10 +54,10 @@ class ProductController extends Controller
         $product->slug = Str::slug(round(microtime(true) * 1000) . $request->name, '-');
         $product->save();
 
-        $productLogic = new ProductImagesLogic();
+        $productRepository = new ProductRepository();
         if ($product->save()) {
-            $imageCount = $productLogic->countImages($request->product_id);
-            $addImages = $productLogic->addProductImage($imageCount, $product->id, $request->file('images'));
+            $imageCount = $productRepository->countImages($request->product_id);
+            $addImages = $productRepository->addProductImage($imageCount, $product->id, $request->file('images'));
         } else {
             return response()->json(
                 [
