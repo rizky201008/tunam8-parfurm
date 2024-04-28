@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Product::class)->constrained();
             $table->string('path');
-            $table->string('relative_path');
+            $table->string('link');
             $table->timestamps();
         });
     }
