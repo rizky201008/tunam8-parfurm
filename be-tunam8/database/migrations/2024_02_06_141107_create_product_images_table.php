@@ -14,7 +14,8 @@ return new class extends Migration
     {
         Schema::create('product_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Product::class);
+            $table->foreignIdFor(Product::class)->constrained();
+            $table->string('path');
             $table->string('link');
             $table->timestamps();
         });
