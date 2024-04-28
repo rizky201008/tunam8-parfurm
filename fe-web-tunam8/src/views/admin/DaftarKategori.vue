@@ -46,7 +46,7 @@
       </div>
       <!-- Modal Nich -->
 
-      <div class="modal fade" id="addKategori" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade text-black" id="addKategori" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <share-modal ref="share-modal-ref" />
         <div class="modal-dialog">
           <div class="modal-content">
@@ -64,13 +64,13 @@
             </div>
             <div class="modal-footer">
               <button-custom type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button-custom>
-              <button-custom class="btn btn-info" type="submit" @click="addKategori">Tambah Parfum</button-custom>
+              <button-custom class="btn btn-info" type="submit" @click="addKategori">Tambah Kategori</button-custom>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal fade text-black" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">

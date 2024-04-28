@@ -50,7 +50,7 @@
         </div>
       </div>
       <!-- Modal Nich -->
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade text-black" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -140,7 +140,7 @@ export default {
     // Method
     async addUser() {
       try {
-        const response = await axios.post(BASE_URL + '/Account/register', {
+        const response = await axios.post(BASE_URL + '/account/register', {
           name: this.namaCustomer,
           email: this.emailCustomer,
           password: this.passwordCustomer

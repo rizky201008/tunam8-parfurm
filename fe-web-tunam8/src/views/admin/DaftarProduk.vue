@@ -28,7 +28,7 @@
         </div>
       </div>
       <!-- Modal Nich -->
-      <div class="modal fade" id="addParfum" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade text-black" id="addParfum" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -154,7 +154,6 @@ export default {
 
     // Method
     handleFileChange(event) {
-      // Handle file change event
       const fileInput = this.$refs.fileInput;
       this.selectedFiles = Array.from(fileInput.files);
     },
