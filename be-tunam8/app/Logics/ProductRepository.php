@@ -5,8 +5,9 @@ namespace App\Logics;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
-class ProductImages
+class ProductRepository
 {
     public function countImages($productId)
     {
@@ -15,7 +16,7 @@ class ProductImages
         if ($product !== null && $product->images !== null) {
             return count($product->images);
         }
-        return  0;
+        return 0;
     }
 
     public function addProductImage($imagesCount, $productId, $images)
@@ -23,14 +24,15 @@ class ProductImages
         $files = [];
         if ($imagesCount <= 4 && $imagesCount + count($images) <= 4) {
             foreach ($images as $file) {
-                if ($file->isValid()) {
-                    $filename = round(microtime(true) * 1000) . '-' . str_replace(' ', '-', $file->getClientOriginalName());
-                    $file->move(public_path('products'), $filename);
-                    $files[] = [
-                        'product_id' => $productId,
-                        'link' =>  $filename,
-                    ];
-                }
+                $hashedName = $file->hashName();
+                $file->store('product');
+                $path = Storage::path('product/' . $hashedName);
+                $url = Storage::url('product/' . $hashedName);
+                $files[] = [
+                    'product_id' => $productId,
+                    'link' => $url,
+                    'path' => $path
+                ];
             }
             ProductImage::insert($files);
             return true;
@@ -43,11 +45,11 @@ class ProductImages
     {
         $productImage = ProductImage::where('product_id', $product_id)->get();
         foreach ($productImage as $image) {
-            $imagePath = public_path('products') . '/' . $image->link;
+            $imagePath = $image->path;
             $image->delete();
             File::delete($imagePath);
         }
-        
+
         return true;
     }
 }
