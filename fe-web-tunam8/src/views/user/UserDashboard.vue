@@ -15,12 +15,12 @@
         
         <div class="div pb-8">
           <div class="row" style="border-bottom: 2px solid black;" v-if="!searchResults.length > 0">
-            <div class="row text-center">
+            <div class="row text-center text-black">
               RECOMMENDATIONS
             </div>
             <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in products.slice(0, 6)"
               :key="item.id">
-              <div class="product-single-card">
+              <div class="product-single-card text-black">
                 <div class="product-top-area">
                   <div class="product-img">
                     <div class="first-view">
@@ -94,7 +94,7 @@
           <div class="row mt-2" v-else>
             <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in products"
               :key="item.id">
-              <div class="product-single-card">
+              <div class="product-single-card text-black">
                 <div class="product-top-area">
                   <div class="product-img">
                     <div class="first-view">
