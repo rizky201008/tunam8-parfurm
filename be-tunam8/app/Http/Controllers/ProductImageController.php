@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Logics\ProductImages as ProductImagesLogic;
+use App\Logics\ProductRepository as ProductImagesLogic;
 use App\Models\ProductImage;
 
 class ProductImageController extends Controller
@@ -30,11 +30,6 @@ class ProductImageController extends Controller
     public function getAllProductImages()
     {
         $productImages = ProductImage::all();
-        $baseUrl = config('app.url') . '/products';
-        $mapped = $productImages->map(function ($image) use ($baseUrl) {
-            $image->link = $baseUrl . '/' . $image->link;
-            return $image;
-        });
-        return response()->json($mapped, 200);
+        return response()->json($productImages, 200);
     }
 }
