@@ -18,13 +18,14 @@ class ProductController extends Controller
 
     public function getPersonalizedProducts(Request $request)
     {
-        $tags   = $request->user()->personal;
+        $tags = $request->user()->personal;
         $explodedTags = explode(',', $tags->tags);
-        $filteredProduct  = [];
+        $filteredProduct = [];
         foreach ($explodedTags as $tag) {
-            $products = Product::with(['category', 'images'])->where('tags', 'LIKE', "%$tag%")->inRandomOrder()->limit(10)->get();
+            $tag = Str::replace(' ', '', $tag);
+            $products = Product::with(['category', 'images'])->where('tags', 'LIKE', "%$tag%")->inRandomOrder()->limit(5)->get();
             foreach ($products as $product) {
-                array_push($filteredProduct, $product);
+                $filteredProduct[] = $product;
             }
         }
 
