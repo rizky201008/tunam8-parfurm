@@ -18,7 +18,7 @@
             <div class="row text-center text-black">
               RECOMMENDATIONS
             </div>
-            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in products.slice(0, 6)"
+            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in personalized.slice(0, 6)"
               :key="item.id">
               <div class="product-single-card text-black">
                 <div class="product-top-area">
@@ -148,6 +148,7 @@ export default {
   },
   data() {
     return {
+      personalized: [],
       products: [],
       breadcrumbsItems: [
         {
@@ -165,6 +166,7 @@ export default {
   },
   mounted() {
     this.retrieveParfum();
+    this.retrievePersonalized();
   },
   methods: {
     formatPrice(price) {
@@ -178,7 +180,23 @@ export default {
         product.description.toLowerCase().includes(query)
       );
     },
+    async retrievePersonalized() {
+      try {
+        const response = await axios.get(BASE_URL + '/personalized-products', {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
 
+        this.personalized = response.data;
+
+        if (response.data.length > 0) {
+          this.fotoUrl = response.data[0].foto;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
     async searchProduct() {
       try {
         const query = this.searchQuery.trim();
