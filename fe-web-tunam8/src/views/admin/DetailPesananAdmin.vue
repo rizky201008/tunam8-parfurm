@@ -115,7 +115,7 @@ export default {
         {
           title: 'Pesanan Saya',
           disabled: false,
-          href: '/pesanan',
+          href: '/admin/pesanan',
         },
         {
           title: 'Detail Pesanan',
