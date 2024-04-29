@@ -73,8 +73,8 @@
               <a :class="getClassForStatus(transaction.status)" style="font-size: 18px;">{{ transaction.status }}</a>
             </div>
             <div class="col d-flex justify-content-center align-items-cente">
-              <v-icon size="large" class="me-2" @click="editStatus(index)" color="blue">
-                mdi-pencil
+              <v-icon size="large" class="me-2" @click.stop="editStatus(index)" color="blue">
+                mdi-pencil-circle-outline
               </v-icon>
             </div>
           </div>
