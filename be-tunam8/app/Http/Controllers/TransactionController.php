@@ -62,9 +62,9 @@ class TransactionController extends Controller
             throw new Exception($validator->errors()->first());
         }
         if ($request->user()->role != 'admin') {
-            $transaction = $this->transaction->with(['transactionItems', 'transactionPayment'])->where('id', $transactionId)->where('user_id', $request->user()->id)->first();
+            $transaction = $this->transaction->with(['transactionItems', 'transactionPayment', 'address'])->where('id', $transactionId)->where('user_id', $request->user()->id)->first();
         } else {
-            $transaction = $this->transaction->with(['transactionItems', 'transactionPayment'])->where('id', $transactionId)->first();
+            $transaction = $this->transaction->with(['transactionItems', 'transactionPayment', 'address'])->where('id', $transactionId)->first();
         }
 
         $transaction->transactionItems->map(function ($item) {
@@ -110,7 +110,7 @@ class TransactionController extends Controller
 
         $insertTransaction = $this->transactionLogic->insertTransaction($transaction, $request->products);
 
-        $paymentLink = $this->transactionLogic->createMidtransSnapLink($total + $cost['cost'], $insertTransaction['transaction_id']);
+        $paymentLink = $this->transactionLogic->createMidtransSnapLink($total + $cost['cost'], $insertTransaction['transaction_id'] . rand(1000, 9999));
 
 
         if ($insertTransaction['error']) {
