@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->double('total');
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
             $table->enum('status', ['unpaid', 'proccess', 'shipping', 'received', 'canceled'])->default('unpaid');
-            $table->foreignIdFor(Address::class);
+            $table->foreignIdFor(Address::class)->nullable()->constrained()->onDelete('set null');
             $table->text('tracking_number')->nullable();
             $table->double('cost')->nullable();
             $table->timestamps();
