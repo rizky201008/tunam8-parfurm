@@ -13,7 +13,7 @@ class ProductImageController extends Controller
         $request->validate([
             'product_id' => 'required|integer|exists:products,id',
             'images' => 'required|array|min:1|max:4',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ]);
 
         $productImagesLogic = new ProductImagesLogic();
