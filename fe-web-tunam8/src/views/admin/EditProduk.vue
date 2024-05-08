@@ -2,11 +2,15 @@
 <template>
   <Navbar>
     <div class="dashboard-admin">
+      <v-dialog v-model="showDialog" hide-overlay persistent width="300" lazy>
+        <v-progress-circular indeterminate color="red" :size="90" class="mb-0"
+          style="right: -100px;"></v-progress-circular>
+      </v-dialog>
       <div class="container-fluid px-4 py-2">
         <div class="row">
           <div class="col-md-12">
             <div class="border-0 px-2 mb-4">
-              here
+
             </div>
           </div>
         </div>
@@ -84,7 +88,7 @@
     </div>
   </Navbar>
 </template>
-  
+
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
@@ -98,6 +102,7 @@ export default {
   },
   data() {
     return {
+      showDialog: false,
       dataLoaded: false,
       parfum: {
         id: '',
@@ -117,6 +122,7 @@ export default {
     }
   },
   async mounted() {
+    this.showDialog = true; 
     try {
       const categoryresponse = await axios.get(BASE_URL + '/categories', {
         headers: {
@@ -140,14 +146,15 @@ export default {
 
       if (error.response && error.response.data.message) {
         const errorMessage = error.response.data.message;
-        // Display notification with red color
         this.$notify({
           type: 'error',
           title: 'Error',
           text: errorMessage,
           color: 'red'
         });
-      }
+      } 
+    } finally {
+      this.showDialog = false; 
     };
     this.retrieveTags();
   },
@@ -184,13 +191,14 @@ export default {
       }
     },
     async saveParfum() {
+      this.showDialog = true; 
       try {
         if (this.fotoFile) {
           const formData = new FormData();
-          formData.append('images', this.fotoFile);
+          formData.append('images[]', this.fotoFile);
           formData.append('product_id', this.parfum.id);
 
-          await axios.post('/product-image', formData, {
+          await axios.post(BASE_URL + '/product-image', formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
               Authorization: 'Bearer ' + localStorage.getItem('access_token')
@@ -231,13 +239,15 @@ export default {
             color: 'red'
           });
         }
+      } finally {
+        this.showDialog = false; 
       }
     },
   }
 
 };
 </script>
-  
+
 <style scoped>
 .dashboard-admin {
   min-height: 100vh;
@@ -298,4 +308,3 @@ button-custom,
   }
 }
 </style>
-  

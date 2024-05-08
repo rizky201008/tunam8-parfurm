@@ -228,7 +228,6 @@ export default {
         },
         editProduk(item) {
             const slug = item.slug
-            // console.log(id)
             this.$router.push({ path: `/admin/daftarproduk/editproduk/` + slug })
         },
         async deleteProduct(item) {
