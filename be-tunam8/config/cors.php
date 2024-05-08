@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['tunam8.biz.id','*.tunam8.biz.id'],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
