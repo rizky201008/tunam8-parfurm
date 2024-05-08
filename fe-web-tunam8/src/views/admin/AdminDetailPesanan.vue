@@ -7,9 +7,9 @@
         <div class="col-md-12 bg-white p-4">
           <div class="row px-3 border-bottom">
             <div class="col-3">
-              <v-chip class="mt-3">{{ transaction.status }}</v-chip>
+              <v-chip class="mt-3">{{ items.data.status }}</v-chip>
             </div>
-            <h4>#{{ transaction.id }}
+            <h4># {{ items.data.id }}
             </h4>
           </div>
           <div class="row px-3 pt-2">
@@ -21,11 +21,11 @@
               <a style="font-size: 20px;">Nomor Resi</a>
             </div>
             <div class="col-md-9">
-              <a style="font-size: 20px;">: {{ formatDate(transaction.created_at) }}</a>
+              <a style="font-size: 20px;">: {{ formatDate(items.data.created_at) }}</a>
               <br>
-              <a style="font-size: 20px;">: Rp. {{ formatPrice(transaction.total) }}</a>
+              <a style="font-size: 20px;">: Rp. {{ formatPrice(items.data.total) }}</a>
               <br>
-              <a style="font-size: 20px;">: {{ transaction.tracking_number }}</a>
+              <a style="font-size: 20px;">: {{ items.data.tracking_number }}</a>
             </div>
           </div>
         </div>
@@ -42,11 +42,11 @@
               <a style="font-size: 20px;">Alamat Detail</a>
             </div>
             <div class="col-md-9">
-              <a style="font-size: 20px;">: {{ getAddressById(transaction.address_id).receiver }}</a>
+              <a style="font-size: 20px;">: {{ items.data.address.receiver }}</a>
               <br>
-              <a style="font-size: 20px;">: {{ getAddressById(transaction.address_id).city }}</a>
+              <a style="font-size: 20px;">: {{ items.data.address.city }}</a>
               <br>
-              <a style="font-size: 20px;">: {{ getAddressById(transaction.address_id).address_detail }}</a>
+              <a style="font-size: 20px;">: {{ items.data.address.address_detail }}</a>
             </div>
           </div>
         </div>
@@ -55,10 +55,10 @@
             <h4>Produk Dibeli</h4>
           </div>
           <div class="row px-3 pt-2">
-            <div v-for="item in transaction.transaction_items" :key="item.id" class="col-md-12 bg-white p-4 mt-2">
+            <div v-for="item in items.data.transaction_items" :key="item.id" class="col-md-12 bg-white p-4 mt-2">
               <div class="row px-3 pt-2">
                 <div class="col-md-3">
-                  <img :src="item.product.image" alt="Product Image" class="product-image">
+                  <img :src="item.product.images[0].link" alt="Product Image" class="product-image">
                 </div>
                 <div class="col-md-9 pt-2">
                   <a style="font-size: 20px; font-weight: bold;">{{ item.product.name }}</a>
@@ -72,32 +72,14 @@
             </div>
           </div>
         </div>
-        <!-- <div class="col-md-12 bg-white p-4 mt-2 mb-4" v-if="transaction.status === 'unpaid'">
-          <div class="row px-3 border-bottom">
-            <h4>Bayar</h4>
-          </div>
-          <div class="row px-3 pt-2">
-            <div class="col-md-4">
-              Total Belum Bayar:
-            </div>
-            <div class="col-md-6">
-              <a style="font-size: 20px; font-weight: bold;">: Rp. {{ formatPrice(transaction.total) }}</a>
-            </div>
-            <div class="col-md-2">
-              <v-btn color="red" rounded="xl" :href="transaction.transaction_payment.link" class="mx-4 mb-2 mt-2">
-                Bayar
-              </v-btn>
-            </div>
-          </div>
-        </div> -->
       </div>
     </div>
   </Navbar>
 </template>
-  
+
 <script>
-import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
+import Navbar from '@/components/AdminNavbar.vue';
 const BASE_URL = import.meta.env.VITE_BASE_URL_API;
 import moment from 'moment';
 import Breadcrumbs from '@/components/Vuetify/Breadcrumbs.vue';
@@ -110,7 +92,6 @@ export default {
   },
   data() {
     return {
-      ids: '',
       breadcrumbsItems: [
         {
           title: 'Pesanan Saya',
@@ -123,18 +104,16 @@ export default {
           href: '/',
         }
       ],
-      transaction: {},
-      addresses: [],
-      products: [],
-
+      items: {},
     };
   },
-  mounted() {
-    this.getAddress().then(() => {
-      this.getTransactionDetails();
-    });
+  created() {
+    this.getDetails();
   },
   methods: {
+    getTest() {
+      console.log("Mounted!")
+    },
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
@@ -142,38 +121,18 @@ export default {
     formatDate(data_date) {
       return moment.utc(data_date).format('YYYY-MM-DD')
     },
-    async getTransactionDetails() {
+    async getDetails() {
       try {
-        const transactionId = this.$route.params.id;
-        const response = await axios.get(BASE_URL + `/transactions/${transactionId}`, {
+        const id = this.$route.params.id;
+        const response = await axios.get(BASE_URL + '/transactions/' + id, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
-        this.transaction = response.data;
-        this.transaction.transaction_items.forEach(item => {
-          item.product = this.getProductById(item.product_id);
-        });
+        this.items = response;
       } catch (error) {
         console.error('Error fetching transaction details:', error);
       }
-    },
-
-    async getAddress() {
-      try {
-        const token = localStorage.getItem('access_token');
-        const response = await axios.get(BASE_URL + '/address', {
-          headers: {
-            Authorization: 'Bearer ' + token
-          }
-        });
-        this.addresses = response.data;
-      } catch (error) {
-        console.error('Error fetching addresses:', error);
-      }
-    },
-    getAddressById(id) {
-      return this.addresses.find(address => address.id == id) || {};
     },
     getClassForStatus(status) {
       if (status === 'unpaid') {
@@ -194,7 +153,7 @@ export default {
 
 
 </script>
-  
+
 <style scoped>
 /* .card-img-top {
   max-width: 450px;
@@ -316,4 +275,3 @@ export default {
   height: 20px;
 }
 </style>
-  
