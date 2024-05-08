@@ -141,6 +141,16 @@ class TransactionController extends Controller
         ], 200);
     }
 
+    public function searchTransactions(Request $request)
+    {
+//        $results = null;
+        $results = Transaction::with(['transactionItems', 'user'])->where('id', 'like', '%' . $request->query('q') . '%')->orWhereHas('user', function ($query) use ($request) {
+            $query->where('name', 'like', '%' . $request->query('q') . '%');
+        })->get();
+
+        return response()->json($results);
+    }
+
     public function deleteTransaction(Request $request)
     {
         $transaction = Transaction::find($request->id);
