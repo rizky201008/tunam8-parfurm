@@ -62,17 +62,10 @@ class TransactionController extends Controller
             throw new Exception($validator->errors()->first());
         }
         if ($request->user()->role != 'admin') {
-            $transaction = $this->transaction->with(['transactionItems', 'transactionPayment', 'address'])->where('id', $transactionId)->where('user_id', $request->user()->id)->first();
+            $transaction = $this->transaction->with(['transactionItems', 'transactionItems.product', 'transactionItems.product.images', 'transactionPayment', 'address'])->where('id', $transactionId)->where('user_id', $request->user()->id)->first();
         } else {
-            $transaction = $this->transaction->with(['transactionItems', 'transactionPayment', 'address'])->where('id', $transactionId)->first();
+            $transaction = $this->transaction->with(['transactionItems', 'transactionItems.product', 'transactionItems.product.images', 'transactionPayment', 'address'])->where('id', $transactionId)->first();
         }
-
-        $transaction->transactionItems->map(function ($item) {
-            $item->product = $this->product->find($item->product_id);
-            $item->product->image = $item->product->images[0]->link;
-            unset($item->product->images); // Remove images field
-            return $item;
-        });
 
         return response()->json(
             $transaction
