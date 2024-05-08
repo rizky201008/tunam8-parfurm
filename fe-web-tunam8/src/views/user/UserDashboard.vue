@@ -12,14 +12,14 @@
             </div>
           </form>
         </div>
-        
+
         <div class="div pb-8">
-          <div class="row" style="border-bottom: 2px solid black;" v-if="!searchResults.length > 0">
+          <div class="row" style="border-bottom: 2px solid black;" v-if="showRecommendations">
             <div class="row text-center text-black">
               RECOMMENDATIONS
             </div>
-            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in personalized.slice(0, 6)"
-              :key="item.id">
+            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6"
+              v-for="(item, index) in personalized.slice(0, 6)" :key="item.id">
               <div class="product-single-card text-black">
                 <div class="product-top-area">
                   <div class="product-img">
@@ -54,44 +54,7 @@
               </div>
             </router-link>
           </div>
-          <div class="row" v-if="searchResults.length > 0">
-            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in searchResults"
-              :key="item.id">
-              <div class="product-single-card">
-                <div class="product-top-area">
-                  <div class="product-img">
-                    <div class="first-view">
-                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
-                    </div>
-                    <div class="hover-view">
-                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
-                    </div>
-                  </div>
-                  <div class="sideicons">
-                    <button class="sideicons-btn">
-                      <v-icon icon="mdi-heart"></v-icon>
-                    </button>
-                    <button class="sideicons-btn" @click.native.prevent="addCart(item.id)">
-                      <v-icon icon="mdi-cart-plus"></v-icon>
-                    </button>
-                  </div>
-                </div>
-                <div class="product-info">
-                  <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
-                  <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
-                  <div class="d-flex align-items-center">
-                    <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
-                  </div>
-                  <div class="d-flex flex-wrap align-items-center py-2">
-                    <div class="new-price">
-                      Rp. {{ formatPrice(item.price) }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </router-link>
-          </div>
-          <div class="row mt-2" v-else>
+          <div class="row mt-2">
             <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in products"
               :key="item.id">
               <div class="product-single-card text-black">
@@ -133,7 +96,7 @@
     </div>
   </Navbar>
 </template>
-  
+
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
@@ -158,11 +121,23 @@ export default {
         }
       ],
       searchResults: [],
-
+      showRecommendations: true,
     };
   },
   computed: {
 
+  },
+  watch: {
+    // Watch for changes in searchQuery and trigger searchProduct method
+    searchQuery(newValue) {
+      if (newValue.trim() === '') {
+        // If searchQuery becomes empty, retrieve parfum (all products)
+        this.retrieveParfum();
+      } else {
+        // If searchQuery is not empty, perform search
+        this.searchProduct();
+      }
+    }
   },
   mounted() {
     this.retrieveParfum();
@@ -172,13 +147,6 @@ export default {
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
-    },
-    searchProduct() {
-      const query = this.searchQuery.toLowerCase().trim();
-      this.filteredProducts = this.products.filter(product =>
-        product.name.toLowerCase().includes(query) ||
-        product.description.toLowerCase().includes(query)
-      );
     },
     async retrievePersonalized() {
       try {
@@ -197,23 +165,41 @@ export default {
         console.error(error);
       }
     },
-    async searchProduct() {
-      try {
-        const query = this.searchQuery.trim();
-        const response = await axios.post(BASE_URL + '/search-products', { query }, {
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('access_token')
-          }
-        });
-        this.searchResults = response.data;
-      } catch (error) {
-        console.error('Error searching products:', error);
-        // Handle the error appropriately
-      }
-    },
 
     clearSearch() {
       this.searchQuery = ''; // Clear the search input
+    },
+    async searchProduct() {
+      if (this.searchTimer) {
+        clearTimeout(this.searchTimer);
+      }
+
+      this.searchTimer = setTimeout(() => {
+        if (this.searchQuery.trim() === '') {
+          this.retrieveParfum();
+        } else {
+          this.searchProductMethod();
+        }
+
+        // Setelah selesai pencarian, atur showRecommendations berdasarkan searchQuery
+        this.showRecommendations = this.searchQuery.trim() === '';
+      }, 2000);
+    },
+    async searchProductMethod() {
+      try {
+        const response = await axios.post(BASE_URL + '/search-products', {
+          query: this.searchQuery.trim()
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        this.products = response.data;
+      } catch (error) {
+        console.error('Error searching products:', error);
+        this.products = []; // Clear products if there's an error
+      }
     },
     async retrieveParfum() {
       try {
@@ -264,7 +250,7 @@ export default {
 
 
 </script>
-  
+
 <style scoped>
 /* .card-img-top {
   max-width: 450px;
@@ -479,4 +465,3 @@ input#search-bar {
   right: -70px;
 }
 </style>
-  
