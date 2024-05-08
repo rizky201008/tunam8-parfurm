@@ -181,7 +181,7 @@ export default {
         });
         // $('#addParfum').modal('hide');
         this.clearForm();
-        this.selectedFiles = []; // Clear selected files
+        this.selectedFiles = []; 
         this.selectedTags = [];
         this.$refs.datatablesParfum.retrieveParfum();
 

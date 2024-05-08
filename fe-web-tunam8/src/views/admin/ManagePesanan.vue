@@ -4,6 +4,14 @@
     <div>
       <div class="container px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
+        <div class="row" style="height: 60px;">
+          <form class="search-container" @submit.prevent="searchProduct" style="max-width: 350px;">
+            <div class="row">
+              <input type="text" id="search-bar" placeholder="Cari Pesanan" v-model="searchQuery"
+                @input="searchProduct">
+            </div>
+          </form>
+        </div>
         <div class="col-md-12 bg-white">
           <div class="row px-3">
             <div :class="{ 'col': true, 'tablist': true, 'tab-active': activeTab === 'Semua' }"
@@ -55,7 +63,8 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12 bg-white mt-2" v-for="(transaction, index) in transactions" :key="index" style="cursor: pointer;">
+        <div class="col-md-12 bg-white mt-2" v-for="(transaction, index) in transactions" :key="index"
+          style="cursor: pointer;">
           <div class="row px-3 ls-transaction" @click="goToTransactionDetail(transaction.id)">
             <div class="col">
               <a style="font-size: 18px; font-weight: bold;">#{{ transaction.id }}</a>
@@ -98,7 +107,7 @@
     </div>
   </Navbar>
 </template>
-  
+
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
@@ -127,6 +136,8 @@ export default {
       selectedStatus: "",
       trackingNumber: "",
       activeTab: 'Semua',
+      searchResults: [],
+      searchQuery: ''
     };
   },
   computed: {
@@ -166,6 +177,22 @@ export default {
         this.transactions = response.data;
       } catch (error) {
         console.error('Error fetching transactions:', error);
+      }
+    },
+    async searchProduct() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await axios.get(BASE_URL + '/search-transactions', {
+          params: {
+            q: this.searchQuery
+          },
+          headers: {
+            Authorization: 'Bearer ' + token
+          }
+        });
+        this.transactions = response.data;
+      } catch (error) {
+        console.error('Error searching transactions:', error);
       }
     },
     editStatus(index) {
@@ -216,7 +243,7 @@ export default {
       }
     },
     goToTransactionDetail(id) {
-      this.$router.push({ path: `/admin/detailpesanan/` + id });
+      this.$router.push({ path: `/admin/pesanan/` + id });
     },
     toggleTab(tab) {
       // Update activeTab state
@@ -249,7 +276,7 @@ export default {
 
 
 </script>
-  
+
 <style scoped>
 /* .card-img-top {
   max-width: 450px;
@@ -380,5 +407,53 @@ export default {
   width: 20px;
   height: 20px;
 }
+
+
+.search-container {
+  width: 400px;
+  display: block;
+  margin: 0 auto;
+  padding-right: 30px;
+}
+
+input#search-bar {
+  margin: 0 auto;
+  width: 100%;
+  height: 45px;
+  padding: 0 20px;
+  font-size: 1rem;
+  background-color: white;
+  border: 1px solid #D0CFCE;
+  outline: none;
+
+  &:focus {
+    border: 1px solid #D0011B;
+    transition: 0.35s ease;
+    color: #D0011B;
+
+    &::-webkit-input-placeholder {
+      transition: opacity 0.45s ease;
+      opacity: 0;
+    }
+
+    &::-moz-placeholder {
+      transition: opacity 0.45s ease;
+      opacity: 0;
+    }
+
+    &:-ms-placeholder {
+      transition: opacity 0.45s ease;
+      opacity: 0;
+    }
+  }
+}
+
+.search-icon {
+  position: relative;
+  float: right;
+  width: 75px;
+  height: 75px;
+  top: -62px;
+  right: -70px;
+}
 </style>
-  

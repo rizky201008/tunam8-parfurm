@@ -19,7 +19,7 @@ import DaftarKategori from '../views/admin/DaftarKategori.vue'
 import DaftarTags from '../views/admin/DaftarTags.vue'
 import KelolaPelanggan from '../views/admin/KelolaPelanggan.vue'
 import ManagePesanan from '../views/admin/ManagePesanan.vue'
-import DetailPesananAdmin from '../views/admin/DetailPesananAdmin.vue'
+import DetailPesananAdmin from '../views/admin/AdminDetailPesanan.vue'
 
 import { getUserRole } from '@/utils/auth'
 const router = createRouter({
@@ -124,7 +124,7 @@ const router = createRouter({
       meta: { requiresAdmin: true } 
     },
     {
-      path: '/admin/detailpesanan/:id',
+      path: '/admin/pesanan/:id',
       name: 'Kelola Pesanan',
       component: DetailPesananAdmin,
       meta: { requiresAdmin: true } 
