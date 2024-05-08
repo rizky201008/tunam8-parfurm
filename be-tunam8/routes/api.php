@@ -41,9 +41,11 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
     Route::get('categories', [CategoryController::class, 'allCategories']);
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
     Route::get('product-image', [ProductImageController::class, 'getAllProductImages']);
-    Route::post('transactions', [TransactionController::class, 'createTransaction']);
-    Route::get('transactions', [TransactionController::class, 'getTransactions']);
-    Route::get('transactions/{transactionId}', [TransactionController::class, 'getTransaction']);
+    Route::prefix('transactions')->group(function () {
+        Route::post('/', [TransactionController::class, 'createTransaction']);
+        Route::get('/', [TransactionController::class, 'getTransactions']);
+        Route::get('/{transactionId}', [TransactionController::class, 'getTransaction']);
+    });
     Route::get('carts', [CartController::class, 'getCarts']);
     Route::delete('carts', [CartController::class, 'deleteCart']);
     Route::put('carts', [CartController::class, 'updateCartItem']);
@@ -67,6 +69,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::delete('delete', [AddressController::class, 'deleteAddress']);
     });
     Route::middleware(['ability:admin'])->group(function () {
+        Route::get('/search-transactions', [TransactionController::class, 'searchTransactions']);
         Route::post('tags', [TagsController::class, 'createTag']);
         Route::put('tags', [TagsController::class, 'updateTag']);
         Route::delete('tags', [TagsController::class, 'deleteTag']);
