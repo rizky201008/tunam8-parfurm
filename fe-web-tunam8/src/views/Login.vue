@@ -255,7 +255,9 @@ export default {
                 const response = await axios.post(BASE_URL + '/account/login', {
                     email: this.loginEmail,
                     password: this.loginPassword
-                });
+                },{
+                  headers : {"Access-Control-Allow-Origin": "*"}
+              });
 
                 // your success handling code
                 this.$notify({
