@@ -69,6 +69,7 @@ Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
         Route::delete('delete', [AddressController::class, 'deleteAddress']);
     });
     Route::middleware(['ability:admin'])->group(function () {
+        Route::get('/search-transactions', [TransactionController::class, 'searchTransactions']);
         Route::post('tags', [TagsController::class, 'createTag']);
         Route::put('tags', [TagsController::class, 'updateTag']);
         Route::delete('tags', [TagsController::class, 'deleteTag']);
