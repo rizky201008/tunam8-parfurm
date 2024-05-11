@@ -6,10 +6,17 @@
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="row" style="height: 60px;">
           <form class="search-container" @submit.prevent="searchProduct" style="max-width: 350px;">
-            <div class="row">
-              <input type="text" id="search-bar" placeholder="Cari Produk anda" v-model="searchQuery"
-                @input="searchProduct">
-            </div>
+            <v-card-text>
+              <v-text-field :loading="loading" append-inner-icon="mdi-magnify" density="compact" label="Search Perfume"
+                variant="solo" hide-details single-line @click:append-inner="onClick" @input="searchProduct"
+                v-model="searchQuery"></v-text-field>
+            </v-card-text>
+            <select class="form-select form-select-sm mb-3" aria-label="Large select example">
+              <option selected>Open this select menu</option>
+              <option value="1">One</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </select>
           </form>
         </div>
 

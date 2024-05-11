@@ -292,6 +292,7 @@ export default {
             }
         },
         async onRegist() {
+            this.showDialog = true; 
             try {
                 const response = await axios.post(BASE_URL + '/account/register', {
                     name: this.registerName,
@@ -316,6 +317,8 @@ export default {
                         color: 'red'
                     });
                 }
+            } finally {
+                this.showDialog = false; 
             }
         }
 
