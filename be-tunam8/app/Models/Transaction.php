@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Models\Address;
-use App\Models\TransactionItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Transaction extends Model
 {
@@ -26,7 +25,7 @@ class Transaction extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function address()
+    public function address() :BelongsTo
     {
         return $this->belongsTo(Address::class);
     }
@@ -36,7 +35,7 @@ class Transaction extends Model
         return $this->hasMany(TransactionItem::class);
     }
 
-    public function transactionPayment()
+    public function transactionPayment() : HasOne
     {
         return $this->hasOne(TransactionPayment::class);
     }

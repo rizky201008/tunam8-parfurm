@@ -31,6 +31,7 @@ class Transactions
         $this->client = new \GuzzleHttp\Client();
         $this->transactionPayment = $transactionPayment;
     }
+
     public function getTotal($products)
     {
         $total = 0;
