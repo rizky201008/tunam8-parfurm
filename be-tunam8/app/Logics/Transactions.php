@@ -31,6 +31,7 @@ class Transactions
         $this->client = new \GuzzleHttp\Client();
         $this->transactionPayment = $transactionPayment;
     }
+
     public function getTotal($products)
     {
         $total = 0;
@@ -194,7 +195,7 @@ class Transactions
         \Midtrans\Config::$appendNotifUrl = config('app.midtrans_callback_url');
         $params = array(
             'transaction_details' => array(
-                'order_id' => $trxId,
+                'order_id' => $trxId . rand(1, 99999),
                 'gross_amount' => (int)$amount,
             )
         );
