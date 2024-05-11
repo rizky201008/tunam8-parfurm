@@ -59,6 +59,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('personal', [UserController::class, 'personalizeUser']);
         Route::get('personal', [UserController::class, 'getUserPersonal']);
         Route::put('personal', [UserController::class, 'updateUserPersonal']);
+        Route::put('update', [UserController::class, 'updateUserDetail']);
     });
     Route::group(['prefix' => 'address'], function () {
         Route::get('/', [AddressController::class, 'getAddresses']);
