@@ -29,7 +29,7 @@
                         <a><v-icon icon="mdi-list-box"></v-icon>&nbsp;Pesanan Saya</a>
                     </router-link>
                     <router-link to="/profile">
-                        <a style="cursor:pointer; align-self: flex-end; bottom: 60px; position: fixed;"><v-icon
+                        <a style="cursor:pointer; "><v-icon
                                 icon="mdi-account"></v-icon>&nbsp;My Profile</a>
                     </router-link>
                     <a @click="onLogout"
