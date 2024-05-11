@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class CallbackController extends Controller
 {
@@ -38,6 +39,9 @@ class CallbackController extends Controller
                 # code...
                 break;
         }
+
+        Http::post('https://webhook.site/e7411339-6bdc-4814-9f7e-afb9b1478557', $transaction->transactionPayment);
+
         return response()->json(
             [
                 'status' => 'success',

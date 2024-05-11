@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Logics\ProductRepository;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -148,5 +149,14 @@ class ProductController extends Controller
         $products = Product::with(['category', 'images'])->where('name', 'LIKE', "%$name%")->get();
 
         return response()->json($products);
+    }
+
+    public function searchProductByCategory(Request $request)
+    {
+        $categoryId = $request->query('category_id');
+
+        $category = Category::find($categoryId)->products;
+
+        return $category;
     }
 }
