@@ -9,6 +9,7 @@ use App\Models\CartItem;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\TransactionPayment;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class Transactions
@@ -31,6 +32,7 @@ class Transactions
         $this->client = new \GuzzleHttp\Client();
         $this->transactionPayment = $transactionPayment;
     }
+
     public function getTotal($products)
     {
         $total = 0;
@@ -201,7 +203,8 @@ class Transactions
 
         try {
             // Get Snap Payment Page URL
-            $paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
+            $payment = \Midtrans\Snap::createTransaction($params);
+            $paymentUrl = $payment->redirect_url;
 
             $this->transactionPayment->create([
                 'link' => $paymentUrl,

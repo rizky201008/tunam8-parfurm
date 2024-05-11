@@ -55,7 +55,7 @@ class UserController extends Controller
 
     public function updateUserPersonal(Request $request)
     {
-        $mergedReqs = array_merge(['tags' => $request->tags,'user_id' =>  $request->user()->id]);
+        $mergedReqs = array_merge(['tags' => $request->tags, 'user_id' => $request->user()->id]);
 
         $validator = Validator::make($mergedReqs, [
             'tags' => 'required',
@@ -82,5 +82,11 @@ class UserController extends Controller
         }
         $user->delete();
         return response()->json(['message' => 'User deleted'], 200);
+    }
+
+    public function updateUserDetail(Request $request)
+    {
+        User::find($request->user()->id)->update($request->all());
+        return response()->json(['message' => 'User updated'], 200);
     }
 }

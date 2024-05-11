@@ -36,8 +36,7 @@ Route::group(['prefix' => 'account'], function () {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('products', [ProductController::class, 'allProducts']);
     Route::get('product/{slug}', [ProductController::class, 'getProduct']);
-    Route::post('search-products', [ProductController::class, 'searchProductByName']);
-    Route::get('search-products-category', [ProductController::class, 'searchProductByCategory']);
+    Route::get('search-products', [ProductController::class, 'searchProductByName']);
     Route::get('personalized-products', [ProductController::class, 'getPersonalizedProducts']);
     Route::get('categories', [CategoryController::class, 'allCategories']);
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
@@ -60,6 +59,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('personal', [UserController::class, 'personalizeUser']);
         Route::get('personal', [UserController::class, 'getUserPersonal']);
         Route::put('personal', [UserController::class, 'updateUserPersonal']);
+        Route::put('update', [UserController::class, 'updateUserDetail']);
     });
     Route::group(['prefix' => 'address'], function () {
         Route::get('/', [AddressController::class, 'getAddresses']);

@@ -13,6 +13,7 @@ class CallbackController extends Controller
         $data = $request->all();
         $trxId = $data['order_id'];
         $status = $data['transaction_status'];
+        $channelResponse = $data['channel_response_message'];
 
         $transaction = Transaction::find($trxId);
 
@@ -26,6 +27,7 @@ class CallbackController extends Controller
                 ]);
                 break;
 
+            case 'expire':
             case 'cancel':
                 $transaction->update([
                     'status' => 'canceled'
@@ -36,11 +38,18 @@ class CallbackController extends Controller
                 break;
 
             default:
-                # code...
+
                 break;
         }
 
-        Http::post('https://webhook.site/e7411339-6bdc-4814-9f7e-afb9b1478557', $transaction->transactionPayment);
+        if ($channelResponse !== null && $channelResponse == "Approved") {
+            $transaction->update([
+                'status' => 'proccess'
+            ]);
+            $transaction->transactionPayment->update([
+                'status' => 'success'
+            ]);
+        }
 
         return response()->json(
             [

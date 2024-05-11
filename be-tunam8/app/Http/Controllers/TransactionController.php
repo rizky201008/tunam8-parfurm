@@ -17,7 +17,7 @@ class TransactionController extends Controller
 {
     protected $product;
     protected $transactionLogic;
-    protected $transaction;
+    protected Transaction $transaction;
     protected $transactionItems;
     protected $address;
     protected $cartItem;
@@ -102,8 +102,9 @@ class TransactionController extends Controller
         ];
 
         $insertTransaction = $this->transactionLogic->insertTransaction($transaction, $request->products);
+        $totalAmount = $total + $transaction['cost'];
 
-        $paymentLink = $this->transactionLogic->createMidtransSnapLink($total + $cost['cost'], $insertTransaction['transaction_id'] . rand(1000, 9999));
+        $paymentLink = $this->transactionLogic->createMidtransSnapLink($totalAmount, $insertTransaction['transaction_id']);
 
 
         if ($insertTransaction['error']) {

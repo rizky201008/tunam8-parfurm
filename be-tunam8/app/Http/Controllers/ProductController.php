@@ -145,8 +145,9 @@ class ProductController extends Controller
 
     public function searchProductByName(Request $request)
     {
-        $name = $request['query'];
-        $products = Product::with(['category', 'images'])->where('name', 'LIKE', "%$name%")->get();
+        $name = $request->query('query');
+        $category = $request->query('category');
+        $products = Product::with(['category', 'images'])->where('category_id', $category)->orWhere('name', 'LIKE', "%$name%")->get();
 
         return response()->json($products);
     }
