@@ -12,9 +12,7 @@
                   <v-btn color="red" rounded="xl" data-bs-toggle="modal" data-bs-target="#addKategori" >
                     Add Category
                   </v-btn>
-                  <!-- <v-btn color="red" rounded="xl" @click="openDaftarParfum">
-                    Add Parfum
-                  </v-btn> -->
+              
                 </div>
               </div>
             </div>
