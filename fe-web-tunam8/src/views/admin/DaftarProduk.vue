@@ -4,6 +4,10 @@
     <div>
       <div class="container-fluid px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
+        <v-dialog v-model="showDialog" hide-overlay persistent width="300" lazy>
+          <v-progress-circular indeterminate color="red" :size="90" class="mb-0"
+            style="right: -100px;"></v-progress-circular>
+        </v-dialog>
         <div class="row">
           <div class="col-md-12">
             <div class="card border-0 px-2 " style="text-align: end;">
@@ -28,12 +32,14 @@
         </div>
       </div>
       <!-- Modal Nich -->
-      <div class="modal fade text-black" id="addParfum" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade text-black" id="addParfum" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Daftar Parfum</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                id="closeModal"></button>
             </div>
             <div class="modal-body">
               <form @submit.prevent="addParfum">
@@ -85,7 +91,7 @@
     </div>
   </Navbar>
 </template>
-  
+
 <script>
 import axios from 'axios';
 import Navbar from '@/components/AdminNavbar.vue';
@@ -103,6 +109,7 @@ export default {
   },
   data() {
     return {
+      showDialog: false,
       parfum: {
         name: '',
         desc: '',
@@ -181,7 +188,7 @@ export default {
         });
         // $('#addParfum').modal('hide');
         this.clearForm();
-        this.selectedFiles = []; 
+        this.selectedFiles = [];
         this.selectedTags = [];
         this.$refs.datatablesParfum.retrieveParfum();
 
@@ -205,6 +212,7 @@ export default {
       }
     },
     async retrieveTags() {
+      this.showDialog = true
       try {
         const response = await axios.get(BASE_URL + '/tags', {
           headers: {
@@ -227,12 +235,14 @@ export default {
         this.categories = response.data;
       } catch (error) {
         console.error('Error fetching categories:', error);
+      } finally {
+        this.showDialog = false
       }
     },
   }
 };
 </script>
-  
+
 <style scoped>
 .dashboard-admin {
   min-height: 100vh;
@@ -274,4 +284,3 @@ button-custom,
   }
 }
 </style>
-  

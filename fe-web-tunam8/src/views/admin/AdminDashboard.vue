@@ -2,6 +2,10 @@
     <Navbar>
         <div>
             <div class="container-fluid px-4 py-4">
+                <v-dialog v-model="showDialog" hide-overlay persistent width="300" lazy>
+                    <v-progress-circular indeterminate color="red" :size="90" class="mb-0"
+                        style="right: -100px;"></v-progress-circular>
+                </v-dialog>
                 <div class="card-list">
                     <div class="row">
                         <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
@@ -35,31 +39,31 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="card border-0 shadow mb-2">
                             <div class="card-header bg-white">
                                 <h5 class="card-title">Grafik Penjualan (Bulan)</h5>
                             </div>
                             <div class="card-body">
                                 <div class="wrapper">
-                                    <Bar :data="chartData" :style="myStyles" :options="options" />
+                                    <CanvasJSChart :options="lineChart.options" :style="lineChart.styleOptions"
+                                        @chart-ref="lineChart.chartInstance" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <!-- <div class="col-md-6">
                         <div class="card border-0 shadow">
                             <div class="card-header bg-white">
                                 <h5 class="card-title">Grafik Pemasukan (Bulan)</h5>
                             </div>
                             <div class="card-body">
                                 <div class="wrapper">
-                                    <Line :data="lineData" :style="myStyles"
-                                        :options="{ responsive: true, maintainAspectRatio: false }" />
+                                    <CanvasJSChart :options="barChart.options" />
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -68,6 +72,7 @@
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
+import moment from 'moment';
 const BASE_URL = import.meta.env.VITE_BASE_URL_API;
 import { Bar } from 'vue-chartjs';
 import { Line } from 'vue-chartjs';
@@ -83,39 +88,49 @@ export default {
     },
     data() {
         return {
-            chartData: {
-                labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                datasets: [
-                    {
-                        label: 'Data One',
-                        backgroundColor: '#f87979',
-                        data: [40, 20, 12, 21, 22, 23, 31, 42, 53, 43, 76, 82],
-                    }
-                ],
+            showDialog: false,
+            lineChart: {
+                chart: null,
                 options: {
-                    scales: {
-                        yAxes: {
-                            beginAtZero: true,
-                            min: 0,
-                            max: 100,
-                        },
-                        responsive: true,
-                        maintainAspectRatio: false
+                    animationEnabled: true,
+                    exportEnabled: true,
+                    theme: "light2",
+                    axisX: {
+                        valueFormatString: "MMMM", // Display month names
+                        labelTextAlign: "center",
+                        labelAngle: 0
                     },
+                    axisY: {
+                        title: "Amount (in IDR Billion)", // Update the axis title
+                        valueFormatString: "IDR #,##0" // Format for Indonesian Rupiah
+                    },
+                    data: [{
+                        type: "line",
+                        yValueFormatString: "IDR #,##0",
+                        dataPoints: [] // Will be populated dynamically
+                    }]
                 },
+                styleOptions: {
+                    width: "100%",
+                    height: "360px"
+                }
             },
-            lineData: {
-                labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                datasets: [
-                    {
-                        label: 'Data One',
-                        backgroundColor: '#f87979',
-                        data: [40, 20, 12, 21, 22, 23, 31, 42, 53, 43, 76, 82],
-                    }
-                ]
+            barChart: {
+                options: {
+                    animationEnabled: true,
+                    axisY: {
+                        includeZero: true,
+                        suffix: " IDR" // Update the y-axis suffix
+                    },
+                    data: [{
+                        yValueFormatString: "#,### IDR", // Update y-value format to IDR
+                        dataPoints: [] // Will be populated dynamically
+                    }]
+                }
             },
             totalIncome: '',
             totalUser: '',
+            test: [],
         };
 
     },
@@ -128,6 +143,7 @@ export default {
             return numericPrice.toLocaleString('id-ID');
         },
         async getDashboardData() {
+            this.showDialog = true
             try {
                 const response = await axios.get(BASE_URL + '/dashboard', {
                     headers: {
@@ -137,9 +153,27 @@ export default {
                 const data = response.data;
                 this.totalIncome = data.omzet_all;
                 this.totalUser = data.user_total;
-                this.chartData.datasets[0].data = data.omzet_bulan;
+                const monthlyRevenues = data.omzet_bulan;
+                const maxYValue = Math.max(...monthlyRevenues);
+
+                const dataPoints = monthlyRevenues.map((revenue, index) => {
+                    const monthLabel = moment().month(index).format('MMMM');
+                    const formattedYValue = (revenue / maxYValue) * 100000; // Scale to 0-100000 range
+                    return { label: monthLabel, y: formattedYValue };
+                });
+                this.lineChart.options.data[0].dataPoints = dataPoints;
+                if (this.lineChart.chart) {
+                    this.lineChart.chart.render();
+                }
+
+                // this.barChart.options.data[0].dataPoints = dataPoints;
+                // if (this.barChart.chart) {
+                //     this.barChart.chart.render();
+                // }
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
+            } finally {
+                this.showDialog = false
             }
         }
     },

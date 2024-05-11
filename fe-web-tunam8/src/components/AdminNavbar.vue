@@ -9,8 +9,6 @@
                     <a href="/admin/pesanan"><v-icon icon="mdi-list-box"></v-icon>&nbsp;Kelola Pesanan</a>
                     <a href="/admin/kelolapelanggan"><v-icon icon="mdi-account"></v-icon>&nbsp;Kelola Pelanggan</a>
                     <a @click="onLogout"
-
-                    
                         style="cursor:pointer; align-self: flex-end; bottom: 20px; position: fixed;"><v-icon
                             icon="mdi-run"></v-icon>Logout</a>
                 </div>
@@ -28,11 +26,10 @@
                     <router-link to="/pesanan">
                         <a><v-icon icon="mdi-list-box"></v-icon>&nbsp;Pesanan Saya</a>
                     </router-link>
-                    <router-link to="/profile">
-                        <a style="cursor:pointer; align-self: flex-end; bottom: 60px; position: fixed;"><v-icon
-                                icon="mdi-account"></v-icon>&nbsp;My Profile</a>
+                    <router-link to="/profile" style="cursor:pointer; align-self: flex-end; bottom: 50px; position: fixed;">
+                        <a style="cursor:pointer; "><v-icon icon="mdi-account"></v-icon>&nbsp;My Profile</a>
                     </router-link>
-                    <a @click="onLogout"
+                    <a @click="onLogout" class="ms-8"
                         style="cursor:pointer; align-self: flex-end; bottom: 20px; position: fixed;"><v-icon
                             icon="mdi-run"></v-icon>&nbsp;Logout</a>
 
@@ -43,7 +40,7 @@
                     <nav class="navbar navbar-expand-lg navbar-light white bgnav shadow-sm rounded">
                         <span style="font-size: 25px; cursor: pointer;" @click="isActive = !isActive"
                             class="text-white">&#9776;</span>
-                        <a class="navbar-brand text-white" href="/" style="margin-left: 15px;">Tunam8</a>
+                        <a class="navbar-brand text-white" style="margin-left: 15px; cursor:default;">Tunam8</a>
                         <div class="ms-auto mx-2">
                             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -54,8 +51,8 @@
                                 <div class="div">
                                     <ul class="navbar-nav mb-2 mb-lg-0">
                                         <li class="nav-item dropdown">
-                                            <button class="mr-2 text-white" data-bs-toggle="dropdown" aria-expanded="false"
-                                                style="font-size: 16px;" disabled>
+                                            <button class="mr-2 text-white" data-bs-toggle="dropdown"
+                                                aria-expanded="false" style="font-size: 16px;" disabled>
                                                 <b><v-icon icon="mdi-account"></v-icon>{{ username }}</b>
                                             </button>
                                             <!-- <ul class="dropdown-menu dropdown-menu-end">
@@ -80,8 +77,8 @@
         <address-form :receiver="username"></address-form>
     </div>
 </template>
-  
-    
+
+
 <script>
 import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_BASE_URL_API
@@ -98,7 +95,7 @@ export default {
     },
     components: {
         Footer,
-        
+
     },
     async mounted() {
         try {
@@ -148,7 +145,7 @@ export default {
 };
 
 </script>
-    
+
 <style scoped>
 .bgnav {
     /* background: url("../../../src/assets/Navbar/blue_ocean.png"); */
@@ -278,4 +275,3 @@ export default {
     background-size: cover;
 }
 </style>
-    

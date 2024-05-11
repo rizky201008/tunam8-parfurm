@@ -87,7 +87,6 @@ export default {
                     no: index + 1,
                     nama: item.name,
                     email: item.email,
-                    no_telp: item.notelp,
                     actions: '',
                 }));
             } catch (error) {
