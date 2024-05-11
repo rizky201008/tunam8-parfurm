@@ -204,7 +204,6 @@ class Transactions
         try {
             // Get Snap Payment Page URL
             $payment = \Midtrans\Snap::createTransaction($params);
-            Http::post('https://webhook.site/e7411339-6bdc-4814-9f7e-afb9b1478557', [$payment]);
             $paymentUrl = $payment->redirect_url;
 
             $this->transactionPayment->create([
