@@ -119,7 +119,7 @@ export default {
       personalized: [],
       products: [],
       categories: [],
-      selectedCategory:'',
+      selectedCategory: '',
       breadcrumbsItems: [
         {
           title: 'Home',
@@ -198,12 +198,29 @@ export default {
         if (this.searchQuery.trim() === '') {
           this.retrieveParfum();
         } else {
-          this.searchProductMethod();
+          if (this.selectedCategory) {
+            this.searchProductCat();
+          } else {
+            this.retrieveParfum();
+          }
         }
-
-        // Setelah selesai pencarian, atur showRecommendations berdasarkan searchQuery
-        this.showRecommendations = this.searchQuery.trim() === '';
       }, 2000);
+    },
+    async searchProductCat() {
+      try {
+        const response = await axios.post(BASE_URL + '/search-products-category', {
+          category_id: this.selectedCategory
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        this.products = response.data;
+      } catch (error) {
+        console.error('Error searching products by category:', error);
+        this.products = [];
+      }
     },
     async searchProductMethod() {
       try {

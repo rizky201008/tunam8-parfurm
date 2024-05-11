@@ -11,6 +11,7 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
+import CanvasJSChart from '@canvasjs/vue-charts';
 
 const app = createApp(App)
 
@@ -20,7 +21,8 @@ const vuetify = createVuetify({
     directives,
   })
 
-app.use(router)
+app.use(router);
+app.use(CanvasJSChart);
 app.use(Notifications);
 app.use(vuetify);
 app.mount('#app')

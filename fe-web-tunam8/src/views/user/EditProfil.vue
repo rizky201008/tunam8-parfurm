@@ -32,7 +32,7 @@
                     <textarea class="form-control" v-model="users.email" id="desc"></textarea>
                     <br>
                     <button-custom class="btn btn-info mb-2" type="submit" @click="saveProfile">Save
-                      Parfum</button-custom>
+                      Profile</button-custom>
                   </form>
                 </div>
               </div>
@@ -356,42 +356,6 @@ export default {
 
 
 
-    // async savePersonal() {
-    //   try {
-    //     const selectedTagNames = this.selectedTags.map(id => this.tags.find(tag => tag.id === id).name);
-
-
-    //     const response = await axios.post(BASE_URL + '/user/personal', { tags: selectedTagNames }, {
-    //       headers: {
-    //         Authorization: 'Bearer ' + localStorage.getItem('access_token')
-    //       }
-    //     });
-
-    //     const personalizationId = response.data.id;
-    //     await axios.put(
-    //       BASE_URL + '/user/personal/' + personalizationId,
-    //       { tags: selectedTagNames },
-    //       {
-    //         headers: {
-    //           Authorization: 'Bearer ' + localStorage.getItem('access_token')
-    //         }
-    //       }
-    //     );
-    //     console.log('Personalization saved:', response.data);
-    //     this.$notify({
-    //       type: 'success',
-    //       title: 'Success',
-    //       text: 'Personalisasi berhasil diatur',
-    //       color: 'green',
-    //     });
-    //   } catch (error) {
-    //     console.error('Error saving personalization:', error);
-    //   }
-    // }
-
-    // handleCheckboxChange() {
-    //   this.savePersonal();
-    // },
     async openDialog() {
       await this.fetchProvinces();
       this.dialogForm = true;
