@@ -102,7 +102,7 @@ class TransactionController extends Controller
         ];
 
         $insertTransaction = $this->transactionLogic->insertTransaction($transaction, $request->products);
-        $totalAmount = $total + $cost['cost'];
+        $totalAmount = $total + $insertTransaction['cost'];
 
         $paymentLink = $this->transactionLogic->createMidtransSnapLink($totalAmount, $insertTransaction['transaction_id']);
 
