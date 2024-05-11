@@ -27,6 +27,7 @@ class CallbackController extends Controller
                 ]);
                 break;
 
+            case 'expire':
             case 'cancel':
                 $transaction->update([
                     'status' => 'canceled'
