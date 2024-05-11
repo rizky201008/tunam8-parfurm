@@ -25,7 +25,7 @@ use App\Http\Controllers\ProductImageController;
 |
 */
 
-Route::group(['prefix' => 'account', 'middleware' => 'cors'], function () {
+Route::group(['prefix' => 'account'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
     Route::group(['middleware' => 'auth:sanctum'], function () {
@@ -33,10 +33,11 @@ Route::group(['prefix' => 'account', 'middleware' => 'cors'], function () {
     });
 });
 
-Route::group(['middleware' => ['auth:sanctum', 'cors']], function () {
+Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('products', [ProductController::class, 'allProducts']);
     Route::get('product/{slug}', [ProductController::class, 'getProduct']);
     Route::post('search-products', [ProductController::class, 'searchProductByName']);
+    Route::get('search-products-category', [ProductController::class, 'searchProductByCategory']);
     Route::get('personalized-products', [ProductController::class, 'getPersonalizedProducts']);
     Route::get('categories', [CategoryController::class, 'allCategories']);
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
