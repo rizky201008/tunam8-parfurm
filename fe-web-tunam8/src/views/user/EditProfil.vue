@@ -29,7 +29,7 @@
                     <input class="form-control" type="text" v-model="users.name" id="judul" />
                     <br>
                     <label for="desc">Email</label>
-                    <textarea class="form-control" v-model="users.email" id="desc"></textarea>
+                    <input type="email" disabled class="form-control" v-model="users.email" id="desc"></input>
                     <br>
                     <button-custom class="btn btn-info mb-2" type="submit" @click="saveProfile">Save
                       Profile</button-custom>
@@ -91,7 +91,7 @@
                 <select v-model="selectedProvinceId" class="form-select" @change="handleProvinceChange">
                   <option value="" disabled>Select Province</option>
                   <option v-for="province in provinces" :key="province.province_id" :value="province.province_id">{{
-                    province.province }}</option>
+          province.province }}</option>
                 </select>
                 <br>
                 <a>Select Cities :</a>
@@ -101,7 +101,8 @@
                 <div v-else>
                   <select v-model="selectedCityId" class="form-select" @change="updatePostalCode">
                     <option value="" disabled>Select City</option>
-                    <option v-for="city in cities" :key="city.city_id" :value="city.city_id">{{ city.city_name }}</option>
+                    <option v-for="city in cities" :key="city.city_id" :value="city.city_id">{{ city.city_name }}
+                    </option>
                   </select>
                 </div>
                 <br>
@@ -140,7 +141,7 @@
                     <input class="form-check-input" type="checkbox" :value="tag.id" v-model="selectedTags"
                       @change="handleCheckboxChange" style="width: 20px; height: 20px;">
                     <label class="form-check-label" :for="'checkbox_' + tag.id" style="padding-left: 10px;">{{ tag.name
-                    }}</label>
+                      }}</label>
                   </div>
                   <div class="col-md-6 my-4">
                     <button-custom class="btn btn-info mb-2" type="submit" @click="savePersonal">Save Your
@@ -155,7 +156,7 @@
     </div>
   </Navbar>
 </template>
-  
+
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
@@ -290,6 +291,36 @@ export default {
           console.log('User has not personalized yet');
         } else {
           console.error('Error fetching personalization:', error);
+        }
+      }
+    },
+    async saveProfile() {
+      try {
+        const updatedUserData = {
+          name: this.users.name
+        };
+        const response = await axios.put(BASE_URL + '/user/update', updatedUserData, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.$notify({
+            type: 'success',
+            title: 'Success',
+            text: 'Namaberhasil diubah',
+            color: 'green'
+          });
+        console.log('Profile updated successfully:', response.data);
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message;
+          this.$notify({
+            type: 'error',
+            title: 'Error',
+            text: errorMessage,
+            color: 'red'
+          });
         }
       }
     },
@@ -487,7 +518,7 @@ export default {
 
 };
 </script>
-  
+
 <style scoped>
 .dashboard-admin {
   min-height: 100vh;
@@ -548,4 +579,3 @@ button-custom,
   }
 }
 </style>
-  
