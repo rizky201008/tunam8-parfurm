@@ -4,6 +4,14 @@
     <div class="dashboard-admin">
       <div class="container px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
+        <v-dialog v-model="dialog1" hide-overlay persistent width="300" lazy>
+          <v-card color="light">
+            <v-card-text>
+              Saving personalization
+              <v-progress-linear indeterminate color="red" class="mb-0"></v-progress-linear>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
         <div class="row " style="min-height: 264px ;">
           <div class="col-md-4">
             <div class="card mb-4 pt-4 border-0 px-2">
@@ -168,6 +176,7 @@ export default {
         name: '',
         email: '',
       },
+      dialog1: false,
       tags: [],
       selectedTags: [],
       breadcrumbsItems: [
@@ -285,6 +294,7 @@ export default {
       }
     },
     async savePersonal() {
+      this.dialog1 = true;
       try {
         const selectedTagNames = this.selectedTags.map(id =>
           this.tags.find(tag => tag.id === id).name
@@ -339,6 +349,8 @@ export default {
         }
       } catch (error) {
         console.error('Error saving personalization:', error);
+      } finally {
+        this.dialog1 = false;
       }
     },
 

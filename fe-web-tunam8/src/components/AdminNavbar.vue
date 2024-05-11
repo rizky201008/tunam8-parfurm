@@ -19,11 +19,19 @@
             <div v-else>
                 <div id="mySidenav" class="sidenav shadow" :class="{ openNavClass: isActive }">
                     <a class="closebtn" @click="isActive = !isActive" style="cursor: pointer;">&times;</a>
-                    <a href="/dashboard"><v-icon icon="mdi-home"></v-icon>&nbsp;Home</a>
-                    <a href="/keranjang"><v-icon icon="mdi-cart"></v-icon>&nbsp;Keranjang</a>
-                    <a href="/pesanan"><v-icon icon="mdi-list-box"></v-icon>&nbsp;Pesanan Saya</a>
-                    <a href="/profile" style="cursor:pointer; align-self: flex-end; bottom: 60px; position: fixed;"><v-icon
-                            icon="mdi-account"></v-icon>&nbsp;My Profile</a>
+                    <router-link to="/dashboard">
+                        <a><v-icon icon="mdi-home"></v-icon>&nbsp;Home</a>
+                    </router-link>
+                    <router-link to="/keranjang">
+                        <a><v-icon icon="mdi-cart"></v-icon>&nbsp;Keranjang</a>
+                    </router-link>
+                    <router-link to="/pesanan">
+                        <a><v-icon icon="mdi-list-box"></v-icon>&nbsp;Pesanan Saya</a>
+                    </router-link>
+                    <router-link to="/profile">
+                        <a style="cursor:pointer; align-self: flex-end; bottom: 60px; position: fixed;"><v-icon
+                                icon="mdi-account"></v-icon>&nbsp;My Profile</a>
+                    </router-link>
                     <a @click="onLogout"
                         style="cursor:pointer; align-self: flex-end; bottom: 20px; position: fixed;"><v-icon
                             icon="mdi-run"></v-icon>&nbsp;Logout</a>
