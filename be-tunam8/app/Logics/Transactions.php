@@ -195,7 +195,7 @@ class Transactions
         \Midtrans\Config::$appendNotifUrl = config('app.midtrans_callback_url');
         $params = array(
             'transaction_details' => array(
-                'order_id' => $trxId . rand(1, 99999),
+                'order_id' => $trxId,
                 'gross_amount' => (int)$amount,
             )
         );
