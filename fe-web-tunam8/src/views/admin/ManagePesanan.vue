@@ -4,6 +4,10 @@
     <div>
       <div class="container px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
+        <v-dialog v-model="showDialog" hide-overlay persistent width="300" lazy>
+          <v-progress-circular indeterminate color="red" :size="90" class="mb-0"
+            style="right: -100px;"></v-progress-circular>
+        </v-dialog>
         <div class="row" style="height: 60px;">
           <form class="search-container" @submit.prevent="searchProduct" style="max-width: 350px;">
             <div class="row">
@@ -137,7 +141,8 @@ export default {
       trackingNumber: "",
       activeTab: 'Semua',
       searchResults: [],
-      searchQuery: ''
+      searchQuery: '',
+      showDialog: false
     };
   },
   computed: {
@@ -164,6 +169,7 @@ export default {
       return numericPrice.toLocaleString('id-ID');
     },
     async getTransactions(status = '') {
+      this.showDialog = true
       try {
         const token = localStorage.getItem('access_token');
         const response = await axios.get(BASE_URL + '/all-transactions', {
@@ -177,6 +183,8 @@ export default {
         this.transactions = response.data;
       } catch (error) {
         console.error('Error fetching transactions:', error);
+      } finally {
+        this.showDialog = false
       }
     },
     async searchProduct() {
