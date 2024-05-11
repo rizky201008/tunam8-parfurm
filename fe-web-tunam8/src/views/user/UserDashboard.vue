@@ -5,20 +5,21 @@
       <div class=" px-4">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="row mb-2">
-          <form class="search-container" @submit.prevent="searchProduct" style="max-width: 350px;">
-            <v-card-text>
-              <v-text-field :loading="loading" append-inner-icon="mdi-magnify" density="compact" label="Search Perfume"
-                variant="solo" hide-details single-line @click:append-inner="onClick" @input="searchProduct"
-                v-model="searchQuery"></v-text-field>
-            </v-card-text>
+          <form class="search-container" @submit.prevent="searchProduct"
+            style="display: flex; align-items: center;">
+            <input type="text" class="form-control flex-grow-1" placeholder="Cari Parfum"
+              aria-describedby="inputGroupFileAddon04" v-model="searchQuery">
+            <button class="btn btn-outline-secondary" type="button" @click="searchProduct">Cari</button>
             <select class="form-select form-select-sm mb-3" aria-label="Large select example"
-              v-model="selectedCategory">
-              <option selected>Select Category</option>
-              <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}
-              </option>
-            </select>
+            v-model="selectedCategory">
+            <option value="" selected disabled>Select Category</option>
+            <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}
+            </option>
+          </select>
+          <button class="btn btn-outline-secondary mx-1" type="button" @click="clearSearch">X</button>
           </form>
         </div>
+
 
         <div class="row" style="border-bottom: 2px solid black;" v-if="showRecommendations">
           <div class="row mb-2 text-center text-black">
@@ -135,16 +136,18 @@ export default {
 
   },
   watch: {
-    // Watch for changes in searchQuery and trigger searchProduct method
-    searchQuery(newValue) {
-      if (newValue.trim() === '') {
-        // If searchQuery becomes empty, retrieve parfum (all products)
-        this.retrieveParfum();
-      } else {
-        // If searchQuery is not empty, perform search
-        this.searchProduct();
-      }
-    }
+    // searchQuery(newValue) {
+    //   if (newValue.trim() === '') {
+    //     this.retrieveParfum();
+    //   } else {
+    //     this.searchProductMethod();
+    //   }
+    // },
+    // selectedCategory(newValue, oldValue) {
+    //   if (newValue !== oldValue && newValue) {
+    //     this.searchProductMethod();
+    //   }
+    // }
   },
   mounted() {
     this.retrieveParfum();
@@ -185,59 +188,64 @@ export default {
         console.error(error);
       }
     },
-
     clearSearch() {
-      this.searchQuery = ''; // Clear the search input
+      this.searchQuery = '';
+      this.selectedCategory = ''
+      this.retrieveParfum();
     },
     async searchProduct() {
-      if (this.searchTimer) {
-        clearTimeout(this.searchTimer);
+      if (this.searchQuery.trim() === '') {
+        this.retrieveParfum();
+      } else {
+        this.searchProductMethod();
       }
-
-      this.searchTimer = setTimeout(() => {
-        if (this.searchQuery.trim() === '') {
-          this.retrieveParfum();
-        } else {
-          if (this.selectedCategory) {
-            this.searchProductCat();
-          } else {
-            this.retrieveParfum();
-          }
-        }
-      }, 2000);
-    },
-    async searchProductCat() {
-      try {
-        const response = await axios.post(BASE_URL + '/search-products-category', {
-          category_id: this.selectedCategory
-        }, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
-        });
-
-        this.products = response.data;
-      } catch (error) {
-        console.error('Error searching products by category:', error);
-        this.products = [];
-      }
+      this.showRecommendations = this.searchQuery.trim() === '';
     },
     async searchProductMethod() {
       try {
-        const response = await axios.post(BASE_URL + '/search-products', {
-          query: this.searchQuery.trim()
-        }, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
-        });
+        const config = {
+          params: {}
+        };
+        if (this.searchQuery.trim() !== '') {
+          config.params.query = this.searchQuery.trim();
+        } else {
+          config.params.query = ' '; // Send a space character as the query if searchQuery is empty
+        }
+        if (this.selectedCategory) {
+          config.params.category_id = this.selectedCategory;
+        }
+
+        config.headers = {
+          Authorization: "Bearer " + localStorage.getItem('access_token')
+        };
+
+        const response = await axios.get(BASE_URL + '/search-products', config);
 
         this.products = response.data;
       } catch (error) {
         console.error('Error searching products:', error);
-        this.products = []; // Clear products if there's an error
+        this.products = [];
       }
     },
+
+    // async searchProductMethod() {
+    //   try {
+    //     const response = await axios.get(BASE_URL + '/search-products', {
+    //       query: this.searchQuery.trim()
+    //     }, {
+    //       headers: {
+    //         Authorization: "Bearer " + localStorage.getItem('access_token')
+    //       }
+    //     });
+
+    //     this.products = response.data;
+    //   } catch (error) {
+    //     console.error('Error searching products:', error);
+    //     this.products = []; // Clear products if there's an error
+    //   }
+    // },
+
+
     async retrieveParfum() {
       try {
         const response = await axios.get(BASE_URL + '/products', {
