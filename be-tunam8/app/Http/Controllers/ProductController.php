@@ -12,9 +12,9 @@ class ProductController extends Controller
 {
     public function allProducts()
     {
-        $products = Product::with(['category', 'images'])->paginate(10);
+        $products = Product::with(['category', 'images'])->get();
 
-        return response()->json($products);
+        return response()->json(['data' => $products]);
     }
 
     public function getPersonalizedProducts(Request $request)
