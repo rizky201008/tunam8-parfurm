@@ -40,11 +40,18 @@ class TransactionController extends Controller
     {
         $status = $request->query('status');
         $date = $request->query('date');
-        $formattedDate = new Carbon($date);
-        if ($status !== null || $date !== null) {
-            return response()->json($this->transaction->with(['transactionItems', 'transactionPayment', 'user'])->where('status', $status)->orWhereDate('created_at', '=', $formattedDate)->get());
+        $query = $this->transaction->with(['transactionItems', 'transactionPayment', 'user']);
+
+        if ($date !== null) {
+            $formattedDate = new Carbon($date);
+            $query->whereDate('created_at', '=', $formattedDate);
         }
-        return response()->json($this->transaction->with(['transactionItems', 'transactionPayment', 'user'])->get());
+
+        if ($status !== null) {
+            $query->where('status', $status);
+        }
+
+        return response()->json($query->get());
     }
 
     public function getTransactions(Request $request)
