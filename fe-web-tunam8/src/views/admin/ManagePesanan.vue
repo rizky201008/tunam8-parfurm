@@ -8,11 +8,20 @@
           <v-progress-circular indeterminate color="red" :size="90" class="mb-0"
             style="right: -100px;"></v-progress-circular>
         </v-dialog>
-        <div class="row" style="height: 60px;">
-          <form class="search-container" @submit.prevent="searchProduct" style="max-width: 350px;">
+        <div class="row d-flex justify-content-center" style="height: 60px;">
+          <form class="" style="max-width: 350px;">
             <div class="row">
-              <input type="text" id="search-bar" placeholder="Cari Pesanan" v-model="searchQuery"
-                @input="searchProduct">
+              <div class="col">
+                <input type="text" id="search-bar" placeholder="Cari Pesanan" v-model="searchQuery"
+                  @input="searchProduct">
+              </div>
+              <div class="col">
+                <div class="form-floating mb-3">
+                  <input type="date" v-model="selectedDate"  @change="onDateChange" class="form-control"
+                    id="floatingInput" placeholder="name@example.com">
+                  <label for="floatingInput">Date</label>
+                </div>
+              </div>
             </div>
           </form>
         </div>
@@ -142,12 +151,16 @@ export default {
       activeTab: 'Semua',
       searchResults: [],
       searchQuery: '',
-      showDialog: false
+      showDialog: false,
+      selectedDate: ''
     };
   },
   computed: {
     statusOptions() {
       return ['proccess', 'canceled', 'shipping', 'received', 'unpaid'];
+    },
+    onDateChange() {
+      this.getTransactions(this.activeTabStatus());
     },
     filteredTransactions() {
       if (this.selectedTab === 'Semua') {
@@ -164,17 +177,24 @@ export default {
     formatDate(data_date) {
       return moment.utc(data_date).format('YYYY-MM-DD')
     },
+    newformatDate(date) {
+      if (!date) return '';
+      const [year, month, day] = date.split('-');
+      return `${day}-${month}-${year}`;
+    },
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
     },
     async getTransactions(status = '') {
-      this.showDialog = true
+      this.showDialog = true;
       try {
         const token = localStorage.getItem('access_token');
+        const formattedDate = this.newformatDate(this.selectedDate);
         const response = await axios.get(BASE_URL + '/all-transactions', {
           params: {
-            status: status
+            status: status || this.activeTabStatus(),
+            date: formattedDate
           },
           headers: {
             Authorization: 'Bearer ' + token
@@ -184,7 +204,7 @@ export default {
       } catch (error) {
         console.error('Error fetching transactions:', error);
       } finally {
-        this.showDialog = false
+        this.showDialog = false;
       }
     },
     async searchProduct() {
@@ -235,6 +255,24 @@ export default {
       this.getTransactions();
       this.dialogForm = false;
     },
+    goToTransactionDetail(id) {
+      this.$router.push({ path: `/admin/pesanan/` + id });
+    },
+    toggleTab(tab) {
+      this.activeTab = tab;
+      this.getTransactions(this.activeTabStatus());
+    },
+    activeTabStatus() {
+      switch (this.activeTab) {
+        case 'Belum Bayar': return 'unpaid';
+        case 'Proses': return 'proccess';
+        case 'Dikirim': return 'shipping';
+        case 'Diterima': return 'received';
+        case 'Dibatalkan': return 'canceled';
+        default: return '';
+      }
+    },
+
     getClassForStatus(status) {
       if (status === 'unpaid') {
         return 'unpaid';
@@ -248,34 +286,6 @@ export default {
         return 'canceled';
       } else {
         return '';
-      }
-    },
-    goToTransactionDetail(id) {
-      this.$router.push({ path: `/admin/pesanan/` + id });
-    },
-    toggleTab(tab) {
-      // Update activeTab state
-      this.activeTab = tab;
-
-      // Call getTransactions method with appropriate status based on the selected tab
-      switch (tab) {
-        case 'Belum Bayar':
-          this.getTransactions('unpaid');
-          break;
-        case 'Proses':
-          this.getTransactions('proccess');
-          break;
-        case 'Dikirim':
-          this.getTransactions('shipping');
-          break;
-        case 'Diterima':
-          this.getTransactions('received');
-          break;
-        case 'Dibatalkan':
-          this.getTransactions('canceled');
-          break;
-        default:
-          this.getTransactions(); // For default tab 'Semua', no status parameter is passed
       }
     },
   }
