@@ -8,89 +8,113 @@
           <v-progress-circular indeterminate color="red" :size="90" class="mb-0"
             style="margin: auto;"></v-progress-circular>
         </v-dialog>
-        <div class="col-md-12 bg-white p-4">
-          <div class="row px-3 border-bottom">
-            <div class="col-3">
-              <v-chip class="mt-3">{{ transaction.status }}</v-chip>
+        <div v-if="!loading">
+          <div class="col-md-12 bg-white p-4">
+            <div class="row px-3 border-bottom">
+              <div class="col-3">
+                <v-chip class="mt-3">{{ transaction.status }}</v-chip>
+              </div>
+              <h4>#{{ transaction.id }}
+              </h4>
             </div>
-            <h4>#{{ transaction.id }}
-            </h4>
-          </div>
-          <div class="row px-3 pt-2">
-            <div class="col-md-3">
-              <a style="font-size: 20px;">Order Date</a>
-              <br>
-              <a style="font-size: 20px;">Total Harga</a>
-              <br>
-              <a style="font-size: 20px;">Nomor Resi</a>
-            </div>
-            <div class="col-md-9">
-              <a style="font-size: 20px;">: {{ formatDate(transaction.created_at) }}</a>
-              <br>
-              <a style="font-size: 20px;">: Rp. {{ formatPrice(transaction.total) }}</a>
-              <br>
-              <a style="font-size: 20px;">: {{ transaction.tracking_number }}</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-12 bg-white p-4 mt-2">
-          <div class="row px-3 border-bottom">
-            <h4>Alamat</h4>
-          </div>
-          <div class="row px-3 pt-2">
-            <div class="col-md-3">
-              <a style="font-size: 20px;">Nama Penerima</a>
-              <br>
-              <a style="font-size: 20px;">City</a>
-              <br>
-              <a style="font-size: 20px;">Alamat Detail</a>
-            </div>
-            <div class="col-md-9">
-              <a style="font-size: 20px;">: {{ getAddressById(transaction.address_id).receiver }}</a>
-              <br>
-              <a style="font-size: 20px;">: {{ getAddressById(transaction.address_id).city }}</a>
-              <br>
-              <a style="font-size: 20px;">: {{ getAddressById(transaction.address_id).address_detail }}</a>
+            <div class="row px-3 pt-2">
+              <div class="col-md-3">
+                <a style="font-size: 20px;">Order Date</a>
+                <br>
+                <a style="font-size: 20px;">Total Harga</a>
+                <br>
+                <a style="font-size: 20px;">Nomor Resi</a>
+                <br>
+                <a style="font-size: 20px;">Harga Ongkos Kirim</a>
+              </div>
+              <div class="col-md-9">
+                <a style="font-size: 20px;">: {{ formatDate(transaction.created_at) }}</a>
+                <br>
+                <a style="font-size: 20px;">: Rp. {{ formatPrice(transaction.total) }}</a>
+                <br>
+                <a style="font-size: 20px;">: {{ transaction.tracking_number }}</a>
+                <br>
+                <a style="font-size: 20px;">: Rp. {{ formatPrice(transaction.cost) }}</a>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-md-12 bg-white p-4 mt-2">
-          <div class="row px-3 border-bottom">
-            <h4>Produk Dibeli</h4>
+          <div class="col-md-12 bg-white p-4 mt-2">
+            <div class="row px-3 border-bottom">
+              <h4>Alamat</h4>
+            </div>
+            <div class="row px-3 pt-2">
+              <div class="col-md-3">
+                <a style="font-size: 20px;">Nama Penerima</a>
+                <br>
+                <a style="font-size: 20px;">City</a>
+                <br>
+                <a style="font-size: 20px;">Alamat Detail</a>
+              </div>
+              <div class="col-md-9">
+                <a style="font-size: 20px;">: {{ getAddressById(transaction.address_id).receiver }}</a>
+                <br>
+                <a style="font-size: 20px;">: {{ getAddressById(transaction.address_id).city }}</a>
+                <br>
+                <a style="font-size: 20px;">: {{ getAddressById(transaction.address_id).address_detail }}</a>
+              </div>
+            </div>
           </div>
-          <div class="row px-3 pt-2">
-            <div v-for="item in transaction.transaction_items" :key="item.id" class="col-md-12 bg-white p-4 mt-2">
-              <div class="row px-3 pt-2">
-                <div class="col-md-3">
-                  <img :src="item.product.image" alt="Product Image" class="product-image">
-                </div>
-                <div class="col-md-9 pt-2">
-                  <a style="font-size: 20px; font-weight: bold;">{{ item.product.name }}</a>
-                  <br>
-                  <a style="font-size: 20px;">Price: Rp. {{ formatPrice(item.price) }}</a>
-                  <br>
-                  <a style="font-size: 20px;">Quantity: {{ item.qty }}</a>
-                  <br>
+          <div class="col-md-12 bg-white p-4 mt-2">
+            <div class="row px-3 border-bottom">
+              <h4>Produk Dibeli</h4>
+            </div>
+            <div class="row px-3 pt-2">
+              <div v-for="item in transaction.transaction_items" :key="item.id" class="col-md-12 bg-white p-4 mt-2">
+                <div class="row px-3 pt-2">
+                  <div class="col-md-3">
+                    <img :src="item.product.image" alt="Product Image" class="product-image">
+                  </div>
+                  <div class="col-md-9 pt-2">
+                    <a style="font-size: 20px; font-weight: bold;">{{ item.product.name }}</a>
+                    <br>
+                    <a style="font-size: 20px;">Price: Rp. {{ formatPrice(item.price) }}</a>
+                    <br>
+                    <a style="font-size: 20px;">Quantity: {{ item.qty }}</a>
+                    <br>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-md-12 bg-white p-4 mt-2 mb-4" v-if="transaction.status === 'unpaid'">
-          <div class="row px-3 border-bottom">
-            <h4>Bayar</h4>
+          <div class="col-md-12 bg-white p-4 mt-2 mb-4" v-if="transaction.status === 'unpaid'">
+            <div class="row px-3 border-bottom">
+              <h4>Bayar</h4>
+            </div>
+            <div class="row px-3 pt-2">
+              <div class="col-md-4">
+                Total Belum Bayar:
+              </div>
+              <div class="col-md-6">
+                <a style="font-size: 20px; font-weight: bold;">: Rp. {{ formatPrice(transaction.total) }}</a>
+              </div>
+              <div class="col-md-2">
+                <v-btn color="red" rounded="xl" :href="transaction.transaction_payment.link" class="mx-4 mb-2 mt-2">
+                  Bayar
+                </v-btn>
+              </div>
+            </div>
           </div>
-          <div class="row px-3 pt-2">
-            <div class="col-md-4">
-              Total Belum Bayar:
+          <div class="col-md-12 bg-white p-4 mt-2 mb-4" v-if="transaction.status === 'shipping'">
+            <div class="row px-3 border-bottom">
+              <h4>Konfirmasi Barang Diterima</h4>
             </div>
-            <div class="col-md-6">
-              <a style="font-size: 20px; font-weight: bold;">: Rp. {{ formatPrice(transaction.total) }}</a>
-            </div>
-            <div class="col-md-2">
-              <v-btn color="red" rounded="xl" :href="transaction.transaction_payment.link" class="mx-4 mb-2 mt-2">
-                Bayar
-              </v-btn>
+            <div class="row px-3 pt-2">
+              <div class="col-md-4">
+                Total Harga:
+              </div>
+              <div class="col-md-6">
+                <a style="font-size: 20px; font-weight: bold;">: Rp. {{ formatPrice(transaction.total) }}</a>
+              </div>
+              <div class="col-md-2">
+                <v-btn color="green" rounded="xl" @click="barangDiterima" class="mx-4 mb-2 mt-2">
+                  Barang Diterima
+                </v-btn>
+              </div>
             </div>
           </div>
         </div>
@@ -98,7 +122,7 @@
     </div>
   </Navbar>
 </template>
-  
+
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
@@ -115,6 +139,7 @@ export default {
   data() {
     return {
       ids: '',
+      loading: true,
       showDialog: false,
       breadcrumbsItems: [
         {
@@ -150,6 +175,29 @@ export default {
     formatDate(data_date) {
       return moment.utc(data_date).format('YYYY-MM-DD')
     },
+    async barangDiterima() {
+      try {
+        const transactionId = this.$route.params.id;
+        const response = await axios.put(BASE_URL + `/transactions`, {
+          id: transactionId,
+          status: 'received'
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.transaction.status = 'received';
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Barang terkonfirmasi diterima',
+          color: 'green'
+        });
+        console.log('Transaction marked as received:', response.data);
+      } catch (error) {
+        console.error('Error marking transaction as received:', error);
+      }
+    },
     async getTransactionDetails() {
       try {
         const transactionId = this.$route.params.id;
@@ -160,10 +208,17 @@ export default {
         });
         this.transaction = response.data;
         this.transaction.transaction_items.forEach(item => {
-          item.product = this.getProductById(item.product_id);
+          // Ensure item.product is defined and has images
+          if (item.product && item.product.images && item.product.images.length > 0) {
+            item.product.image = item.product.images[0].link;
+          } else {
+            item.product.image = 'default_image_link'; // Fallback image if no images are available
+          }
         });
       } catch (error) {
         console.error('Error fetching transaction details:', error);
+      } finally {
+        this.loading = false
       }
     },
 
@@ -202,7 +257,7 @@ export default {
 
 
 </script>
-  
+
 <style scoped>
 /* .card-img-top {
   max-width: 450px;
@@ -324,4 +379,3 @@ export default {
   height: 20px;
 }
 </style>
-  

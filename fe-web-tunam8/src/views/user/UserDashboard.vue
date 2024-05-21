@@ -22,25 +22,19 @@
           <div class="col-12">
             <form class="search-container d-flex align-items-center" @submit.prevent="searchProduct"
               style="gap: 0.5rem;">
-              <div class="dropdown">
-                <select class="form-select form-select-sm mb-3" aria-label="Large select example"
-                  v-model="selectedCategory" @change="searchProduct">
-                  <option value="" selected disabled>Select Category</option>
-                  <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}
-                  </option>
-                </select>
-                <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-                  <li v-for="category in categories" :key="category.id">
-                    <a class="dropdown-item" @click="selectCategory(category.id)">{{ category.name }}</a>
-                  </li>
-                </ul>
-              </div>
+
+              <select class="form-select form-select-sm mb-3" aria-label="Large select example"
+                v-model="selectedCategory" @change="searchProduct">
+                <option value="" selected disabled>Select Category</option>
+                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}
+                </option>
+              </select>
+
+
               <input type="text" class="form-control flex-grow-1" placeholder="Cari Parfum"
                 aria-describedby="inputGroupFileAddon04" v-model="searchQuery">
-              <button class="btn btn-outline-secondary" type="button" @click="searchProduct">
-                <i class="fas fa-search"></i>
-              </button>
-              <button class="btn btn-outline-secondary mx-1" type="button" @click="clearSearch">X</button>
+              <v-icon icon="mdi-magnify" @click="searchProduct"></v-icon>
+              <button class="btn btn-danger mx-1 text-white" type="button" @click="clearSearch">X</button>
             </form>
           </div>
         </div>
