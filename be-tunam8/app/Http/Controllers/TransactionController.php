@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Exception;
 use App\Models\Address;
 use App\Models\Product;
 use App\Models\CartItem;
 use App\Models\Transaction;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\TransactionItem;
 use App\Models\TransactionPayment;
@@ -34,13 +36,22 @@ class TransactionController extends Controller
         $this->transactionLogic = new TransactionLogic($this->transaction, $this->transactionItems, $this->product, $this->address, $this->cartItem, $this->transactionPayment);
     }
 
-    public function allTransactions(Request $request)
+    public function allTransactions(Request $request): JsonResponse
     {
         $status = $request->query('status');
-        if ($status !== null) {
-            return response()->json($this->transaction->with(['transactionItems', 'transactionPayment', 'user'])->where('status', $status)->get());
+        $date = $request->query('date');
+        $query = $this->transaction->with(['transactionItems', 'transactionPayment', 'user']);
+
+        if ($date !== null) {
+            $formattedDate = new Carbon($date);
+            $query->whereDate('created_at', '=', $formattedDate);
         }
-        return response()->json($this->transaction->with(['transactionItems', 'transactionPayment', 'user'])->get());
+
+        if ($status !== null) {
+            $query->where('status', $status);
+        }
+
+        return response()->json($query->get());
     }
 
     public function getTransactions(Request $request)
@@ -137,7 +148,6 @@ class TransactionController extends Controller
 
     public function searchTransactions(Request $request)
     {
-//        $results = null;
         $results = Transaction::with(['transactionItems', 'user'])->where('id', 'like', '%' . $request->query('q') . '%')->orWhereHas('user', function ($query) use ($request) {
             $query->where('name', 'like', '%' . $request->query('q') . '%');
         })->get();
@@ -145,14 +155,14 @@ class TransactionController extends Controller
         return response()->json($results);
     }
 
-    public function deleteTransaction(Request $request)
+    public function deleteTransaction(Request $request): JsonResponse
     {
         $transaction = Transaction::find($request->id);
         $transaction->delete();
         return response()->json(['message' => 'Transaction deleted']);
     }
 
-    public function updateTransaction(Request $request)
+    public function updateTransaction(Request $request): JsonResponse
     {
         $request->validate([
             'id' => 'required|exists:transactions,id',
