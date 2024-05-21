@@ -54,6 +54,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('tags', [TagsController::class, 'allTags']);
     Route::get('tags/products/{tag}', [TagsController::class, 'getProductsByTag']);
     Route::post('shipping', [TransactionController::class, 'getShippingCost']);
+    Route::put('transactions', [TransactionController::class, 'updateTransaction']);
     Route::group(['prefix' => 'user'], function () {
         Route::get('detail', [AuthController::class, 'user']);
         Route::post('personal', [UserController::class, 'personalizeUser']);
@@ -83,7 +84,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::put('categories', [CategoryController::class, 'updateCategory']);
         Route::delete('categories', [CategoryController::class, 'deleteCategory']);
         Route::post('product-image', [ProductImageController::class, 'updateProductImage']);
-        Route::put('transactions', [TransactionController::class, 'updateTransaction']);
         Route::get('all-transactions', [TransactionController::class, 'allTransactions']);
         Route::get('dashboard', [DashboardController::class, 'index']);
     });
