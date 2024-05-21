@@ -62,15 +62,6 @@ class Transactions
             }
         }
     }
-
-    public function validateAddressOwner($addressId, $userId)
-    {
-        $address = $this->address->find($addressId);
-        if ($address->user_id !== $userId) {
-            throw new Exception('Address not found');
-        }
-    }
-
     public function decreaseStock($products)
     {
         foreach ($products as $product) {
