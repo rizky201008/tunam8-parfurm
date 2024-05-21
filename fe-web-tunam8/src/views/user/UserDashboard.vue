@@ -4,26 +4,51 @@
     <div class="container">
       <div class=" px-4">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
-        <div class="row mb-2">
-          <form class="search-container" @submit.prevent="searchProduct"
-            style="display: flex; align-items: center;">
+        <!-- <div class="row mb-2">
+          <form class="search-container" @submit.prevent="searchProduct" style="display: flex; align-items: center;">
             <input type="text" class="form-control flex-grow-1" placeholder="Cari Parfum"
               aria-describedby="inputGroupFileAddon04" v-model="searchQuery">
             <button class="btn btn-outline-secondary" type="button" @click="searchProduct">Cari</button>
             <select class="form-select form-select-sm mb-3" aria-label="Large select example"
-            v-model="selectedCategory">
-            <option value="" selected disabled>Select Category</option>
-            <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}
-            </option>
-          </select>
-          <button class="btn btn-outline-secondary mx-1" type="button" @click="clearSearch">X</button>
+              v-model="selectedCategory"  @change="searchProduct">
+              <option value="" selected disabled>Select Category</option>
+              <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}
+              </option>
+            </select>
+            <button class="btn btn-outline-secondary mx-1" type="button" @click="clearSearch">X</button>
           </form>
+        </div> -->
+        <div class="row">
+          <div class="col-12">
+            <form class="search-container d-flex align-items-center" @submit.prevent="searchProduct"
+              style="gap: 0.5rem;">
+              <div class="dropdown">
+                <select class="form-select form-select-sm mb-3" aria-label="Large select example"
+                  v-model="selectedCategory" @change="searchProduct">
+                  <option value="" selected disabled>Select Category</option>
+                  <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}
+                  </option>
+                </select>
+                <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+                  <li v-for="category in categories" :key="category.id">
+                    <a class="dropdown-item" @click="selectCategory(category.id)">{{ category.name }}</a>
+                  </li>
+                </ul>
+              </div>
+              <input type="text" class="form-control flex-grow-1" placeholder="Cari Parfum"
+                aria-describedby="inputGroupFileAddon04" v-model="searchQuery">
+              <button class="btn btn-outline-secondary" type="button" @click="searchProduct">
+                <i class="fas fa-search"></i>
+              </button>
+              <button class="btn btn-outline-secondary mx-1" type="button" @click="clearSearch">X</button>
+            </form>
+          </div>
         </div>
 
-
         <div class="row" style="border-bottom: 2px solid black;" v-if="showRecommendations">
-          <div class="row mb-2 text-center text-black">
-            RECOMMENDATIONS
+          <div class="row mb-2 text-center text-black"
+            style="font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+            REKOMENDASI
           </div>
           <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6"
             v-for="(item, index) in personalized.slice(0, 6)" :key="item.id">
@@ -53,7 +78,7 @@
                   <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
                 </div>
                 <div class="d-flex flex-wrap align-items-center py-2">
-                  <div class="new-price">
+                  <div class="new-price text-truncate">
                     Rp. {{ formatPrice(item.price) }}
                   </div>
                 </div>
@@ -83,7 +108,7 @@
                   </button>
                 </div>
               </div>
-              <div class="product-info">
+              <div class="product-info p-2">
                 <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
                 <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
                 <div class="d-flex align-items-center">
@@ -120,6 +145,7 @@ export default {
       personalized: [],
       products: [],
       categories: [],
+      searchQuery: '',
       selectedCategory: '',
       breadcrumbsItems: [
         {
@@ -194,7 +220,7 @@ export default {
       this.retrieveParfum();
     },
     async searchProduct() {
-      if (this.searchQuery.trim() === '') {
+      if (this.searchQuery.trim() === '' && !this.selectedCategory) {
         this.retrieveParfum();
       } else {
         this.searchProductMethod();
@@ -204,13 +230,11 @@ export default {
     async searchProductMethod() {
       try {
         const config = {
-          params: {}
+          params: {
+            query: this.searchQuery.trim() !== '' ? this.searchQuery.trim() : ' ', // Include a space if the query is empty
+          }
         };
-        if (this.searchQuery.trim() !== '') {
-          config.params.query = this.searchQuery.trim();
-        } else {
-          config.params.query = ' '; // Send a space character as the query if searchQuery is empty
-        }
+
         if (this.selectedCategory) {
           config.params.category_id = this.selectedCategory;
         }
@@ -220,7 +244,6 @@ export default {
         };
 
         const response = await axios.get(BASE_URL + '/search-products', config);
-
         this.products = response.data;
       } catch (error) {
         console.error('Error searching products:', error);
@@ -314,7 +337,7 @@ a {
 }
 
 .product-single-card {
-  padding: 20px;
+  /* padding: 20px; */
   border-radius: 5px;
   box-shadow: 1px 1px 15px #cccccc40;
   transition: 0.5s ease-in;
@@ -380,7 +403,7 @@ a {
   /* width: 250px;  */
   /* height: 150px;  */
   /* object-fit: cover; */
-  border: 1px solid black;
+  /* border: 1px solid black; */
   /* Add a 5px solid white border */
   box-sizing: border-box;
 }
