@@ -36,7 +36,7 @@ Route::group(['prefix' => 'account'], function () {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('products', [ProductController::class, 'allProducts']);
     Route::get('product/{slug}', [ProductController::class, 'getProduct']);
-    Route::get('search-products', [ProductController::class, 'searchProductByName']);
+    Route::get('search-products', [ProductController::class, 'searchProducts']);
     Route::get('personalized-products', [ProductController::class, 'getPersonalizedProducts']);
     Route::get('categories', [CategoryController::class, 'allCategories']);
     Route::get('category/{slug}', [CategoryController::class, 'getCategoryBySlug']);
