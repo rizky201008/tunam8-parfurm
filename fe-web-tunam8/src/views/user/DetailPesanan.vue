@@ -8,7 +8,7 @@
           <v-progress-circular indeterminate color="red" :size="90" class="mb-0"
             style="margin: auto;"></v-progress-circular>
         </v-dialog>
-        <div v-if="!loading">
+        <div v-if="loading === false">
           <div class="col-md-12 bg-white p-4">
             <div class="row px-3 border-bottom">
               <div class="col-3">
@@ -93,7 +93,7 @@
                 <a style="font-size: 20px; font-weight: bold;">: Rp. {{ formatPrice(transaction.total) }}</a>
               </div>
               <div class="col-md-2">
-                <v-btn color="red" rounded="xl" :href="transaction.transaction_payment.link" class="mx-4 mb-2 mt-2">
+                <v-btn color="red" rounded="xl" @click="showTermsDialog" class="mx-4 mb-2 mt-2">
                   Bayar
                 </v-btn>
               </div>
@@ -118,6 +118,23 @@
             </div>
           </div>
         </div>
+        <v-dialog v-model="termsDialog" max-width="600px">
+          <v-card>
+            <v-card-title class="headline">Syarat dan Ketentuan</v-card-title>
+            <v-card-text>
+              <ol>
+                <li>Pengembalian barang maksimal dilakukan pada saat status belum shipping</li>
+                <li>Wajib melakukan video unboxing pada saat membuka paket!</li>
+                <li>Refund hanya diberikan sebesar 80% dari total transaksi yang dibatalkan</li>
+              </ol>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="green darken-1" text @click="acceptTerms">Saya Setuju</v-btn>
+              <v-btn color="red darken-1" text @click="termsDialog = false">Batal</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
   </Navbar>
@@ -140,6 +157,7 @@ export default {
     return {
       ids: '',
       loading: true,
+      termsDialog: false,
       showDialog: false,
       breadcrumbsItems: [
         {
@@ -174,6 +192,13 @@ export default {
     },
     formatDate(data_date) {
       return moment.utc(data_date).format('YYYY-MM-DD')
+    },
+    showTermsDialog() {
+      this.termsDialog = true;
+    },
+    acceptTerms() {
+      this.termsDialog = false;
+      window.open(this.transaction.transaction_payment.link, '_blank');
     },
     async barangDiterima() {
       try {

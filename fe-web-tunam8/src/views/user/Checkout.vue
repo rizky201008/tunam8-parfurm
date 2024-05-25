@@ -16,14 +16,14 @@
               <div class="product-details">
                 <a style="font-size: 27px;">{{ item.product.name }}</a>
                 <p style="font-weight: bold; font-size: large; color: green;">Rp. {{ formatPrice(item.product.price)
-                }}</p>
+                  }}</p>
               </div>
             </div>
             <div class="col-5">
               <div class="quantity-controls">
                 <span class="mx-2" style="font-size: 20px;">Qty. {{ item.quantity }}</span>
                 <p style="font-weight: bold; font-size: medium">Rp. {{ formatPrice(item.product.price * item.quantity)
-                }}</p>
+                  }}</p>
               </div>
             </div>
           </div>
@@ -109,23 +109,40 @@
                 </div>
                 <div class="col-md-4 col-6">
                   <a style="font-size: 20px;"> : <span style="font-weight: 500; color: #D0011B">Rp. {{
-                    formatPrice(totalPaid) }} </span></a>
+          formatPrice(totalPaid) }} </span></a>
                 </div>
               </div>
               <div class="row mt-8 mx-2">
                 <button class="btn btn-danger" style="width: 100%;height:50px; margin-bottom:100px"
-                  @click="processPayment">
+                @click="showTermsDialog">
                   Bayar
                 </button>
               </div>
             </div>
           </div>
         </div>
+        <v-dialog v-model="termsDialog" max-width="600px">
+          <v-card>
+            <v-card-title class="headline">Syarat dan Ketentuan</v-card-title>
+            <v-card-text>
+              <ol>
+                <li>Pengembalian barang maksimal dilakukan pada saat status belum shipping</li>
+                <li>Wajib melakukan video unboxing pada saat membuka paket!</li>
+                <li>Refund hanya diberikan sebesar 80% dari total transaksi yang dibatalkan</li>
+              </ol>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="green darken-1" text @click="acceptTerms">Saya Setuju</v-btn>
+              <v-btn color="red darken-1" text @click="termsDialog = false">Batal</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
   </Navbar>
 </template>
-  
+
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
@@ -166,6 +183,7 @@ export default {
       selectedAddressId: null,
       loadingOngkir: false,
       ongkir: '',
+      termsDialog: false
     };
   },
   watch: {
@@ -201,7 +219,13 @@ export default {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
     },
-
+    showTermsDialog() {
+      this.termsDialog = true;
+    },
+    acceptTerms() {
+      this.processPayment();
+      this.termsDialog = false;
+    },
     confirmDelete(index) {
       this.deleteIndex = index;
       this.deleteDialog = true;
@@ -318,7 +342,7 @@ export default {
 
 
 </script>
-  
+
 <style scoped>
 /* .card-img-top {
   max-width: 450px;
@@ -383,4 +407,3 @@ export default {
   height: 20px;
 }
 </style>
-  

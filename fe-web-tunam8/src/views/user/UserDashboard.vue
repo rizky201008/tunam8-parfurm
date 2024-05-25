@@ -230,7 +230,7 @@ export default {
         };
 
         if (this.selectedCategory) {
-          config.params.category_id = this.selectedCategory;
+          config.params.category = this.selectedCategory;
         }
 
         config.headers = {
