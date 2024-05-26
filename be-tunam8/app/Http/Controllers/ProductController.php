@@ -143,21 +143,21 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    public function searchProductByName(Request $request)
+    public function searchProducts(Request $request)
     {
         $name = $request->query('query');
         $category = $request->query('category');
-        $products = Product::with(['category', 'images'])->where('category_id', $category)->orWhere('name', 'LIKE', "%$name%")->get();
 
-        return response()->json($products);
-    }
+        if ($name == null && $category == null) {
+            $products = Product::with(['category', 'images'])->get();
+        } elseif ($name == null && $category !== null) {
+            $products = Product::with(['category', 'images'])->where('category_id', $category)->get();
+        } elseif ($name !== null && $category == null) {
+            $products = Product::with(['category', 'images'])->where('name', 'LIKE', "%$name%")->get();
+        } else {
+            $products = Product::with(['category', 'images'])->where('name', 'LIKE', "%$name%")->where('category_id', $category)->get();
+        }
 
-    public function searchProductByCategory(Request $request)
-    {
-        $categoryId = $request->query('category_id');
-
-        $category = Category::find($categoryId)->products;
-
-        return $category;
+            return response()->json($products);
     }
 }
