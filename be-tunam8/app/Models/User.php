@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'jenis_kelamin'
     ];
 
     /**
@@ -41,7 +42,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'password' => 'hashed'
     ];
 
     public function personal()
@@ -54,11 +55,13 @@ class User extends Authenticatable
         return $this->hasMany(Address::class);
     }
 
-    public function transactions(){
+    public function transactions()
+    {
         return $this->hasMany(Transaction::class);
     }
 
-    public function cartItems(){
+    public function cartItems()
+    {
         return $this->hasMany(CartItem::class);
     }
 }
