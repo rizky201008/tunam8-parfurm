@@ -53,6 +53,15 @@
                     aria-describedby="emailCustomer"></textarea>
                 </div>
                 <div class="mb-3">
+                  <label for="exampleKategori" class="form-label">Jenis Kelamin</label>
+                  <select class="form-select" aria-label="Default select example" v-model="parfum.jenis_kelamin">
+                    <option selected>Pilih jenis kelamin</option>
+                    <option value="u">Unisex</option>
+                    <option value="l">Laki-laki</option>
+                    <option value="p">Perempuan</option>
+                  </select>
+                </div>
+                <div class="mb-3">
                   <label class="form-label">Tags</label>
                   <div class="form-check" v-for="tag in tags" :key="tag.id">
                     <input class="form-check-input" type="checkbox" :value="tag.name" v-model="selectedTags">
@@ -115,6 +124,7 @@ export default {
         desc: '',
         price: '',
         stok: '',
+        jenis_kelamin: '',
         category: '',
         tag: ''
       },
@@ -149,6 +159,7 @@ export default {
       this.parfum.price = '';
       this.parfum.stok = '';
       this.parfum.foto = '';
+      this.parfum.jenis_kelamin = '',
       this.parfum.category = '',
         this.$refs.fileInput.value = '';
     },
@@ -178,6 +189,7 @@ export default {
         formData.append('stock', this.parfum.stok);
         formData.append('tags', this.selectedTags.join(', '));
         formData.append('category_id', this.parfum.category);
+        formData.append('jenis_kelamin', this.parfum.jenis_kelamin);
         document.getElementById('closeModal').click();
         const token = localStorage.getItem('access_token')
         const response = await axios.post(BASE_URL + '/products', formData, {
