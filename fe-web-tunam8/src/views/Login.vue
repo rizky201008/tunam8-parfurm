@@ -1,9 +1,10 @@
-    <template>
+<template>
     <main>
         <Navbar />
         <section class="login-section">
             <v-dialog v-model="showDialog" hide-overlay persistent width="300" lazy>
-                        <v-progress-circular indeterminate color="red" :size="90" class="mb-0" style="right: -100px;"></v-progress-circular>
+                <v-progress-circular indeterminate color="red" :size="90" class="mb-0"
+                    style="right: -100px;"></v-progress-circular>
             </v-dialog>
 
             <div class="container">
@@ -33,7 +34,8 @@
                                     </div>
                                     <button class="login-button" type="submit" style="color:white">Log in</button>
                                     <div class="register">
-                                        <p>Don't have an account <a @click="toggleForm" style="cursor: pointer">Register</a>
+                                        <p>Don't have an account <a @click="toggleForm"
+                                                style="cursor: pointer">Register</a>
                                         </p>
                                     </div>
                                 </form>
@@ -65,7 +67,8 @@
                                     </div>
                                     <div class="inputbox">
                                         <ion-icon name="lock-closed-outline"></ion-icon>
-                                        <input class="input-type" type="password" v-model="createForgetPassword" required>
+                                        <input class="input-type" type="password" v-model="createForgetPassword"
+                                            required>
                                         <label for="">Create New Password</label>
                                     </div>
                                     <button class="login-button" type="submit" style="color:white">Register</button>
@@ -83,6 +86,15 @@
                                         <label for="">Name</label>
                                     </div>
                                     <div class="inputbox">
+                                        <select class="form-select" aria-label="Default select example"
+                                            v-model="registerGender">
+                                            <option selected>Pilih jenis kelamin</option>
+                                            <option value="u">Unisex</option>
+                                            <option value="l">Laki-laki</option>
+                                            <option value="p">Perempuan</option>
+                                        </select>
+                                    </div>
+                                    <div class="inputbox">
                                         <ion-icon name="mail-outline"></ion-icon>
                                         <input class="input-type" type="email" v-model="registerEmail" required>
                                         <label for="">Email</label>
@@ -94,7 +106,8 @@
                                     </div>
                                     <button class="login-button" type="submit" style="color:white">Register</button>
                                     <div class="register">
-                                        <p>Already have an account <a @click="toggleForm" style="cursor: pointer">Log in</a>
+                                        <p>Already have an account <a @click="toggleForm" style="cursor: pointer">Log
+                                                in</a>
                                         </p>
                                     </div>
                                 </form>
@@ -127,6 +140,7 @@ export default {
             // Register Input
             registerName: "",
             registerEmail: "",
+            registerGender: "",
             registerPassword: "",
             // Forgot Password Input
             forgotPassword: "",
@@ -249,7 +263,7 @@ export default {
         //     }
         // },
         async onSubmit() {
-            this.showDialog = true; 
+            this.showDialog = true;
 
             try {
                 const response = await axios.post(BASE_URL + '/account/login', {
@@ -288,14 +302,15 @@ export default {
                     });
                 }
             } finally {
-                this.showDialog = false; 
+                this.showDialog = false;
             }
         },
         async onRegist() {
-            this.showDialog = true; 
+            this.showDialog = true;
             try {
                 const response = await axios.post(BASE_URL + '/account/register', {
                     name: this.registerName,
+                    jenis_kelamin: this.registerGender,
                     email: this.registerEmail,
                     password: this.registerPassword
                 });
@@ -318,7 +333,7 @@ export default {
                     });
                 }
             } finally {
-                this.showDialog = false; 
+                this.showDialog = false;
             }
         }
 

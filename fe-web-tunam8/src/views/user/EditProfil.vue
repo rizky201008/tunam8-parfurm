@@ -28,6 +28,14 @@
                     <label for="judul">Nama</label>
                     <input class="form-control" type="text" v-model="users.name" id="judul" />
                     <br>
+                    <label for="exampleKategori" class="form-label">Jenis Kelamin</label>
+                    <select class="form-select" aria-label="Default select example" v-model="users.jenis_kelamin">
+                      <option selected>Pilih jenis kelamin</option>
+                      <option value="u">Unisex</option>
+                      <option value="l">Laki-laki</option>
+                      <option value="p">Perempuan</option>
+                    </select>
+                    <br>
                     <label for="desc">Email</label>
                     <input type="email" disabled class="form-control" v-model="users.email" id="desc"></input>
                     <br>
@@ -175,6 +183,7 @@ export default {
       users: {
         id: '',
         name: '',
+        jenis_kelamin:'',
         email: '',
       },
       dialog1: false,
@@ -297,7 +306,8 @@ export default {
     async saveProfile() {
       try {
         const updatedUserData = {
-          name: this.users.name
+          name: this.users.name,
+          jenis_kelamin: this.users.jenis_kelamin
         };
         const response = await axios.put(BASE_URL + '/user/update', updatedUserData, {
           headers: {
@@ -305,11 +315,11 @@ export default {
           }
         });
         this.$notify({
-            type: 'success',
-            title: 'Success',
-            text: 'Namaberhasil diubah',
-            color: 'green'
-          });
+          type: 'success',
+          title: 'Success',
+          text: 'Namaberhasil diubah',
+          color: 'green'
+        });
         console.log('Profile updated successfully:', response.data);
       } catch (error) {
         console.error('Error updating profile:', error);
