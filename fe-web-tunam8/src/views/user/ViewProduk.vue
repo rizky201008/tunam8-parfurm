@@ -56,8 +56,12 @@
               </div>
               <br>
               <div class="mt-auto pb-2">
+                <a>Gender Preferences:</a>
+                <p v-if="parfum.jenis_kelamin === 'l'">Laki-laki</p>
+                <p v-if="parfum.jenis_kelamin === 'p'">Perempuan</p>
+                <p v-if="parfum.jenis_kelamin === 'u'">Unisex</p>
                 <a>Tags:</a>
-                            <p>{{ parfum.tags }}</p>
+                <p>{{ parfum.tags }}</p>
                 <a>Category &nbsp;: </a>
                 <br>
                 <v-chip class="mt-3">{{ parfum.category.name }}</v-chip>
@@ -78,7 +82,7 @@
     </div>
   </Navbar>
 </template>
-  
+
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
 import axios from 'axios';
@@ -201,7 +205,7 @@ export default {
 
 };
 </script>
-  
+
 <style scoped>
 .dashboard-admin {
   min-height: 100vh;
@@ -288,4 +292,3 @@ export default {
   color: white;
 }
 </style>
-  
