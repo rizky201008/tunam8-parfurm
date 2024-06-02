@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use App\Models\TransactionItem;
 use App\Models\TransactionPayment;
 use Illuminate\Support\Facades\Validator;
-use App\Logics\Transactions as TransactionLogic;
+use App\Repository\Transactions as TransactionLogic;
 
 class TransactionController extends Controller
 {
