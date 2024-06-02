@@ -25,8 +25,12 @@ class ProductController extends Controller
         $explodedTags = explode(',', $tags->tags);
         $filteredProduct = [];
 
-        $jenis_kelamin = $user->jenis_kelamin ?? 'u';
-        $query = Product::with(['category', 'images'])->where('jenis_kelamin', $jenis_kelamin);
+        $jenis_kelamin = $user->jenis_kelamin;
+        if ($jenis_kelamin == null) {
+            $query = Product::with(['category', 'images'])->where('jenis_kelamin', 'u');
+        } else {
+            $query = Product::with(['category', 'images'])->where('jenis_kelamin', $jenis_kelamin)->orWhere('jenis_kelamin', 'u');
+        }
 
         if (!empty($explodedTags)) {
             foreach ($explodedTags as $tag) {
