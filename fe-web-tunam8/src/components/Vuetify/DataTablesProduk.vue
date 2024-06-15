@@ -50,6 +50,9 @@
                     Reset
                 </v-btn>
             </template>
+            <template v-slot:bottom>
+                <v-pagination v-model="currentPage" :length="pageCount" @input="retrieveParfum"></v-pagination>
+            </template>
         </v-data-table>
         <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card title="Dialog">
@@ -65,7 +68,8 @@
             </v-card>
         </v-dialog>
     </v-card>
-    <div class="modal fade text-black" id="showProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade text-black" id="showProduct" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -116,7 +120,8 @@
                                         <label class="form-label">Harga:</label>
                                         <div class="input-group">
                                             <span class="input-group-text">Rp</span>
-                                            <input type="text" class="form-control" :value="selectedProduct.price" disabled>
+                                            <input type="text" class="form-control" :value="selectedProduct.price"
+                                                disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -149,6 +154,9 @@ export default {
             selectedProduct: {},
             currentIndex: 0,
             dialogDelete: false,
+            currentPage: 1,
+            pageCount: 1,
+            itemsPerPage: 10,
         }
     },
     computed: {
@@ -163,7 +171,10 @@ export default {
         },
         shouldShowNextIcon() {
             return this.selectedProduct.images.length > 1 && this.currentIndex < this.selectedProduct.images.length - 1;
-        }
+        },
+        pageCount() {
+            return Math.ceil(this.items.length / this.itemsPerPage)
+        },
     },
     mounted() {
         this.retrieveParfum();
@@ -199,9 +210,9 @@ export default {
                 console.error(error);
             }
         },
-        async retrieveParfum() {
+        async retrieveParfum(page = 1) {
             try {
-                const response = await axios.get(BASE_URL + '/products', {
+                const response = await axios.get(BASE_URL + '/products?page=' + page, {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem('access_token')
                     }
@@ -218,6 +229,9 @@ export default {
                     slug: item.slug,
                     actions: '',
                 }));
+
+                this.currentPage = response.data.current_page;
+                this.pageCount = 2;
 
                 if (response.data.length > 0) {
                     this.fotoUrl = response.data[0].foto;

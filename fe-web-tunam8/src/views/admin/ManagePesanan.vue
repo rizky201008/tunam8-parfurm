@@ -1,7 +1,7 @@
 <!-- Catalogue.vue -->
 <template>
   <Navbar>
-    <div>
+    <div class="mt-5">
       <div class="container px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <v-dialog v-model="showDialog" hide-overlay persistent width="300" lazy>
