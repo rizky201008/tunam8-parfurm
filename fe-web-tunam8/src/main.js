@@ -13,6 +13,7 @@ import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
 import CanvasJSChart from '@canvasjs/vue-charts';
 
+
 const app = createApp(App)
 
 
