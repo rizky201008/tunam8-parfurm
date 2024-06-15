@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
-use App\Logics\Tags;
+use App\Repository\Tags;
 use App\Models\Product;
 use Illuminate\Http\Request;
 

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Logics\ProductRepository;
+use App\Repository\ProductRepository;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -19,19 +20,36 @@ class ProductController extends Controller
 
     public function getPersonalizedProducts(Request $request)
     {
-        $tags = $request->user()->personal;
+        $user = $request->user();
+        $tags = $user->personal;
         $explodedTags = explode(',', $tags->tags);
         $filteredProduct = [];
-        foreach ($explodedTags as $tag) {
-            $tag = Str::replace(' ', '', $tag);
-            $products = Product::with(['category', 'images'])->where('tags', 'LIKE', "%$tag%")->inRandomOrder()->limit(5)->get();
-            foreach ($products as $product) {
-                $filteredProduct[] = $product;
+
+        $jenis_kelamin = $user->jenis_kelamin;
+        if ($jenis_kelamin == null) {
+            $query = Product::with(['category', 'images'])->where('jenis_kelamin', 'u');
+        } else {
+            $query = Product::with(['category', 'images'])->where('jenis_kelamin', $jenis_kelamin)->orWhere('jenis_kelamin', 'u');
+        }
+
+        if (!empty($explodedTags)) {
+            foreach ($explodedTags as $tag) {
+                $tag = Str::replace(' ', '', $tag);
+                $products = $query->where('tags', 'LIKE', "%$tag%")->first();
+                if ($products !== null) {
+                    $filteredProduct[] = $products;
+                }
+            }
+        } else {
+            $products = $query->get();
+            if ($products->isNotEmpty()) {
+                $filteredProduct = $products->toArray();
             }
         }
 
-        return response()->json($filteredProduct);
+        return response()->json(array_slice($filteredProduct, 0, 5));
     }
+
 
     public function createProduct(Request $request)
     {
@@ -158,6 +176,6 @@ class ProductController extends Controller
             $products = Product::with(['category', 'images'])->where('name', 'LIKE', "%$name%")->where('category_id', $category)->get();
         }
 
-            return response()->json($products);
+        return response()->json($products);
     }
 }

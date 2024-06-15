@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Logics\ProductRepository as ProductImagesLogic;
+use App\Repository\ProductRepository as ProductImagesLogic;
 use App\Models\ProductImage;
 
 class ProductImageController extends Controller
