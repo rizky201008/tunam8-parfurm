@@ -120,7 +120,7 @@
               Update Transaction
             </v-card-title>
             <v-card-text>
-              <v-select v-model="selectedStatus" :items="statusOptions" label="Status"></v-select>
+              <v-select v-model="selectedStatus" :items="filteredStatusOptions" label="Status"></v-select>
               <v-text-field v-model="trackingNumber" label="Tracking Number"></v-text-field>
             </v-card-text>
             <v-card-actions>
@@ -174,6 +174,14 @@ export default {
     },
     onDateChange() {
       this.getTransactions(this.activeTabStatus());
+    },
+    filteredStatusOptions() {
+      const currentStatus = this.selectedStatus;
+      if (currentStatus === 'unpaid') {
+        return this.statusOptions;
+      } else {
+        return this.statusOptions.filter(status => status !== 'canceled');
+      }
     },
     filteredTransactions() {
       if (this.selectedTab === 'Semua') {
