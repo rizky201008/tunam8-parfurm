@@ -1,5 +1,5 @@
 <template>
-    <div class="transition-content" :class="{ pushMainContent: isActive }">
+    <div class="transition-content " :class="{ pushMainContent: isActive }">
         <div>
             <div v-if="Role === 'admin'">
                 <div id="mySidenav" class="sidenav shadow" :class="{ openNavClass: isActive }">
@@ -37,7 +37,8 @@
             </div>
             <div class="content">
                 <div class="button-side">
-                    <nav class="navbar navbar-expand-lg navbar-light white bgnav shadow-sm rounded">
+                    <nav class="navbar navbar-expand-lg navbar-light white bgnav shadow-sm rounded" 
+                    >
                         <span style="font-size: 25px; cursor: pointer;" @click="isActive = !isActive"
                             class="text-white">&#9776;</span>
                         <a class="navbar-brand text-white" style="margin-left: 15px; cursor:default;">Tunam8</a>

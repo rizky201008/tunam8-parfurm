@@ -47,7 +47,7 @@
                             <div class="card-body">
                                 <div class="wrapper">
                                     <CanvasJSChart :options="lineChart.options" :style="lineChart.styleOptions"
-                                        @chart-ref="lineChart.chartInstance" />
+                                        @chart-ref="chartRef" />
                                 </div>
                             </div>
                         </div>
@@ -124,12 +124,13 @@ export default {
                     },
                     data: [{
                         yValueFormatString: "#,### IDR", // Update y-value format to IDR
-                        dataPoints: [] // Will be populated dynamically
+                        dataPoints: []
                     }]
                 }
             },
             totalIncome: '',
             totalUser: '',
+            monthRevenue: '',
             test: [],
         };
 
@@ -143,7 +144,7 @@ export default {
             return numericPrice.toLocaleString('id-ID');
         },
         async getDashboardData() {
-            this.showDialog = true
+            this.showDialog = true;
             try {
                 const response = await axios.get(BASE_URL + '/dashboard', {
                     headers: {
@@ -153,29 +154,41 @@ export default {
                 const data = response.data;
                 this.totalIncome = data.omzet_all;
                 this.totalUser = data.user_total;
-                const monthlyRevenues = data.omzet_bulan;
-                const maxYValue = Math.max(...monthlyRevenues);
+                this.monthRevenue = data.omzet_bulan;
 
-                const dataPoints = monthlyRevenues.map((revenue, index) => {
-                    const monthLabel = moment().month(index).format('MMMM');
-                    const formattedYValue = (revenue / maxYValue) * 100000; // Scale to 0-100000 range
-                    return { label: monthLabel, y: formattedYValue };
-                });
-                this.lineChart.options.data[0].dataPoints = dataPoints;
-                if (this.lineChart.chart) {
-                    this.lineChart.chart.render();
-                }
-
-                // this.barChart.options.data[0].dataPoints = dataPoints;
-                // if (this.barChart.chart) {
-                //     this.barChart.chart.render();
-                // }
+                this.updateChart(data.omzet_bulan);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
             } finally {
-                this.showDialog = false
+                this.showDialog = false;
             }
+        },
+        updateChart(omzetBulan) {
+            const dataPoints = omzetBulan.map((value, index) => ({
+                x: new Date(2024, index), 
+                y: value
+            }));
+
+            this.lineChart.options.data[0].dataPoints = dataPoints;
+
+            this.lineChart.options.axisX = {
+                valueFormatString: "MMMM",
+                interval: 1,
+                intervalType: "month",
+                minimum: new Date(2024, 0), // Start at January 2024
+                maximum: new Date(2024, 11, 31), // End at December 2024
+            };
+
+            if (this.lineChart.chartInstance) {
+                this.lineChart.chartInstance.render();
+            }
+        },
+        chartRef(chart) {
+            this.lineChart.chartInstance = chart;
         }
+
+
+
     },
     computed: {
         myStyles() {

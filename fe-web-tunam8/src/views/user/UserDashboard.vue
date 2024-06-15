@@ -22,7 +22,6 @@
           <div class="col-12">
             <form class="search-container d-flex align-items-center" @submit.prevent="searchProduct"
               style="gap: 0.5rem;">
-
               <select class="form-select form-select-sm mb-3" aria-label="Large select example"
                 v-model="selectedCategory" @change="searchProduct">
                 <option value="" selected disabled>Select Category</option>
@@ -38,84 +37,85 @@
             </form>
           </div>
         </div>
-
-        <div class="row" style="border-bottom: 2px solid black;" v-if="showRecommendations">
-          <div class="row mb-2 text-center text-black"
-            style="font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
-            REKOMENDASI
+        <div class="p-4 mt-2" style="background-color: #FBFBFB; border-radius: 10px">
+          <div class="row bg-white p-2" style="border-radius: 10px;" v-if="showRecommendations">
+            <div class="row mb-2 text-center text-black"
+              style="font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; font-size: 1.5rem;">
+              Rekomendasi Tunam8 Untukmu!
+            </div>
+            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6"
+              v-for="(item, index) in personalized.slice(0, 6)" :key="item.id">
+              <div class="product-single-card text-black">
+                <div class="product-top-area">
+                  <div class="product-img">
+                    <div class="first-view">
+                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                    </div>
+                    <div class="hover-view">
+                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                    </div>
+                  </div>
+                  <div class="sideicons">
+                    <button class="sideicons-btn">
+                      <v-icon icon="mdi-heart"></v-icon>
+                    </button>
+                    <button class="sideicons-btn" @click.native.prevent="addCart(item.id)">
+                      <v-icon icon="mdi-cart-plus"></v-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="product-info">
+                  <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
+                  <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
+                  <div class="d-flex align-items-center">
+                    <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
+                  </div>
+                  <div class="d-flex flex-wrap align-items-center py-2">
+                    <div class="new-price text-truncate">
+                      Rp. {{ formatPrice(item.price) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </router-link>
           </div>
-          <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6"
-            v-for="(item, index) in personalized.slice(0, 6)" :key="item.id">
-            <div class="product-single-card text-black">
-              <div class="product-top-area">
-                <div class="product-img">
-                  <div class="first-view">
-                    <img :src="item.images[0].link" alt="logo" class="img-fluid">
+          <div class="row mt-2">
+            <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in products"
+              :key="item.id">
+              <div class="product-single-card text-black">
+                <div class="product-top-area">
+                  <div class="product-img">
+                    <div class="first-view">
+                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                    </div>
+                    <div class="hover-view">
+                      <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                    </div>
                   </div>
-                  <div class="hover-view">
-                    <img :src="item.images[0].link" alt="logo" class="img-fluid">
-                  </div>
-                </div>
-                <div class="sideicons">
-                  <button class="sideicons-btn">
-                    <v-icon icon="mdi-heart"></v-icon>
-                  </button>
-                  <button class="sideicons-btn" @click.native.prevent="addCart(item.id)">
-                    <v-icon icon="mdi-cart-plus"></v-icon>
-                  </button>
-                </div>
-              </div>
-              <div class="product-info">
-                <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
-                <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
-                <div class="d-flex align-items-center">
-                  <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
-                </div>
-                <div class="d-flex flex-wrap align-items-center py-2">
-                  <div class="new-price text-truncate">
-                    Rp. {{ formatPrice(item.price) }}
+                  <div class="sideicons">
+                    <button class="sideicons-btn">
+                      <v-icon icon="mdi-heart"></v-icon>
+                    </button>
+                    <button class="sideicons-btn" @click.native.prevent="addCart(item.id)">
+                      <v-icon icon="mdi-cart-plus"></v-icon>
+                    </button>
                   </div>
                 </div>
-              </div>
-            </div>
-          </router-link>
-        </div>
-        <div class="row mt-2">
-          <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="(item, index) in products"
-            :key="item.id">
-            <div class="product-single-card text-black">
-              <div class="product-top-area">
-                <div class="product-img">
-                  <div class="first-view">
-                    <img :src="item.images[0].link" alt="logo" class="img-fluid">
+                <div class="product-info p-2">
+                  <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
+                  <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
+                  <div class="d-flex align-items-center">
+                    <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
                   </div>
-                  <div class="hover-view">
-                    <img :src="item.images[0].link" alt="logo" class="img-fluid">
-                  </div>
-                </div>
-                <div class="sideicons">
-                  <button class="sideicons-btn">
-                    <v-icon icon="mdi-heart"></v-icon>
-                  </button>
-                  <button class="sideicons-btn" @click.native.prevent="addCart(item.id)">
-                    <v-icon icon="mdi-cart-plus"></v-icon>
-                  </button>
-                </div>
-              </div>
-              <div class="product-info p-2">
-                <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
-                <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
-                <div class="d-flex align-items-center">
-                  <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
-                </div>
-                <div class="d-flex flex-wrap align-items-center py-2">
-                  <div class="new-price">
-                    Rp. {{ formatPrice(item.price) }}
+                  <div class="d-flex flex-wrap align-items-center py-2">
+                    <div class="new-price">
+                      Rp. {{ formatPrice(item.price) }}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </router-link>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -209,9 +209,11 @@ export default {
       }
     },
     clearSearch() {
-      this.searchQuery = '';
-      this.selectedCategory = ''
       this.retrieveParfum();
+      this.retrievePersonalized();
+      this.searchQuery = '';
+      this.selectedCategory = '',
+      this.showRecommendations = true
     },
     async searchProduct() {
       if (this.searchQuery.trim() === '' && !this.selectedCategory) {

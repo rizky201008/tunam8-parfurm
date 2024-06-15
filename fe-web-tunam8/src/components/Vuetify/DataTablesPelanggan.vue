@@ -4,17 +4,19 @@
             <v-icon icon="mdi-account-supervisor"></v-icon> &nbsp;
             Daftar Customer
             <v-spacer></v-spacer>
+            <v-btn class="mx-3" color="primary" @click="exportTableToExcel">
+                Download Data
+            </v-btn>
             <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line
                 flat hide-details variant="solo-filled"></v-text-field>
         </v-card-title>
 
         <v-divider></v-divider>
-        <v-data-table v-model:search="search" :items="items">
+        <v-data-table v-model:search="search" :items="items" item-value="no">
             <template v-slot:item.id="{ item }">
                 <div v-if="false">{{ item.id }}</div>
             </template>
-            <template v-slot:header.id>
-            </template>
+            <template v-slot:header.id></template>
             <template v-slot:item.no="{ item }">
                 <div class="text-start">
                     {{ item.no }}
@@ -46,6 +48,7 @@
         </v-dialog>
     </v-card>
 </template>
+
 <script>
 import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_BASE_URL_API;
@@ -56,11 +59,11 @@ export default {
             search: '',
             items: [],
             dialogDelete: false,
+            itemToDelete: null,
         }
     },
     computed: {
         getitems() {
-            // Add a sequential number to each item
             return this.items.map((item, index) => {
                 return { ...item, no: index + 1 };
             });
@@ -70,9 +73,42 @@ export default {
         this.retrieveUser();
     },
     methods: {
+        exportTableToExcel() {
+            const table = document.querySelector('table');
+            const clonedTable = table.cloneNode(true);
+            const actionHeader = Array.from(clonedTable.querySelectorAll('th')).find(th => th.textContent.trim() === 'Actions');
+            const actionIndex = actionHeader ? Array.from(actionHeader.parentNode.children).indexOf(actionHeader) : -1;
+
+            if (actionIndex !== -1) {
+                clonedTable.querySelectorAll('th')[actionIndex].remove();
+                clonedTable.querySelectorAll('tr').forEach(row => {
+                    const cells = row.querySelectorAll('td, th');
+                    if (cells[actionIndex]) {
+                        cells[actionIndex].remove();
+                    }
+                });
+            }
+
+            const tableHTML = clonedTable.outerHTML.replace(/ /g, '%20');
+            const filename = 'data.xls';
+            const dataType = 'application/vnd.ms-excel';
+
+            const downloadLink = document.createElement('a');
+            document.body.appendChild(downloadLink);
+
+            if (navigator.msSaveOrOpenBlob) {
+                const blob = new Blob(['\ufeff', tableHTML], { type: dataType });
+                navigator.msSaveOrOpenBlob(blob, filename);
+            } else {
+                downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+                downloadLink.download = filename;
+                downloadLink.click();
+            }
+
+            document.body.removeChild(downloadLink);
+        },
         confirmDelete(item) {
             this.itemToDelete = item;
-            // console.log(item.id)
             this.dialogDelete = true;
         },
         async retrieveUser() {
@@ -95,7 +131,7 @@ export default {
         },
         async deleteUser(item) {
             try {
-                const response = await axios.delete(BASE_URL + '/users', {
+                await axios.delete(BASE_URL + '/users', {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('access_token'),
                     },
