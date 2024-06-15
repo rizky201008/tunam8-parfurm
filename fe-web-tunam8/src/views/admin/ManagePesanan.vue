@@ -1,26 +1,39 @@
 <!-- Catalogue.vue -->
 <template>
   <Navbar>
-    <div class="mt-5">
+    <div>
       <div class="container px-4 py-2">
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <v-dialog v-model="showDialog" hide-overlay persistent width="300" lazy>
           <v-progress-circular indeterminate color="red" :size="90" class="mb-0"
             style="right: -100px;"></v-progress-circular>
         </v-dialog>
-        <div class="row d-flex justify-content-center" style="height: 60px;">
-          <form class="" style="max-width: 350px;">
-            <div class="row">
-              <div class="col">
-                <input type="text" id="search-bar" placeholder="Cari Pesanan" v-model="searchQuery"
-                  @input="searchProduct">
-              </div>
-              <div class="col">
-                <div class="form-floating mb-3">
-                  <input type="date" v-model="selectedDate"  @change="onDateChange" class="form-control"
-                    id="floatingInput" placeholder="name@example.com">
-                  <label for="floatingInput">Date</label>
+        <div class="row ">
+          <form class="">
+            <div class="row d-flex justify-content-center">
+              <div class="col-3">
+                <div class="wrap">
+                  <input type="text" id="search-bar" placeholder="Cari Pesanan" v-model="searchQuery"
+                    @input="searchProduct">
                 </div>
+              </div>
+              <div class="col-2">
+                <div class="form-floating mb-3">
+                  <input type="date" v-model="selectedDate" @change="onDateChange" class="form-control"
+                    id="floatingInput" placeholder="name@example.com">
+                  <label for="floatingInput">From</label>
+                </div>
+              </div>
+              <div class="col-2">
+                <div class="form-floating mb-3">
+                  <input type="date" v-model="selectedDate" @change="onDateChange" class="form-control"
+                    id="floatingInput" placeholder="name@example.com">
+                  <label for="floatingInput">To</label>
+                </div>
+              </div>
+              <div class="col-3 d-flex align-items-center">
+                <button class="btn btn-primary" @click="exportTransactionsToExcel"><span
+                    class="mdi mdi-download-circle-outline"></span> Export</button>
               </div>
             </div>
           </form>
@@ -174,8 +187,87 @@ export default {
     this.getTransactions();
   },
   methods: {
+    exportTransactionsToExcel() {
+      const dataToExport = this.transactions.map(transaction => ({
+        'Transaction ID': transaction.id,
+        'User': transaction.user.name,
+        'Price': 'Rp. ' + this.formatPrice(transaction.total),
+        'Tanggal Transaksi': this.formatDate(transaction.created_at)
+      }));
+
+      const totalPrice = this.calculateTotalPrice(this.transactions);
+      dataToExport.push({
+        'Transaction ID': 'Total', // Label Total in the first column
+        'User': '',
+        'Price': 'Rp. ' + this.formatPrice(totalPrice),
+        'Tanggal Transaksi': ''
+      });
+
+      this.exportTableToExcel(dataToExport);
+    },
+    exportTableToExcel(data) {
+      const tableHTML = this.convertDataToHTML(data);
+      const filename = 'transaction_data.xls';
+      const dataType = 'application/vnd.ms-excel';
+
+      const downloadLink = document.createElement('a');
+      document.body.appendChild(downloadLink);
+
+      if (navigator.msSaveOrOpenBlob) {
+        const blob = new Blob(['\ufeff', tableHTML], { type: dataType });
+        navigator.msSaveOrOpenBlob(blob, filename);
+      } else {
+        downloadLink.href = 'data:' + dataType + ', ' + encodeURIComponent(tableHTML);
+        downloadLink.download = filename;
+        downloadLink.click();
+      }
+
+      document.body.removeChild(downloadLink);
+    },
+    convertDataToHTML(data) {
+      let table = `
+    <table>
+      <tr>
+        <td colspan="4" style="font-weight: bold; text-align: center;">Tunam8 Perfume</td>
+      </tr>
+      <tr>
+        <td colspan="4" style="font-weight: bold; text-align: center;">Transaction Report</td>
+      </tr>
+    </table>
+    <table border="1" style="border-collapse:collapse;">
+  `;
+      const headers = Object.keys(data[0]);
+      table += '<tr>';
+      headers.forEach(header => {
+        table += '<th style="border: 1px solid black; padding: 5px;">' + header + '</th>';
+      });
+      table += '</tr>';
+
+      data.forEach((row, index) => {
+        table += '<tr>';
+        headers.forEach(header => {
+          if (header === 'Transaction ID' && row[header] === 'Total') {
+            table += '<td style="font-weight: bold; text-align: left;">' + row[header] + '</td>';
+          } else {
+            table += '<td style="padding: 5px;">' + row[header] + '</td>';
+          }
+        });
+        table += '</tr>';
+      });
+
+      table += '</table>';
+      return table;
+    },
+    
+    calculateTotalPrice(transactions) {
+      return transactions.reduce((total, transaction) => total + parseFloat(transaction.total), 0);
+    },
     formatDate(data_date) {
-      return moment.utc(data_date).format('YYYY-MM-DD')
+      if (!data_date) return '';
+
+      const date = new Date(data_date);
+      const options = { year: 'numeric', month: 'long', day: '2-digit' };
+      return date.toLocaleDateString('id-ID', options);
     },
     newformatDate(date) {
       if (!date) return '';
