@@ -38,9 +38,9 @@
           </div>
         </div>
         <div class="p-4 mt-2" style="background-color: #FBFBFB; border-radius: 10px">
-          <div class="row bg-white p-2" style="border-radius: 10px;" v-if="showRecommendations">
+          <div class="row p-2" style="border-radius: 10px; background-color: #E7E2E0" v-if="showRecommendations">
             <div class="row mb-2 text-center text-black"
-              style="font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; font-size: 1.5rem;">
+              style="font-weight: bold;font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; font-size: 1.5rem;">
               Rekomendasi Tunam8 Untukmu!
             </div>
             <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6"
@@ -64,7 +64,7 @@
                     </button>
                   </div>
                 </div>
-                <div class="product-info">
+                <div class="product-info p-2">
                   <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
                   <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
                   <div class="d-flex align-items-center">
