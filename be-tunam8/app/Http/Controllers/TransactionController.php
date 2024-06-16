@@ -40,7 +40,7 @@ class TransactionController extends Controller
     {
         $status = $request->query('status');
         $date = $request->query('date');
-        $query = $this->transaction->with(['transactionItems', 'transactionPayment', 'user']);
+        $query = $this->transaction->with(['transactionItems', 'transactionPayment', 'user', 'address']);
 
         if ($date !== null) {
             $formattedDate = new Carbon($date);
