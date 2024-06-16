@@ -18,6 +18,7 @@ import EditProduk from '../views/admin/EditProduk.vue'
 import DaftarKategori from '../views/admin/DaftarKategori.vue'
 import DaftarTags from '../views/admin/DaftarTags.vue'
 import KelolaPelanggan from '../views/admin/KelolaPelanggan.vue'
+import KeranjangAdmin from '../views/admin/Keranjang.vue'
 import ManagePesanan from '../views/admin/ManagePesanan.vue'
 import DetailPesananAdmin from '../views/admin/AdminDetailPesanan.vue'
 
@@ -85,36 +86,42 @@ const router = createRouter({
       path: '/admin/dashboard',
       name: 'Admin Dashboard',
       component: AdminDashboard,
-      meta: { requiresAdmin: true } // Add meta field to indicate admin access required
+      meta: { requiresAdmin: true }
     },
     {
       path: '/admin/daftarproduk',
       name: 'Daftar Produk',
       component: DaftarProduk,
-      meta: { requiresAdmin: true } // Add meta field to indicate admin access required
+      meta: { requiresAdmin: true } 
     },
     {
       path: '/admin/daftarproduk/editproduk/:slug',
       name: 'Edit Produk',
       component: EditProduk,
-      meta: { requiresAdmin: true } // Add meta field to indicate admin access required
+      meta: { requiresAdmin: true }
     },
     {
       path: '/admin/kategori',
       name: 'Daftar Kategori',
       component: DaftarKategori,
-      meta: { requiresAdmin: true } // Add meta field to indicate admin access required
+      meta: { requiresAdmin: true }
     },
     {
       path: '/admin/tags',
       name: 'Daftar Tags',
       component: DaftarTags,
-      meta: { requiresAdmin: true } // Add meta field to indicate admin access required
+      meta: { requiresAdmin: true } 
     },
     {
       path: '/admin/kelolapelanggan',
       name: 'Kelola Pelanggan',
       component: KelolaPelanggan,
+      meta: { requiresAdmin: true } 
+    },
+    {
+      path: '/admin/keranjang',
+      name: 'Keranjang',
+      component: KeranjangAdmin,
       meta: { requiresAdmin: true } 
     },
     {

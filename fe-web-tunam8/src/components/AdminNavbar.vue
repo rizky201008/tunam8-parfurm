@@ -8,6 +8,7 @@
                     <a href="/admin/daftarproduk"><v-icon icon="mdi-invoice-list"></v-icon>&nbsp;Daftar Produk</a>
                     <a href="/admin/pesanan"><v-icon icon="mdi-list-box"></v-icon>&nbsp;Kelola Pesanan</a>
                     <a href="/admin/kelolapelanggan"><v-icon icon="mdi-account"></v-icon>&nbsp;Kelola Pelanggan</a>
+                    <a href="/admin/keranjang"><v-icon icon="mdi-cart"></v-icon>&nbsp;Keranjang</a>
                     <a @click="onLogout"
                         style="cursor:pointer; align-self: flex-end; bottom: 20px; position: fixed;"><v-icon
                             icon="mdi-run"></v-icon>Logout</a>
