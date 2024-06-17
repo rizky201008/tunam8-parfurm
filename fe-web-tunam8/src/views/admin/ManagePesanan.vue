@@ -315,24 +315,20 @@ export default {
       try {
         const token = localStorage.getItem('access_token');
 
-        // Mengonversi tanggal
         const formattedDate = this.newformatDate(this.selectedFrom);
         const formattedFrom = this.newformatDate(this.selectedFrom);
         const formattedTo = this.newformatDate(this.selectedTo);
 
-        // Menangani logika untuk parameter tanggal
         let params = {
           status: status || this.activeTabStatus(),
           start_date: formattedFrom,
           end_date: formattedTo
         };
 
-        // Jika `start_date` saja yang diisi
         if (formattedFrom && !formattedTo) {
-          params.end_date = this.newformatDate(new Date().toISOString().split('T')[0]); // Set to today
+          params.end_date = this.newformatDate(new Date().toISOString().split('T')[0]);
         }
 
-        // Jika `start_date` dan `end_date` sama
         if (formattedFrom && formattedTo && formattedFrom === formattedTo) {
           params = {
             status: status || this.activeTabStatus(),

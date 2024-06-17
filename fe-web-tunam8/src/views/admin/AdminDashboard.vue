@@ -10,8 +10,8 @@
                     <div class="row">
                         <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
                             <div class="cardstat blue">
-                                <div class="title">all projects</div>
-                                <div class="value">89</div>
+                                <div class="title">Products</div>
+                                <div class="value">{{ total_product }} Perfume</div>
                             </div>
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
@@ -30,9 +30,9 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
                             <div class="cardstat red">
-                                <div class="title">new customers</div>
+                                <div class="title">Transaction</div>
                                 <i class="zmdi zmdi-download"></i>
-                                <div class="value">3</div>
+                                <div class="value">{{ transaction_total }} Transaction</div>
 
                             </div>
                         </div>
@@ -47,7 +47,7 @@
                             <div class="card-body">
                                 <div class="wrapper">
                                     <CanvasJSChart :options="lineChart.options" :style="lineChart.styleOptions"
-                                        @chart-ref="chartRef" />
+                                        @chart-ref="chartRef" style="width: 100%;" />
                                 </div>
                             </div>
                         </div>
@@ -132,6 +132,9 @@ export default {
             totalUser: '',
             monthRevenue: '',
             test: [],
+            total_product: '',
+            transaction_total: ''
+
         };
 
     },
@@ -155,6 +158,8 @@ export default {
                 this.totalIncome = data.omzet_all;
                 this.totalUser = data.user_total;
                 this.monthRevenue = data.omzet_bulan;
+                this.total_product = data.product_total
+                this.transaction_total = data.transaction_total
 
                 this.updateChart(data.omzet_bulan);
             } catch (error) {
