@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Transaction;
@@ -12,10 +13,13 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $userCount = User::count();
-        $omzetTotal = Transaction::where('status', 'received')->sum('total');
+        $transactions = Transaction::where('status', 'received');
+        $products = Product::count();
+        $transactionsCount = $transactions->count();
+        $omzetTotal = $transactions->sum('total');
         $currentYear = Carbon::now()->year;
         $omzetBulan = Transaction::selectRaw('COALESCE(SUM(total), 0) as total')
-            ->where('status','received')
+            ->where('status', 'received')
             ->whereYear('created_at', $currentYear)
             ->groupByRaw('MONTH(created_at)')
             ->orderByRaw('MONTH(created_at)')
@@ -29,7 +33,9 @@ class DashboardController extends Controller
             [
                 'user_total' => $userCount,
                 'omzet_all' => $omzetTotal,
-                'omzet_bulan' => $omzetBulan
+                'omzet_bulan' => $omzetBulan,
+                'transaction_total' => $transactionsCount,
+                'product_total' => $products
             ]
         );
     }
