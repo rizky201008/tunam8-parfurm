@@ -19,15 +19,15 @@
               </div>
               <div class="col-2">
                 <div class="form-floating mb-3">
-                  <input type="date" v-model="selectedDate" @change="onDateChange" class="form-control"
+                  <input type="date" v-model="selectedFrom" @change="onDateChange" class="form-control"
                     id="floatingInput" placeholder="name@example.com">
                   <label for="floatingInput">From</label>
                 </div>
               </div>
               <div class="col-2">
                 <div class="form-floating mb-3">
-                  <input type="date" v-model="selectedDate" @change="onDateChange" class="form-control"
-                    id="floatingInput" placeholder="name@example.com">
+                  <input type="date" v-model="selectedTo" @change="onDateChange" class="form-control" id="floatingInput"
+                    placeholder="name@example.com">
                   <label for="floatingInput">To</label>
                 </div>
               </div>
@@ -165,7 +165,9 @@ export default {
       searchResults: [],
       searchQuery: '',
       showDialog: false,
-      selectedDate: ''
+      selectedDate: '',
+      selectedFrom: '',
+      selectedTo: ''
     };
   },
   computed: {
@@ -312,12 +314,34 @@ export default {
       this.showDialog = true;
       try {
         const token = localStorage.getItem('access_token');
-        const formattedDate = this.newformatDate(this.selectedDate);
-        const response = await axios.get(BASE_URL + '/all-transactions', {
-          params: {
+
+        // Mengonversi tanggal
+        const formattedDate = this.newformatDate(this.selectedFrom);
+        const formattedFrom = this.newformatDate(this.selectedFrom);
+        const formattedTo = this.newformatDate(this.selectedTo);
+
+        // Menangani logika untuk parameter tanggal
+        let params = {
+          status: status || this.activeTabStatus(),
+          start_date: formattedFrom,
+          end_date: formattedTo
+        };
+
+        // Jika `start_date` saja yang diisi
+        if (formattedFrom && !formattedTo) {
+          params.end_date = this.newformatDate(new Date().toISOString().split('T')[0]); // Set to today
+        }
+
+        // Jika `start_date` dan `end_date` sama
+        if (formattedFrom && formattedTo && formattedFrom === formattedTo) {
+          params = {
             status: status || this.activeTabStatus(),
             date: formattedDate
-          },
+          };
+        }
+
+        const response = await axios.get(BASE_URL + '/all-transactions', {
+          params,
           headers: {
             Authorization: 'Bearer ' + token
           }
