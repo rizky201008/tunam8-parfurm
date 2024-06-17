@@ -40,7 +40,11 @@ class TransactionController extends Controller
     {
         $status = $request->query('status');
         $date = $request->query('date');
-        $query = $this->transaction->with(['transactionItems', 'transactionPayment', 'user']);
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $orderBy = $request->query('order_by');
+
+        $query = $this->transaction->with(['transactionItems', 'transactionPayment', 'user', 'address']);
 
         if ($date !== null) {
             $formattedDate = new Carbon($date);
@@ -51,17 +55,37 @@ class TransactionController extends Controller
             $query->where('status', $status);
         }
 
+        if ($startDate !== null && $endDate !== null) {
+            $formattedStartDate = new Carbon($startDate);
+            $formattedEndDate = new Carbon($endDate);
+            $query->whereBetween('created_at', [$formattedStartDate, $formattedEndDate]);
+        }
+
+        if ($orderBy !== null) {
+            $query->orderBy('created_at', $orderBy);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
         return response()->json($query->get());
     }
 
     public function getTransactions(Request $request)
     {
         $status = $request->query('status');
-
+        $orderBy = $request->query('order_by');
+        $transactions = $this->transaction->with(['transactionItems', 'transactionPayment'])->where('user_id', $request->user()->id);
         if ($status !== null) {
-            return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->where('status', $status)->where('user_id', $request->user()->id)->get());
+            $transactions->where('status', $status)->get();
         }
-        return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->where('user_id', $request->user()->id)->get());
+
+        if ($orderBy !== null) {
+            $transactions->orderBy('created_at', $orderBy)->get();
+        } else {
+            $transactions->orderBy('created_at', 'desc')->get();
+        }
+
+        return response()->json($transactions->get());
     }
 
     public function getTransaction(Request $request, $transactionId)
