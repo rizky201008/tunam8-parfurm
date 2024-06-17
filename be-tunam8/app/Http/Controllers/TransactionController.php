@@ -42,6 +42,7 @@ class TransactionController extends Controller
         $date = $request->query('date');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
+        $orderBy = $request->query('order_by');
 
         $query = $this->transaction->with(['transactionItems', 'transactionPayment', 'user', 'address']);
 
@@ -58,6 +59,12 @@ class TransactionController extends Controller
             $formattedStartDate = new Carbon($startDate);
             $formattedEndDate = new Carbon($endDate);
             $query->whereBetween('created_at', [$formattedStartDate, $formattedEndDate]);
+        }
+
+        if ($orderBy !== null) {
+            $query->orderBy('created_at', $orderBy);
+        } else {
+            $query->orderBy('created_at', 'desc');
         }
 
         return response()->json($query->get());
