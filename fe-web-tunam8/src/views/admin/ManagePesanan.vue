@@ -200,19 +200,22 @@ export default {
         'Transaction ID': transaction.id,
         'User': transaction.user.name,
         'Price': 'Rp. ' + this.formatPrice(transaction.total),
+        'Tujuan': transaction.address.city,
         'Tanggal Transaksi': this.formatDate(transaction.created_at)
       }));
 
       const totalPrice = this.calculateTotalPrice(this.transactions);
       dataToExport.push({
-        'Transaction ID': 'Total', // Label Total in the first column
+        'Transaction ID': 'Total',
         'User': '',
         'Price': 'Rp. ' + this.formatPrice(totalPrice),
+        'Tujuan': '',
         'Tanggal Transaksi': ''
       });
 
       this.exportTableToExcel(dataToExport);
     },
+
     exportTableToExcel(data) {
       const tableHTML = this.convertDataToHTML(data);
       const filename = 'transaction_data.xls';
@@ -232,14 +235,15 @@ export default {
 
       document.body.removeChild(downloadLink);
     },
+
     convertDataToHTML(data) {
       let table = `
     <table>
       <tr>
-        <td colspan="4" style="font-weight: bold; text-align: center;">Tunam8 Perfume</td>
+        <td colspan="5" style="font-weight: bold; text-align: center;">Tunam8 Perfume</td>
       </tr>
       <tr>
-        <td colspan="4" style="font-weight: bold; text-align: center;">Transaction Report</td>
+        <td colspan="5" style="font-weight: bold; text-align: center;">Transaction Report</td>
       </tr>
     </table>
     <table border="1" style="border-collapse:collapse;">
@@ -266,7 +270,25 @@ export default {
       table += '</table>';
       return table;
     },
-    
+
+    calculateTotalPrice(transactions) {
+      return transactions.reduce((total, transaction) => total + transaction.total, 0);
+    },
+
+    formatDate(data_date) {
+      if (!data_date) return '';
+
+      const date = new Date(data_date);
+      const options = { year: 'numeric', month: 'long', day: '2-digit' };
+      return date.toLocaleDateString('id-ID', options);
+    },
+
+    formatPrice(price) {
+      const numericPrice = parseFloat(price);
+      return numericPrice.toLocaleString('id-ID');
+    },
+
+
     calculateTotalPrice(transactions) {
       return transactions.reduce((total, transaction) => total + parseFloat(transaction.total), 0);
     },
