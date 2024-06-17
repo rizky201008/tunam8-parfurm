@@ -73,11 +73,19 @@ class TransactionController extends Controller
     public function getTransactions(Request $request)
     {
         $status = $request->query('status');
-
+        $orderBy = $request->query('order_by');
+        $transactions = $this->transaction->with(['transactionItems', 'transactionPayment'])->where('user_id', $request->user()->id);
         if ($status !== null) {
-            return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->where('status', $status)->where('user_id', $request->user()->id)->get());
+            $transactions->where('status', $status)->get();
         }
-        return response()->json($this->transaction->with(['transactionItems', 'transactionPayment'])->where('user_id', $request->user()->id)->get());
+
+        if ($orderBy !== null) {
+            $transactions->orderBy('created_at', $orderBy)->get();
+        } else {
+            $transactions->orderBy('created_at', 'desc')->get();
+        }
+
+        return response()->json($transactions->get());
     }
 
     public function getTransaction(Request $request, $transactionId)
