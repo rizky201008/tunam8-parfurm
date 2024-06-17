@@ -19,15 +19,15 @@
               </div>
               <div class="col-2">
                 <div class="form-floating mb-3">
-                  <input type="date" v-model="selectedDate" @change="onDateChange" class="form-control"
+                  <input type="date" v-model="selectedFrom" @change="onDateChange" class="form-control"
                     id="floatingInput" placeholder="name@example.com">
                   <label for="floatingInput">From</label>
                 </div>
               </div>
               <div class="col-2">
                 <div class="form-floating mb-3">
-                  <input type="date" v-model="selectedDate" @change="onDateChange" class="form-control"
-                    id="floatingInput" placeholder="name@example.com">
+                  <input type="date" v-model="selectedTo" @change="onDateChange" class="form-control" id="floatingInput"
+                    placeholder="name@example.com">
                   <label for="floatingInput">To</label>
                 </div>
               </div>
@@ -120,7 +120,7 @@
               Update Transaction
             </v-card-title>
             <v-card-text>
-              <v-select v-model="selectedStatus" :items="statusOptions" label="Status"></v-select>
+              <v-select v-model="selectedStatus" :items="filteredStatusOptions" label="Status"></v-select>
               <v-text-field v-model="trackingNumber" label="Tracking Number"></v-text-field>
             </v-card-text>
             <v-card-actions>
@@ -165,7 +165,9 @@ export default {
       searchResults: [],
       searchQuery: '',
       showDialog: false,
-      selectedDate: ''
+      selectedDate: '',
+      selectedFrom: '',
+      selectedTo: ''
     };
   },
   computed: {
@@ -174,6 +176,14 @@ export default {
     },
     onDateChange() {
       this.getTransactions(this.activeTabStatus());
+    },
+    filteredStatusOptions() {
+      const currentStatus = this.selectedStatus;
+      if (currentStatus === 'unpaid') {
+        return this.statusOptions;
+      } else {
+        return this.statusOptions.filter(status => status !== 'canceled');
+      }
     },
     filteredTransactions() {
       if (this.selectedTab === 'Semua') {
@@ -192,19 +202,22 @@ export default {
         'Transaction ID': transaction.id,
         'User': transaction.user.name,
         'Price': 'Rp. ' + this.formatPrice(transaction.total),
+        'Tujuan': transaction.address.city,
         'Tanggal Transaksi': this.formatDate(transaction.created_at)
       }));
 
       const totalPrice = this.calculateTotalPrice(this.transactions);
       dataToExport.push({
-        'Transaction ID': 'Total', // Label Total in the first column
+        'Transaction ID': 'Total',
         'User': '',
         'Price': 'Rp. ' + this.formatPrice(totalPrice),
+        'Tujuan': '',
         'Tanggal Transaksi': ''
       });
 
       this.exportTableToExcel(dataToExport);
     },
+
     exportTableToExcel(data) {
       const tableHTML = this.convertDataToHTML(data);
       const filename = 'transaction_data.xls';
@@ -224,14 +237,15 @@ export default {
 
       document.body.removeChild(downloadLink);
     },
+
     convertDataToHTML(data) {
       let table = `
     <table>
       <tr>
-        <td colspan="4" style="font-weight: bold; text-align: center;">Tunam8 Perfume</td>
+        <td colspan="5" style="font-weight: bold; text-align: center;">Tunam8 Perfume</td>
       </tr>
       <tr>
-        <td colspan="4" style="font-weight: bold; text-align: center;">Transaction Report</td>
+        <td colspan="5" style="font-weight: bold; text-align: center;">Transaction Report</td>
       </tr>
     </table>
     <table border="1" style="border-collapse:collapse;">
@@ -258,7 +272,25 @@ export default {
       table += '</table>';
       return table;
     },
-    
+
+    calculateTotalPrice(transactions) {
+      return transactions.reduce((total, transaction) => total + transaction.total, 0);
+    },
+
+    formatDate(data_date) {
+      if (!data_date) return '';
+
+      const date = new Date(data_date);
+      const options = { year: 'numeric', month: 'long', day: '2-digit' };
+      return date.toLocaleDateString('id-ID', options);
+    },
+
+    formatPrice(price) {
+      const numericPrice = parseFloat(price);
+      return numericPrice.toLocaleString('id-ID');
+    },
+
+
     calculateTotalPrice(transactions) {
       return transactions.reduce((total, transaction) => total + parseFloat(transaction.total), 0);
     },
@@ -282,12 +314,30 @@ export default {
       this.showDialog = true;
       try {
         const token = localStorage.getItem('access_token');
-        const formattedDate = this.newformatDate(this.selectedDate);
-        const response = await axios.get(BASE_URL + '/all-transactions', {
-          params: {
+
+        const formattedDate = this.newformatDate(this.selectedFrom);
+        const formattedFrom = this.newformatDate(this.selectedFrom);
+        const formattedTo = this.newformatDate(this.selectedTo);
+
+        let params = {
+          status: status || this.activeTabStatus(),
+          start_date: formattedFrom,
+          end_date: formattedTo
+        };
+
+        if (formattedFrom && !formattedTo) {
+          params.end_date = this.newformatDate(new Date().toISOString().split('T')[0]);
+        }
+
+        if (formattedFrom && formattedTo && formattedFrom === formattedTo) {
+          params = {
             status: status || this.activeTabStatus(),
             date: formattedDate
-          },
+          };
+        }
+
+        const response = await axios.get(BASE_URL + '/all-transactions', {
+          params,
           headers: {
             Authorization: 'Bearer ' + token
           }
