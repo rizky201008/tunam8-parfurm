@@ -42,6 +42,7 @@ class TransactionController extends Controller
         $date = $request->query('date');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
+
         $query = $this->transaction->with(['transactionItems', 'transactionPayment', 'user', 'address']);
 
         if ($date !== null) {
