@@ -40,6 +40,9 @@ class TransactionController extends Controller
     {
         $status = $request->query('status');
         $date = $request->query('date');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
         $query = $this->transaction->with(['transactionItems', 'transactionPayment', 'user', 'address']);
 
         if ($date !== null) {
@@ -49,6 +52,12 @@ class TransactionController extends Controller
 
         if ($status !== null) {
             $query->where('status', $status);
+        }
+
+        if ($startDate !== null && $endDate !== null) {
+            $formattedStartDate = new Carbon($startDate);
+            $formattedEndDate = new Carbon($endDate);
+            $query->whereBetween('created_at', [$formattedStartDate, $formattedEndDate]);
         }
 
         return response()->json($query->get());
