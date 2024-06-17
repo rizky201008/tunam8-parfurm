@@ -35,14 +35,8 @@
                 <v-chip>{{ item.category.name }}</v-chip>
             </template>
             <template v-slot:item.actions="{ item }">
-                <v-icon size="large" class="me-2" @click="showModal(item)" color="green">
-                    mdi-eye-circle-outline
-                </v-icon>
-                <v-icon size="large" class="me-2" @click="editProduk(item)" color="blue">
-                    mdi-pencil
-                </v-icon>
-                <v-icon size="large" @click="confirmDelete(item)" color="red">
-                    mdi-delete
+                <v-icon size="large" class="me-2" @click="addCart(item)" color="green">
+                    mdi-plus-box-outline
                 </v-icon>
             </template>
             <template v-slot:no-data>
@@ -154,14 +148,13 @@ export default {
             selectedProduct: {},
             currentIndex: 0,
             dialogDelete: false,
-            currentPage: 1,
-            pageCount: 1,
-            itemsPerPage: 10,
+            // currentPage: 1,
+            // pageCount: 1,
+            // itemsPerPage: 10,
         }
     },
     computed: {
         getitems() {
-            // Add a sequential number to each item
             return this.items.map((item, index) => {
                 return { ...item, no: index + 1 };
             });
@@ -240,9 +233,33 @@ export default {
                 console.error(error);
             }
         },
-        editProduk(item) {
-            const slug = item.slug
-            this.$router.push({ path: `/admin/daftarproduk/editproduk/` + slug })
+        addCart(item) {
+            axios.post(BASE_URL + '/carts', { 
+                product_id: item.id 
+            }, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('access_token')
+                }
+            })
+
+                .then(response => {
+                    console.log('Item added to cart:', response.data);
+                    this.$notify({
+                        type: 'success',
+                        title: 'Success',
+                        text: 'Produk berhasil ditambahkan',
+                        color: 'green',
+                    });
+                })
+                .catch(error => {
+                    console.error('Error adding item to cart:', error);
+                    this.$notify({
+                        type: 'error',
+                        title: 'Tambah Produk Gagal',
+                        text: 'Produk sudah ada pada keranjang',
+                        color: 'red',
+                    });
+                });
         },
         async deleteProduct(item) {
             try {

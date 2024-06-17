@@ -19,6 +19,7 @@ import DaftarKategori from '../views/admin/DaftarKategori.vue'
 import DaftarTags from '../views/admin/DaftarTags.vue'
 import KelolaPelanggan from '../views/admin/KelolaPelanggan.vue'
 import KeranjangAdmin from '../views/admin/Keranjang.vue'
+import KasirAdmin from '../views/admin/Kasir.vue'
 import ManagePesanan from '../views/admin/ManagePesanan.vue'
 import DetailPesananAdmin from '../views/admin/AdminDetailPesanan.vue'
 
@@ -116,6 +117,12 @@ const router = createRouter({
       path: '/admin/kelolapelanggan',
       name: 'Kelola Pelanggan',
       component: KelolaPelanggan,
+      meta: { requiresAdmin: true } 
+    },
+    {
+      path: '/admin/kasir',
+      name: 'Kasir',
+      component: KasirAdmin,
       meta: { requiresAdmin: true } 
     },
     {

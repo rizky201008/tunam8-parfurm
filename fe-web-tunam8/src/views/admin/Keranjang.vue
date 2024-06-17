@@ -78,12 +78,12 @@ export default {
         {
           title: 'Home',
           disabled: false,
-          href: '/dashboard',
+          href: '/admin/kasir',
         },
         {
           title: 'Keranjang',
           disabled: true,
-          href: '/dashboard',
+          href: '/admin/keranjang',
         }
       ],
       searchQuery: '',
