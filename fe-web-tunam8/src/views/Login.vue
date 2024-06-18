@@ -79,37 +79,37 @@
                                     </div>
                                 </form>
                                 <form v-else key="register-form" @submit.prevent="onRegist">
-                                    <h2>Register</h2>
-                                    <div class="inputbox">
-                                        <ion-icon name="person-outline"></ion-icon>
-                                        <input class="input-type" type="input" v-model="registerName" required>
-                                        <label for="">Name</label>
-                                    </div>
-                                    <div class="inputbox">
-                                        <select class="form-select" aria-label="Default select example"
-                                            v-model="registerGender">
-                                            <option selected>Pilih jenis kelamin</option>
-                                            <option value="u">Unisex</option>
-                                            <option value="l">Laki-laki</option>
-                                            <option value="p">Perempuan</option>
-                                        </select>
-                                    </div>
-                                    <div class="inputbox">
-                                        <ion-icon name="mail-outline"></ion-icon>
-                                        <input class="input-type" type="email" v-model="registerEmail" required>
-                                        <label for="">Email</label>
-                                    </div>
-                                    <div class="inputbox">
-                                        <ion-icon name="lock-closed-outline"></ion-icon>
-                                        <input class="input-type" type="password" v-model="registerPassword" required>
-                                        <label for="">Create Password</label>
-                                    </div>
-                                    <button class="login-button" type="submit" style="color:white">Register</button>
-                                    <div class="register">
-                                        <p>Already have an account <a @click="toggleForm" style="cursor: pointer">Log
-                                                in</a>
-                                        </p>
-                                    </div>
+                                        <h2>Register</h2>
+                                        <div class="inputbox">
+                                            <ion-icon name="person-outline"></ion-icon>
+                                            <input class="input-type" type="input" v-model="registerName" required>
+                                            <label for="">Name</label>
+                                        </div>
+                                        <div class="inputbox">
+                                            <label for="">Gender</label>
+                                            <select class="form-select" aria-label="Default select example"
+                                                v-model="registerGender">
+                                                <option value="u">Unisex</option>
+                                                <option value="l">Laki-laki</option>
+                                                <option value="p">Perempuan</option>
+                                            </select>
+                                        </div>
+                                        <div class="inputbox">
+                                            <ion-icon name="mail-outline"></ion-icon>
+                                            <input class="input-type" type="email" v-model="registerEmail" required>
+                                            <label for="">Email</label>
+                                        </div>
+                                        <div class="inputbox">
+                                            <ion-icon name="lock-closed-outline"></ion-icon>
+                                            <input class="input-type" type="password" v-model="registerPassword" required>
+                                            <label for="">Create Password</label>
+                                        </div>
+                                        <button class="login-button" type="submit" style="color:white">Register</button>
+                                        <div class="register">
+                                            <p>Already have an account <a @click="toggleForm" style="cursor: pointer">Log
+                                                    in</a>
+                                            </p>
+                                        </div>
                                 </form>
                             </transition>
                         </div>
@@ -297,7 +297,7 @@ export default {
                     this.$notify({
                         type: 'error',
                         title: 'Error',
-                        text: errorMessage,
+                        text: 'Email atau Password Salah',
                         color: 'red'
                     });
                 }
@@ -355,8 +355,8 @@ export default {
 
 .form-box {
     position: relative;
-    width: 400px;
-    height: 450px;
+    width: 500px;
+    height: 550px;
     background: transparent;
     border: 1px solid red;
     border-radius: 20px;

@@ -6,10 +6,7 @@
         <Breadcrumbs class="d-flex align-items-center" :items="breadcrumbsItems" />
         <div class="bg-white col-md-12">
           <div v-for="(item, index) in cartItems" :key="index" class="cart-item">
-            <div class="col-1 d-flex justify-content-center align-item-center">
-              <input type="checkbox" v-model="item.checked" class="checkbox-style">
-            </div>
-            <div class="col-3 d-flex justify-content-center align-item-center">
+            <div class="col-4 d-flex justify-content-center align-item-center">
               <img :src="item.product.image" alt="Product Image" class="product-image">
             </div>
             <div class="col-5 text-left">
@@ -38,7 +35,7 @@
             <h2>Cart Summary</h2>
             <p>Total Items: {{ checkedTotalItems }}</p>
             <p>Total Price: Rp. {{ formatPrice(checkedTotalPrice) }}</p>
-            <v-btn color="red" rounded="xl" @click="checkout">
+            <v-btn color="red" rounded="xl" @click="processPayment">
               Checkout
             </v-btn>
           </div>
@@ -94,11 +91,11 @@ export default {
   },
   computed: {
     checkedTotalItems() {
-      return this.cartItems.reduce((acc, item) => item.checked ? acc + parseInt(item.quantity) : acc, 0);
+      return this.cartItems.reduce((acc, item) => acc + parseInt(item.quantity), 0);
     },
     checkedTotalPrice() {
-      return this.cartItems.reduce((acc, item) => item.checked ? acc + (item.product.price * item.quantity) : acc, 0);
-    }
+      return this.cartItems.reduce((acc, item) => acc + (item.product.price * parseInt(item.quantity)), 0);
+    },
   },
   mounted() {
     this.retrieveCart();
@@ -162,6 +159,33 @@ export default {
             console.error('Error updating quantity:', error);
           });
       }, 4000);
+    },
+    processPayment() {
+      const requestData = {
+        products: this.cartItems.map(item => ({
+          id: item.product.id,
+          qty: item.quantity
+        })),
+      };
+
+      axios.post(BASE_URL + '/cashier-transaction', requestData, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+        }
+      })
+        .then(response => {
+          this.$notify({
+                    type: 'success',
+                    title: 'Success',
+                    text: 'Transaksi Berhasil Dibuat',
+                    color: 'green'
+                });
+          this.$router.push('/admin/kasir');
+        })
+        .catch(error => {
+          console.error('Error processing payment:', error);
+          console.log(requestData)
+        });
     },
     checkout() {
       const checkedItems = this.cartItems.filter(item => item.checked);
