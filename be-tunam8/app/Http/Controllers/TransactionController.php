@@ -156,6 +156,31 @@ class TransactionController extends Controller
         ], 201);
     }
 
+    public function createCashierTransaction(Request $request)
+    {
+        $request->validate([
+            'products' => 'required|array',
+        ]);
+
+        $this->transactionLogic->decreaseStock($request->products);
+        $this->transactionLogic->deleteCartItem($request->products, $request->user()->id);
+        $total = $this->transactionLogic->getTotal($request->products);
+        $transaction = [
+            'total' => $total,
+            'user_id' => $request->user()->id,
+            'status' => 'received',
+            'address_id' => null,
+            'cost' => null,
+        ];
+        $insertTransaction = $this->transactionLogic->insertTransaction($transaction, $request->products);
+        if ($insertTransaction['error']) {
+            throw new Exception($insertTransaction['message']);
+        }
+        return response()->json([
+            'message' => 'Transaction created',
+        ], 201);
+    }
+
     public function getShippingCost(Request $request)
     {
         $request->validate([
