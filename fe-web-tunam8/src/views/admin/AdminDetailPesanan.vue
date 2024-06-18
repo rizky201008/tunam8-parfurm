@@ -34,22 +34,30 @@
             <h4>Alamat</h4>
           </div>
           <div class="row px-3 pt-2">
-            <div class="col-md-3">
-              <a style="font-size: 20px;">Nama Penerima</a>
-              <br>
-              <a style="font-size: 20px;">City</a>
-              <br>
-              <a style="font-size: 20px;">Alamat Detail</a>
-            </div>
-            <div class="col-md-9">
-              <a style="font-size: 20px;">: {{ items.data.address.receiver }}</a>
-              <br>
-              <a style="font-size: 20px;">: {{ items.data.address.city }}</a>
-              <br>
-              <a style="font-size: 20px;">: {{ items.data.address.address_detail }}</a>
-            </div>
+            <template v-if="items.data.address">
+              <div class="col-md-3">
+                <a style="font-size: 20px;">Nama Penerima</a>
+                <br>
+                <a style="font-size: 20px;">City</a>
+                <br>
+                <a style="font-size: 20px;">Alamat Detail</a>
+              </div>
+              <div class="col-md-9">
+                <a style="font-size: 20px;">: {{ items.data.address.receiver }}</a>
+                <br>
+                <a style="font-size: 20px;">: {{ items.data.address.city }}</a>
+                <br>
+                <a style="font-size: 20px;">: {{ items.data.address.address_detail }}</a>
+              </div>
+            </template>
+            <template v-else>
+              <div class="col-md-12">
+                <a style="font-size: 20px; font-weight: bold;">Pembelian OnSite</a>
+              </div>
+            </template>
           </div>
         </div>
+
         <div class="col-md-12 bg-white p-4 mt-2">
           <div class="row px-3 border-bottom">
             <h4>Produk Dibeli</h4>

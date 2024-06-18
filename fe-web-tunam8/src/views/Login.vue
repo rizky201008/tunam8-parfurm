@@ -297,7 +297,7 @@ export default {
                     this.$notify({
                         type: 'error',
                         title: 'Error',
-                        text: errorMessage,
+                        text: 'Email atau Password Salah',
                         color: 'red'
                     });
                 }
