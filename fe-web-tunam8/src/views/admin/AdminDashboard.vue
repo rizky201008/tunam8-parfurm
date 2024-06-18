@@ -120,10 +120,10 @@ export default {
                     animationEnabled: true,
                     axisY: {
                         includeZero: true,
-                        suffix: " IDR" // Update the y-axis suffix
+                        suffix: " IDR" 
                     },
                     data: [{
-                        yValueFormatString: "#,### IDR", // Update y-value format to IDR
+                        yValueFormatString: "#,### IDR", 
                         dataPoints: []
                     }]
                 }
