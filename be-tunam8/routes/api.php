@@ -86,6 +86,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('product-image', [ProductImageController::class, 'updateProductImage']);
         Route::get('all-transactions', [TransactionController::class, 'allTransactions']);
         Route::get('dashboard', [DashboardController::class, 'index']);
+        Route::post('cashier-transaction', [TransactionController::class, 'createCashierTransaction']);
     });
 });
 
