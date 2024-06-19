@@ -202,7 +202,7 @@ export default {
         'Transaction ID': transaction.id,
         'User': transaction.user.name,
         'Price': 'Rp. ' + this.formatPrice(transaction.total),
-        'Tujuan': transaction.address.city,
+        'Tujuan': transaction.address && transaction.address.city ? transaction.address.city : 'OnSite',
         'Tanggal Transaksi': this.formatDate(transaction.created_at)
       }));
 
@@ -217,6 +217,7 @@ export default {
 
       this.exportTableToExcel(dataToExport);
     },
+
 
     exportTableToExcel(data) {
       const tableHTML = this.convertDataToHTML(data);
